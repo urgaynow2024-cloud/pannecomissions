@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await requireAdmin();
     const services = await prisma.Service.findMany({
-      orderBy: { sortOrder: "asc" },
+      orderBy: { sort_order: "asc" },
     });
     return NextResponse.json(services);
   } catch {
@@ -39,5 +39,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create service" }, { status: 500 });
   }
 }
+
 
 

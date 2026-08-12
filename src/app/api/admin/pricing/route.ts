@@ -12,7 +12,7 @@ export async function GET() {
   try {
     await requireAdmin();
     const pricing = await prisma.Pricing.findMany({
-      orderBy: { sortOrder: "asc" },
+      orderBy: { sort_order: "asc" },
     });
     return NextResponse.json(pricing);
   } catch {
@@ -41,5 +41,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create pricing" }, { status: 500 });
   }
 }
+
 
 

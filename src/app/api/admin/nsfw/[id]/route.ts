@@ -40,7 +40,7 @@ export async function PUT(
     const description = formData.get("description") as string;
     const altText = formData.get("altText") as string;
     const visible = formData.get("visible") === "true";
-    const sortOrder = parseInt(formData.get("sortOrder") as string || "0", 10);
+    const sort_order = parseInt(formData.get("sortOrder") as string || "0", 10);
     const file = formData.get("image") as File | null;
 
     const existing = await prisma.PortfolioItem.findUnique({
@@ -69,7 +69,7 @@ export async function PUT(
         alt_text: altText !== "" ? altText : existing.alt_text,
         image_url: imageUrl,
         visible,
-        sortOrder,
+        sort_order,
       },
     });
 

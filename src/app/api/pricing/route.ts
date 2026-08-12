@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const pricing = await prisma.Pricing.findMany({
       where: { visible: true },
-      orderBy: { sortOrder: "asc" },
+      orderBy: { sort_order: "asc" },
     });
     return NextResponse.json(pricing);
   } catch (error) {
@@ -13,5 +13,6 @@ export async function GET() {
     return NextResponse.json({ error: "Failed to fetch pricing", items: [] }, { status: 500 });
   }
 }
+
 
 

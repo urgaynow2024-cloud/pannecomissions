@@ -14,7 +14,7 @@ export async function GET() {
     await requireAdmin();
     const items = await prisma.PortfolioItem.findMany({
       where: { nsfw: true },
-      orderBy: { sortOrder: "asc" },
+      orderBy: { sort_order: "asc" },
     });
     return NextResponse.json(items);
   } catch {
@@ -64,5 +64,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create NSFW portfolio item" }, { status: 500 });
   }
 }
+
 
 
