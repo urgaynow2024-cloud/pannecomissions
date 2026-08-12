@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model portfolio_items {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  image_url   String
+  sort_order  Int      @default(0)
+  featured    Boolean  @default(false)
+  nsfw        Boolean  @default(false)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+}
+
+model reviews {
+  id         String   @id @default(cuid())
+  client_name String
+  rating     Int
+  message    String
+  status     String   @default("PENDING")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model commission_submissions {
+  id         String   @id @default(cuid())
+  client_name String
+  email      String
+  service    String
+  description String?
+  status     String   @default("PENDING")
+  nsfw       Boolean  @default(false)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model support_requests {
+  id         String   @id @default(cuid())
+  client_name String
+  email      String
+  message    String
+  status     String   @default("PENDING")
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model site_settings {
+  id         String   @id @default(cuid())
+  key        String   @unique
+  value      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model admin_users {
+  id         String   @id @default(cuid())
+  username   String   @unique
+  password_hash String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model contact_submissions {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  message    String
+  created_at DateTime @default(now())
+}
