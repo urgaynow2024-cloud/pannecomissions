@@ -116,6 +116,18 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'rejection_reason') THEN
     ALTER TABLE reviews ADD COLUMN rejection_reason TEXT;
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'hidden') THEN
+    ALTER TABLE reviews ADD COLUMN hidden BOOLEAN NOT NULL DEFAULT false;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'image_url') THEN
+    ALTER TABLE reviews ADD COLUMN image_url TEXT;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'client_name') THEN
+    ALTER TABLE reviews RENAME COLUMN client_name TO display_name;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'message') THEN
+    ALTER TABLE reviews RENAME COLUMN message TO review_text;
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'support_requests' AND column_name = 'subject') THEN
     ALTER TABLE support_requests ADD COLUMN subject TEXT;
   END IF;
