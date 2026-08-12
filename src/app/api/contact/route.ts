@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sendEmail } from "@/lib/email";
 
 export async function POST(request: Request) {
   try {
@@ -8,16 +7,6 @@ export async function POST(request: Request) {
     const contact = await prisma.contactSubmission.create({
       data: body,
     });
-
-    try {
-      await sendEmail({
-        to: body.email,
-        subject: "Contact Message Received",
-        content: "Thank you for contacting me. I will get back to you soon.",
-      });
-    } catch (emailError) {
-      console.error("Failed to send email:", emailError);
-    }
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {

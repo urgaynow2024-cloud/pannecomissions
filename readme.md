@@ -232,8 +232,6 @@ SUPABASE_SERVICE_ROLE_KEY=...
 
 ADMIN_PASSWORD=...
 
-RESEND_API_KEY=...
-
 DISCORD_WEBHOOK_URL=...
 
 NEXT_PUBLIC_SITE_URL=https://pannecomissions.shop
@@ -285,14 +283,6 @@ The Discord webhook is a server-side secret.
 
 It must not be exposed through client-side code or a `NEXT_PUBLIC_` variable.
 
-## Email
-
-The site uses **Resend** for email-related functionality.
-
-Email is handled server-side.
-
-The Resend API key is stored as an environment variable and is never sent to the browser.
-
 ## Tech Stack
 
 * **Next.js**
@@ -301,7 +291,6 @@ The Resend API key is stored as an environment variable and is never sent to the
 * **Tailwind CSS**
 * **Supabase PostgreSQL**
 * **Vercel**
-* **Resend**
 * **Discord Webhooks**
 * **Lucide React**
 
@@ -380,7 +369,6 @@ These must never be exposed publicly:
 DATABASE_URL
 SUPABASE_SERVICE_ROLE_KEY
 ADMIN_PASSWORD
-RESEND_API_KEY
 DISCORD_WEBHOOK_URL
 ```
 
@@ -476,8 +464,8 @@ Panne Commissions
                        │
               ┌────────┼────────┐
               ▼        ▼        ▼
-          Supabase   Resend   Discord
-          Database    Email    Webhook
+           Supabase   Discord
+           Database   Webhook
 ```
 
 ### Vercel Environment Variables
@@ -490,7 +478,6 @@ SUPABASE_URL
 SUPABASE_ANON_KEY
 SUPABASE_SERVICE_ROLE_KEY
 ADMIN_PASSWORD
-RESEND_API_KEY
 DISCORD_WEBHOOK_URL
 NEXT_PUBLIC_SITE_URL
 ```
