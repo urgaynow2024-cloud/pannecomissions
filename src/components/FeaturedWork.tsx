@@ -6,37 +6,32 @@ import Link from "next/link";
 interface PortfolioItem {
   id: string;
   title: string;
-  description: string;
   image_url: string;
-  featured: boolean;
 }
 
-export default function FeaturedWork() {
-  const [items, setItems] = useState<PortfolioItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface FeaturedWorkProps {
+  items: PortfolioItem[];
+}
+
+export default function FeaturedWork({ items }: FeaturedWorkProps) {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/portfolio")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch portfolio");
-        return res.json();
-      })
-      .then((all: PortfolioItem[]) => {
-        const featured = all.filter((item) => item.featured);
-        setItems(featured.length > 0 ? featured.slice(0, 3) : all.slice(0, 3));
-      })
-      .catch((err) => {
-        setError(err.message);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
-  }, []);
+    const handleKey = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+      if (e.key === "Escape") setSelectedIndex(null);
+      if (e.key === "ArrowRight") setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
+      if (e.key === "ArrowLeft") setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedIndex, items.length]);
 
-  if (loading || error || items.length === 0) {
+  if (items.length === 0) {
     return null;
   }
+
+  const selected = selectedIndex !== null ? items[selectedIndex] : null;
 
   return (
     <section className="py-20 border-t border-white/5">
@@ -63,15 +58,16 @@ export default function FeaturedWork() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {items.map((item) => (
-            <Link
+            <button
               key={item.id}
-              href={`/portfolio#${item.id}`}
+              onClick={() => setSelectedIndex(items.indexOf(item))}
               className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:border-purple-500/30"
             >
               <img
                 src={item.image_url}
                 alt={item.title}
                 className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                loading="lazy"
                 onError={(e) => {
                   (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
                 }}
@@ -81,7 +77,7 @@ export default function FeaturedWork() {
                 <p className="text-sm font-medium text-purple-400 mb-1">Featured</p>
                 <p className="text-lg font-semibold text-white">{item.title}</p>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
 
@@ -97,6 +93,64 @@ export default function FeaturedWork() {
           </Link>
         </div>
       </div>
+
+      {selected && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedIndex(null)}
+        >
+          <div
+            className="relative max-w-5xl w-full max-h-[90vh] overflow-auto rounded-2xl border border-white/10 bg-gray-900"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-4">
+              <p className="text-sm font-medium text-white">{selected.title}</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
+                  }}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
+                  }}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setSelectedIndex(null)}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <div className="px-4 pb-4">
+              <img
+                src={selected.image_url}
+                alt={selected.title}
+                className="w-full h-auto max-h-[75vh] object-contain mx-auto"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

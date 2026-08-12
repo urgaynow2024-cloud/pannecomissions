@@ -11,6 +11,37 @@ interface Service {
   visible: boolean;
 }
 
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-4 px-5 py-4">
+      <div className="h-10 w-10 rounded-lg bg-white/5 animate-pulse shrink-0" />
+      <div className="flex-1 space-y-2">
+        <div className="h-4 bg-white/5 rounded animate-pulse w-48" />
+        <div className="h-3 bg-white/5 rounded animate-pulse w-72" />
+      </div>
+      <div className="h-8 w-16 bg-white/5 rounded animate-pulse" />
+      <div className="h-8 w-8 bg-white/5 rounded animate-pulse" />
+      <div className="h-8 w-8 bg-white/5 rounded animate-pulse" />
+    </div>
+  );
+}
+
+function EmptyState({ onAdd }: { onAdd: () => void }) {
+  return (
+    <div className="text-center py-20 rounded-xl border border-dashed border-white/10">
+      <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 mb-4">
+        <svg className="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      </div>
+      <p className="text-gray-400 mb-4 text-sm">No services yet.</p>
+      <button onClick={onAdd} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+        Add First Service
+      </button>
+    </div>
+  );
+}
+
 export default function ServicesPage() {
   const [items, setItems] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,7 +79,10 @@ export default function ServicesPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (!res.ok) throw new Error("Save failed");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Save failed");
+      }
       await fetchItems();
       resetForm();
     } catch (err) {
@@ -76,74 +110,135 @@ export default function ServicesPage() {
     setFormData({ name: "", description: "", image_url: "", sort_order: 0, visible: true });
   }
 
-  if (loading) return <div className="text-gray-400">Loading...</div>;
-  if (error) return <div className="text-red-400">{error}</div>;
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <div className="h-8 bg-white/5 rounded w-32 animate-pulse mb-2" />
+            <div className="h-4 bg-white/5 rounded w-48 animate-pulse" />
+          </div>
+        </div>
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden divide-y divide-white/5">
+          <SkeletonRow />
+          <SkeletonRow />
+          <SkeletonRow />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Services</h1>
+          <p className="text-gray-400 mt-1">Manage service offerings.</p>
+        </div>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
+          <p className="text-sm text-red-400 mb-4">{error}</p>
+          <button onClick={fetchItems} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">Services</h1>
-            <p className="text-gray-400 mt-1">Manage service offerings.</p>
-          </div>
-          <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
-            Add Service
-          </button>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-white">Services</h1>
+          <p className="text-gray-400 mt-1">Manage service offerings.</p>
         </div>
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+          Add Service
+        </button>
+      </div>
 
-        {showForm && (
-          <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+      {showForm && (
+        <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+          <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white">{editingId ? "Edit Service" : "New Service"}</h3>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
-              <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-              <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white" rows={3} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
-              <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white" />
-            </div>
+            <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
+            <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" rows={3} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
+            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" placeholder="https://..." />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Order</label>
-              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white" />
+              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" />
             </div>
-            <div className="flex items-center gap-2">
-              <input id="visible" type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} />
-              <label htmlFor="visible" className="text-sm text-gray-300">Visible</label>
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0" />
+                <span className="text-sm text-gray-300">Visible</span>
+              </label>
             </div>
-            <div className="flex gap-3">
-              <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50">
-                {saving ? "Saving..." : "Save"}
-              </button>
-              <button type="button" onClick={resetForm} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white">Cancel</button>
-            </div>
-          </form>
-        )}
-
-        {items.length === 0 ? (
-          <div className="text-center py-20">
-            <p className="text-gray-400 mb-4">No services yet.</p>
-            <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500">Add First Service</button>
           </div>
-        ) : (
-          <div className="space-y-3">
+          <div className="flex gap-3 pt-2">
+            <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+              {saving ? "Saving..." : "Save"}
+            </button>
+            <button type="button" onClick={resetForm} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>
+          </div>
+        </form>
+      )}
+
+      {items.length === 0 ? (
+        <EmptyState onAdd={() => { resetForm(); setShowForm(true); }} />
+      ) : (
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
+          <div className="divide-y divide-white/5">
             {items.map((item) => (
-              <div key={item.id} className="flex items-center justify-between rounded-xl border border-white/5 bg-white/[0.02] p-4">
-                <div>
-                  <h3 className="font-semibold text-white">{item.name}</h3>
-                  <p className="text-sm text-gray-400">{item.description || "No description"}</p>
+              <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors">
+                <div className="shrink-0">
+                  {item.image_url ? (
+                    <img src={item.image_url} alt={item.name} className="h-10 w-10 rounded-lg object-cover" />
+                  ) : (
+                    <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                  )}
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => handleEdit(item)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white">Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/5">Delete</button>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-white truncate">{item.name}</h3>
+                    {item.visible ? (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-500/10 text-green-400">Visible</span>
+                    ) : (
+                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400">Hidden</span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-500 truncate">{item.description || "No description"}</p>
+                </div>
+                <span className="text-xs text-gray-500 w-8 text-center shrink-0">{item.sort_order}</span>
+                <div className="flex gap-2 shrink-0">
+                  <button onClick={() => handleEdit(item)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors">Edit</button>
+                  <button onClick={() => handleDelete(item.id)} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/5 transition-colors">Delete</button>
                 </div>
               </div>
             ))}
           </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
   );
 }

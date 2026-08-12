@@ -2,8 +2,31 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AgeVerifier from "@/components/AgeVerifier";
 import NSFWPortfolio from "@/components/NSFWPortfolio";
+import prisma from "@/lib/prisma";
 
-export default function NSFWPage() {
+export const revalidate = 60;
+
+async function getData() {
+  try {
+    const items = await prisma.PortfolioItem.findMany({
+      where: { nsfw: true, visible: true },
+      orderBy: { sort_order: "asc" },
+    });
+
+    return items.map((item: { id: string; title: string; description: string | null; image_url: string }) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description || "",
+      image_url: item.image_url,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export default async function NSFWPage() {
+  const items = await getData();
+
   return (
     <main className="min-h-screen bg-black text-white antialiased">
       <AgeVerifier />
@@ -23,7 +46,7 @@ export default function NSFWPage() {
             Adult VRChat avatar work. You must be 18 or older.
           </p>
         </div>
-        <NSFWPortfolio />
+        <NSFWPortfolio items={items} />
       </div>
       <Footer />
     </main>

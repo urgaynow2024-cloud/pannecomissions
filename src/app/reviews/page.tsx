@@ -1,8 +1,32 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Reviews from "@/components/Reviews";
+import prisma from "@/lib/prisma";
 
-export default function ReviewsPage() {
+export const revalidate = 60;
+
+async function getData() {
+  try {
+    const reviews = await prisma.Review.findMany({
+      where: { status: "APPROVED", hidden: false },
+      orderBy: { created_at: "desc" },
+    });
+
+    return reviews.map((review: { id: string; display_name: string; rating: number; review_text: string; image_url: string | null }) => ({
+      id: review.id,
+      display_name: review.display_name,
+      rating: review.rating,
+      review_text: review.review_text,
+      image_url: review.image_url,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export default async function ReviewsPage() {
+  const reviews = await getData();
+
   return (
     <main className="min-h-screen bg-black text-white antialiased">
       <Navbar />
@@ -15,7 +39,7 @@ export default function ReviewsPage() {
             What clients have said.
           </p>
         </div>
-        <Reviews />
+        <Reviews reviews={reviews} />
       </div>
       <Footer />
     </main>

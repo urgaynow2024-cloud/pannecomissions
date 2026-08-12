@@ -1,34 +1,23 @@
-"use client";
-
-import { useState, useEffect } from "react";
-
 interface PricingItem {
   id: string;
   name: string;
   min_price: number | null;
   max_price: number | null;
   description: string | null;
-  visible: boolean;
-  sort_order: number;
-  category: string;
 }
 
-export default function PricingSection() {
-  const [items, setItems] = useState<PricingItem[]>([]);
-  const [loading, setLoading] = useState(true);
+interface PricingSectionProps {
+  pricing: PricingItem[];
+}
 
-  useEffect(() => {
-    fetch("/api/pricing")
-      .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch");
-        return res.json();
-      })
-      .then((data: PricingItem[]) => setItems(data))
-      .catch(() => setItems([]))
-      .finally(() => setLoading(false));
-  }, []);
+const DEFAULT_PRICING: PricingItem[] = [
+  { id: "textures", name: "Textures", min_price: 5, max_price: 25, description: "depending on complexity." },
+  { id: "entire-avatar", name: "Entire Avatars", min_price: 55, max_price: 100, description: "depending on complexity." },
+  { id: "models", name: "Models", min_price: 65, max_price: 150, description: "depending on complexity." },
+];
 
-  const displayItems = items.filter((i) => i.category === "sfw");
+export default function PricingSection({ pricing }: PricingSectionProps) {
+  const displayItems = pricing.length > 0 ? pricing : DEFAULT_PRICING;
 
   return (
     <section className="py-20 border-t border-white/5">
@@ -38,13 +27,7 @@ export default function PricingSection() {
           <p className="text-gray-400">Starting ranges. Final price depends on the work involved.</p>
         </div>
 
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 h-32 animate-pulse" />
-            ))}
-          </div>
-        ) : displayItems.length === 0 ? (
+        {displayItems.length === 0 ? (
           <div className="text-center py-12 text-gray-400">No pricing information available.</div>
         ) : (
           <>

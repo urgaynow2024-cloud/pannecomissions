@@ -1,8 +1,31 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Services from "@/components/Services";
+import prisma from "@/lib/prisma";
 
-export default function ServicesPage() {
+export const revalidate = 60;
+
+async function getData() {
+  try {
+    const services = await prisma.Service.findMany({
+      where: { visible: true },
+      orderBy: { sort_order: "asc" },
+    });
+
+    return services.map((service: { id: string; name: string; description: string | null; image_url: string | null }) => ({
+      id: service.id,
+      name: service.name,
+      description: service.description,
+      image_url: service.image_url,
+    }));
+  } catch {
+    return [];
+  }
+}
+
+export default async function ServicesPage() {
+  const services = await getData();
+
   return (
     <main className="min-h-screen bg-black text-white antialiased">
       <Navbar />
@@ -15,7 +38,7 @@ export default function ServicesPage() {
             What I can do for your VRChat avatar.
           </p>
         </div>
-        <Services />
+        <Services services={services} />
       </div>
       <Footer />
     </main>

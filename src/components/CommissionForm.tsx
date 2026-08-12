@@ -2,7 +2,16 @@
 
 import { useState } from "react";
 
-export default function CommissionForm() {
+interface Service {
+  id: string;
+  name: string;
+}
+
+interface CommissionFormProps {
+  services: Service[];
+}
+
+export default function CommissionForm({ services }: CommissionFormProps) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -106,12 +115,9 @@ export default function CommissionForm() {
           onChange={(e) => setFormData({ ...formData, service: e.target.value })}
         >
           <option value="">Select a service</option>
-          <option value="textures">Custom Textures</option>
-          <option value="entire-avatar">Entire Avatar</option>
-          <option value="models">Models</option>
-          <option value="clothing">Clothing Add-ons</option>
-          <option value="toggles">Toggles & Options</option>
-          <option value="other">Other</option>
+          {services.map((service) => (
+            <option key={service.id} value={service.id}>{service.name}</option>
+          ))}
         </select>
       </div>
 
