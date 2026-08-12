@@ -1,10 +1,12 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CommissionForm from "@/components/CommissionForm";
+import AgeVerifier from "@/components/AgeVerifier";
 
 export default function NSFWPage() {
   return (
     <main className="min-h-screen bg-black text-white antialiased">
+      <AgeVerifier />
       <Navbar />
       <div className="mx-auto max-w-7xl px-6 pt-32 pb-20">
         <div className="mb-12">

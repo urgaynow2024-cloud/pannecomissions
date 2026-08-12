@@ -1,550 +1,323 @@
 # Panne Commissions
 
-Panne Commissions is a VRChat avatar commission service focused on avatar customisation, clothing additions, complete avatar setups, toggles, custom textures, and more advanced avatar work.
+**Panne Commissions** is a VRChat avatar commission website for **pannecomissions.shop**.
 
-The website is available at:
+The site is mainly used to showcase Panne's work, give potential clients somewhere to look through previous avatars, and provide an easy way to send a commission enquiry.
 
-**https://pannecomissions.shop**
+The design is built around a **black and purple** colour scheme with the avatar work being the main focus of the site.
 
-The website is built around showcasing Panne's work and giving potential clients an easy way to view the portfolio, read reviews, submit a commission enquiry, and get support.
+## What Panne Offers
 
-The entire website uses a **black and purple** colour theme, with purple used for accents, buttons, highlights, borders, glow effects, and interactive elements.
+Panne works primarily with VRChat avatars and can take on different types of avatar work depending on the project.
 
-## Services
+Current services include:
 
-Panne offers a range of VRChat avatar services, from smaller texture work to complete avatar setups.
+* Clothing additions
+* Avatar customisation
+* Complete avatars assembled from premade assets
+* Avatar toggles
+* Outfit and accessory options
+* Custom textures
+* Blender work
+* Unity setup
+* More advanced modelling work depending on the project
 
-### Clothing Add-ons
-
-Clothing and accessory additions for existing VRChat avatars.
-
-This can include adding premade clothing, accessories, and other compatible assets to an avatar and setting everything up correctly.
-
-### Complete Avatars
-
-Complete VRChat avatars can be assembled using premade assets.
-
-This includes putting the different parts together and configuring the finished avatar.
-
-### Toggles & Options
-
-Avatar toggles and other in-game options can be added to avatars.
-
-This can include:
-
-* Clothing toggles
-* Outfit toggles
-* Accessory toggles
-* Avatar options
-* Other requested toggle setups
-
-### Custom Textures
-
-Custom textures can be created for VRChat avatars.
-
-Texture pricing depends on the complexity of the requested work.
-
-### Models
-
-More advanced modelling work may also be available depending on the project and budget.
-
-Model pricing depends on the complexity of the requested work.
+Not every project is the same, so the final price depends on what actually needs to be done.
 
 ## Pricing
 
-Current price ranges are:
+Current price ranges:
 
-| Service        |    Price |
-| -------------- | -------: |
-| Textures       |   $5–$25 |
-| Entire Avatars | $55–$100 |
-| Models         | $65–$150 |
+| Service          | Price    |
+| ---------------- | -------- |
+| Textures         | $5–$25   |
+| Complete Avatars | $55–$100 |
+| Models           | $65–$150 |
 
-Prices depend on the complexity of the work being requested.
+These are not fixed prices for every possible commission. A more complicated project may cost more depending on the amount of work involved.
 
-These prices are starting ranges and the final price can change depending on what is required for the commission.
+### Asset Costs
 
-## Asset Costs
+Paid assets are **not included** in the commission price.
 
-The listed commission prices **do not include the cost of assets that need to be purchased specifically for a commission**.
+If an avatar needs an asset that has to be purchased, the cost of that asset is added separately to the commission.
 
-If a commission requires a paid asset, the cost of that asset is added to the commission total.
+Any assets used for a commission must also be used in accordance with the original creator's terms.
 
-For example, if an avatar requires a paid clothing asset, the client will need to cover the cost of that asset in addition to the commission price.
+## Payment
 
-All purchased assets must be used according to their original creator's terms and licensing.
+Panne's preferred payment method is **Cash App**.
 
-## Payment & Trade Options
+**PayPal** is also available.
 
-Panne accepts several different ways of paying for commissions.
+Payment details are agreed upon before work starts.
 
-### Cash App
+### Trades
 
-**Cash App is the preferred payment method.**
+Art trades may be considered on a case-by-case basis.
 
-Clients who are able to use Cash App should use it where possible.
+Other trades may also be considered, including things such as FBT equipment or other useful VRChat-related items.
 
-### PayPal
-
-**PayPal is also accepted.**
-
-PayPal can be used if Cash App is not available or practical for the client.
-
-Payment arrangements should be agreed upon before work begins.
-
-### Art Trades
-
-Art trades may also be considered.
-
-Art trades are accepted on a **case-by-case basis** and are not guaranteed to be accepted.
-
-The artwork being offered needs to be something Panne actually wants and considers a fair trade for the requested commission.
-
-### Other Trades
-
-Other trade arrangements may also be considered.
-
-This can include things such as:
-
-* FBT equipment
-* VRChat-related items
-* Other useful equipment
-* Other items agreed upon by both parties
-
-Alternative trades are considered individually and must be agreed upon before work begins.
-
-Panne can decline any trade offer that does not make sense for the commission.
+Trades are not guaranteed to be accepted. Panne decides whether a proposed trade is suitable for the requested work.
 
 ## Portfolio
 
-The website includes a portfolio showing Panne's previous VRChat avatar work.
+The portfolio is where Panne's previous VRChat work is showcased.
 
-The portfolio is the main showcase for the service and is designed to let potential clients see the type and quality of work available before contacting Panne.
+The goal is to keep this section simple and let the actual work speak for itself rather than filling the page with unnecessary information.
 
-Portfolio features include:
+Portfolio content is managed through the admin side of the website.
 
-* Avatar artwork
-* Project images
-* Full-size image viewing
-* Project information
-* Featured work
-* Responsive gallery
-* Mobile-friendly viewing
-
-Portfolio images are managed through the admin dashboard.
+Images are stored separately from the database, while the database keeps track of the portfolio information and image URLs.
 
 ## Reviews
 
-Clients can submit reviews after their commission has been completed.
+Clients can leave a review after their commission.
 
-New reviews are stored as pending until they are checked and approved.
+New reviews are kept private until they have been checked and approved.
+
+Once approved, they can appear on the public reviews page.
 
 The review system supports:
-
-* Client names
-* Star ratings
-* Review messages
-* Pending reviews
-* Approved reviews
-* Review management
-
-Only approved reviews are displayed publicly.
-
-## Commission Enquiries
-
-The website includes a dedicated commission enquiry system.
-
-Potential clients can submit information about the work they want.
-
-A commission submission can include:
-
-* Client name
-* Email address
-* Requested service
-* Commission description
-* Additional information
-
-The submission is stored privately in the database.
-
-The client's email address allows Panne to contact them about their commission.
-
-### Commission Notifications
-
-Every successful commission submission is also sent to the configured Discord webhook.
-
-The commission information is saved to the database first, then the website sends the notification.
-
-The Discord notification can contain:
-
-* New commission notification
-* Client name
-* Client email
-* Requested service
-* Commission description
-* Submission date
-* Commission ID
-* Current status
-
-The notification is sent server-side.
-
-The Discord webhook URL is never exposed to website visitors.
-
-## Support
-
-The website includes a dedicated support page for existing clients and general website issues.
-
-Support can be used for:
-
-* Questions about an existing commission
-* Problems with a delivered avatar
-* Commission-related issues
-* Website problems
-* General questions
-
-Support requests are stored privately and can be managed through the admin dashboard.
-
-Support submissions can also trigger a Discord notification so Panne knows when someone needs assistance.
-
-## Discord Notifications
-
-The website uses a Discord webhook for private notifications.
-
-Discord notifications are sent for important website events, including:
-
-* New commission enquiries
-* New reviews
-* New support requests
-
-### Commission Webhook
-
-Commission enquiries are connected directly to the Discord webhook.
-
-When a client submits a commission:
-
-```text
-Client submits commission
-        ↓
-Next.js API route
-        ↓
-Commission saved to Supabase
-        ↓
-Discord webhook notification
-        ↓
-Client receives confirmation
-```
-
-The Discord webhook should only be called from server-side code.
-
-The webhook URL must never be included in:
-
-* Client-side React components
-* Browser JavaScript
-* Public API responses
-* GitHub source code
-* `NEXT_PUBLIC_` environment variables
-
-The webhook should be stored using:
-
-```env
-DISCORD_WEBHOOK_URL=your-discord-webhook-url
-```
-
-## Database
-
-The website uses **PostgreSQL** hosted by **Supabase**.
-
-Prisma is used as the database ORM.
-
-The database stores the information needed to run the website, including:
-
-* Portfolio information
-* Reviews
-* Commission enquiries
-* Client email addresses
-* Support requests
-* Website settings
-* Admin information
-
-The actual image files are stored separately using Vercel Blob.
-
-## Database Tables
-
-### `portfolio_items`
-
-Stores information about portfolio projects.
-
-Information can include:
-
-* Title
-* Description
-* Image URL
-* Sort order
-* Featured status
-* Created date
-
-### `reviews`
-
-Stores client reviews.
-
-Information can include:
 
 * Client name
 * Rating
 * Review text
-* Status
-* Created date
+* Pending reviews
+* Approved reviews
+* Review management
 
-### `commission_submissions`
+## Commission Enquiries
 
-Stores commission enquiries.
+The main purpose of the site is making it easy for someone to start a commission.
 
-Information can include:
+The commission form asks for:
 
-* Client name
-* Client email
-* Requested service
-* Commission description
-* Status
-* Created date
+* Name
+* Email
+* Service
+* Description of the requested work
 
-### `support_requests`
+When someone submits the form, the commission is saved and a notification is sent to the private Discord webhook.
 
-Stores support enquiries.
+The email address is kept with the submission so Panne can contact the client about their request.
 
-Information can include:
-
-* Client name
-* Client email
-* Message
-* Status
-* Created date
-
-### `site_settings`
-
-Stores editable website settings.
-
-### `admin_users`
-
-Stores administrator authentication information.
-
-Passwords must never be stored as plain text.
-
-## Image Storage
-
-Portfolio images are stored using **Vercel Blob**.
-
-The database stores the information needed to display each image, while Vercel Blob stores the actual image file.
-
-The upload process works like this:
+### Commission Flow
 
 ```text
-Admin
-  ↓
-Admin Dashboard
-  ↓
-Next.js Server API
-  ↓
-Vercel Blob
-  ↓
-Image URL
-  ↓
-Supabase PostgreSQL
-  ↓
-Public Portfolio
+Client
+   │
+   ▼
+Commission Form
+   │
+   ▼
+Server
+   │
+   ├──► Save commission
+   │        │
+   │        ▼
+   │     Database
+   │
+   ├──► Discord notification
+   │
+   └──► Email notification
 ```
 
-This prevents large image files from being stored directly inside PostgreSQL.
+The Discord notification is not handled by the browser. The webhook is called from the server so the webhook URL stays private.
 
-## Authentication
+## Support
 
-The admin dashboard is protected using server-side authentication.
+There is also a separate support page for people who already have a commission or need help with something related to the site or their work.
 
-The admin password is not stored directly in the source code.
+Support requests can include:
 
-The password is provided through an environment variable:
+* Questions about an existing commission
+* Problems with a delivered avatar
+* Commission issues
+* Website problems
+* General questions
 
-```env
-ADMIN_PASSWORD=your-secure-admin-password
-```
+Support submissions are kept private and can also notify Panne through Discord.
 
-Authentication should use:
+## NSFW
 
-* Server-side authentication
-* Secure sessions
-* HTTP-only cookies
-* Secure cookies in production
-* Server-side authorization checks
-* Password hashing when passwords are stored in the database
+The site has a separate **18+ NSFW section** for adult VRChat avatar work.
 
-Admin API routes must verify authentication before allowing protected actions.
+NSFW content is kept separate from the normal portfolio.
 
-## Admin Dashboard
+The NSFW page uses an age gate before adult portfolio content is displayed.
 
-The private admin dashboard allows Panne to manage the website without manually editing source code.
+The NSFW section can have its own:
+
+* Portfolio
+* Commission examples
+* Pricing
+* Project information
+
+NSFW portfolio images should never appear in the normal SFW portfolio.
+
+NSFW commission enquiries use the same commission system as normal enquiries, while being clearly identified as NSFW in private notifications.
+
+## Admin
+
+The website has a private admin area for managing the content on the site.
+
+The admin area is used for things such as:
 
 ### Portfolio
 
-The admin can:
-
-* Upload images
-* Delete images
-* Reorder portfolio items
-* Edit portfolio information
-* Manage featured work
+* Uploading work
+* Removing work
+* Reordering portfolio items
+* Updating portfolio information
 
 ### Reviews
 
-The admin can:
-
-* View pending reviews
-* Approve reviews
-* Reject reviews
-* Edit reviews
-* Delete reviews
+* Viewing new reviews
+* Approving reviews
+* Rejecting reviews
+* Editing reviews
+* Removing reviews
 
 ### Commissions
 
-The admin can:
-
-* View commission submissions
-* View client information
-* View client email addresses
-* View requested services
-* View commission descriptions
-* Update commission status
+* Viewing incoming enquiries
+* Checking the client's email
+* Viewing the requested service
+* Reading the commission description
+* Updating the status of an enquiry
 
 ### Support
 
-The admin can:
+* Viewing support requests
+* Reading client messages
+* Managing support requests
 
-* View support requests
-* View client information
-* View support messages
-* Update support status
-* Manage completed requests
+### NSFW Portfolio
+
+* Uploading NSFW work
+* Removing NSFW work
+* Reordering NSFW work
+* Managing NSFW portfolio content
+
+## Data & Storage
+
+The website is hosted on **Vercel**.
+
+The project currently uses **Supabase PostgreSQL** for its database.
+
+Portfolio and other uploaded images are stored separately from the database.
+
+The database is used for things such as:
+
+* Commission enquiries
+* Client email addresses
+* Reviews
+* Portfolio information
+* Support requests
+* Website settings
+* Admin data
+
+The actual image files are handled through storage rather than being placed directly into PostgreSQL.
 
 ## Environment Variables
 
-Create a `.env.local` file in the root of the project.
+The production environment uses the following variables:
 
 ```env
-DATABASE_URL=your-supabase-postgresql-connection-string
+DATABASE_URL=...
+SUPABASE_URL=...
+SUPABASE_ANON_KEY=...
+SUPABASE_SERVICE_ROLE_KEY=...
 
-SUPABASE_URL=your-supabase-project-url
+ADMIN_PASSWORD=...
 
-SUPABASE_ANON_KEY=your-supabase-anon-key
+RESEND_API_KEY=...
 
-SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
-
-ADMIN_PASSWORD=your-secure-admin-password
-
-DISCORD_WEBHOOK_URL=your-discord-webhook-url
+DISCORD_WEBHOOK_URL=...
 
 NEXT_PUBLIC_SITE_URL=https://pannecomissions.shop
 ```
 
-Private credentials must never be committed to GitHub.
+The actual values belong in Vercel's environment variable settings and should never be committed to the repository.
 
-The repository should contain:
+### Local Development
 
-```gitignore
-.env
-.env.local
-.env.*.local
-```
-
-## Quick Start
-
-Install dependencies:
-
-```bash
-npm install
-```
-
-Create the environment file:
-
-```bash
-cp .env.example .env.local
-```
-
-Add the required environment variables to `.env.local`.
-
-Generate Prisma:
-
-```bash
-npx prisma generate
-```
-
-Run database migrations:
-
-```bash
-npx prisma migrate dev
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-The website will be available at:
+For local development, create:
 
 ```text
-http://localhost:3000
+.env.local
 ```
 
-## Production
+and add the required environment variables there.
 
-Create a production build:
+Do not commit `.env.local`.
 
-```bash
-npm run build
+## Discord Notifications
+
+Discord is used for private website notifications.
+
+Notifications can be sent for:
+
+* New commission enquiries
+* New NSFW commission enquiries
+* New reviews
+* New support requests
+
+Commission notifications should include enough information for Panne to know what has been submitted without needing to immediately open the admin panel.
+
+For example:
+
+```text
+New Commission
+
+Client: Example Name
+Email: example@email.com
+Service: Complete Avatar
+
+Description:
+Client's commission description here.
+
+Status: Pending
 ```
 
-Start the production server:
+The Discord webhook is a server-side secret.
 
-```bash
-npm run start
-```
+It must not be exposed through client-side code or a `NEXT_PUBLIC_` variable.
+
+## Email
+
+The site uses **Resend** for email-related functionality.
+
+Email is handled server-side.
+
+The Resend API key is stored as an environment variable and is never sent to the browser.
 
 ## Tech Stack
 
-* **Framework:** Next.js 16
-* **Language:** TypeScript
-* **Frontend:** React
-* **Styling:** Tailwind CSS
-* **Database:** PostgreSQL
-* **Database Provider:** Supabase
-* **ORM:** Prisma
-* **Image Storage:** Vercel Blob
-* **Hosting:** Vercel
-* **Notifications:** Discord Webhooks
+* **Next.js**
+* **React**
+* **TypeScript**
+* **Tailwind CSS**
+* **Supabase PostgreSQL**
+* **Vercel**
+* **Resend**
+* **Discord Webhooks**
+* **Lucide React**
 
-## Project Structure
+## Project Layout
 
 ```text
 src/
 ├── app/
 │   ├── page.tsx
 │   ├── portfolio/
-│   │   └── page.tsx
 │   ├── reviews/
-│   │   └── page.tsx
 │   ├── contact/
-│   │   └── page.tsx
 │   ├── support/
-│   │   └── page.tsx
+│   ├── nsfw/
 │   ├── admin/
-│   │   └── page.tsx
 │   └── api/
-│       ├── portfolio/
-│       ├── reviews/
-│       ├── commissions/
-│       ├── support/
-│       ├── contact/
-│       ├── auth/
-│       ├── email/
-│       └── discord/
 │
 ├── components/
 │   ├── Navbar.tsx
@@ -554,401 +327,196 @@ src/
 │   ├── Reviews.tsx
 │   ├── CommissionForm.tsx
 │   ├── ContactForm.tsx
-│   └── SupportForm.tsx
+│   ├── SupportForm.tsx
+│   └── AgeVerifier.tsx
 │
 ├── lib/
-│   ├── prisma.ts
+│   ├── supabase.ts
 │   ├── auth.ts
 │   ├── email.ts
-│   ├── discord.ts
-│   └── blob.ts
+│   └── discord.ts
 │
 └── styles/
     └── globals.css
 
-prisma/
-└── schema.prisma
+supabase/
+└── schema.sql
 ```
 
-## Pages
-
-### `/`
-
-The main Panne Commissions homepage.
-
-The homepage introduces the service and provides quick access to the portfolio, reviews, commission enquiries, and support.
-
-### `/portfolio`
-
-Displays completed VRChat avatar work.
-
-### `/reviews`
-
-Displays approved client reviews.
-
-### `/contact`
-
-Provides a general contact form for enquiries.
-
-### `/support`
-
-Provides a support form for existing clients and website issues.
-
-### `/admin`
-
-Private administration area for managing portfolio content, reviews, commissions, and support requests.
-
-## VRChat Avatar Work
-
-Panne Commissions is focused specifically on **VRChat avatar commissions**.
-
-The portfolio can showcase work including:
-
-* Avatar edits
-* Avatar customisation
-* Clothing
-* Accessories
-* Avatar assembly
-* Toggles
-* Custom textures
-* Blender work
-* Unity work
-* Complete avatar setups
-* Other VRChat avatar projects
-
-The website should keep the focus on the actual avatar work and make it easy for potential clients to see what Panne can create.
+The exact files may change as the site develops. The important separation is between the public pages, admin tools, server-side API routes, and database/storage helpers.
 
 ## Design
 
-The entire website uses a **black and purple colour theme**.
+Panne Commissions uses a **black and purple** theme throughout the site.
 
-The design should feel modern, clean, and polished without becoming overly complicated.
+The design should stay consistent across the homepage, portfolio, reviews, contact, support, admin, and NSFW areas.
 
-### Colour Direction
+### Main visual direction
 
-**Primary background:**
-
-Black and very dark tones.
-
-**Accent colour:**
-
-Purple.
-
-Purple is used for:
-
-* Buttons
-* Links
-* Highlights
-* Borders
-* Icons
-* Hover states
-* Active navigation
-* Glow effects
-* Important UI elements
-
-The website should not be covered entirely in purple.
-
-Dark backgrounds should provide the main visual foundation while purple provides the accent colour.
-
-### Visual Style
-
-The interface uses:
-
-* Dark backgrounds
-* Purple accents
-* Subtle purple glow
+* Black / very dark backgrounds
+* Purple primary accent
+* Purple glow used sparingly
 * Dark cards
-* Soft borders
+* Subtle borders
 * Rounded corners
-* Clean typography
-* Smooth transitions
-* Subtle animations
-* Large artwork
-* Clear navigation
-* Good spacing
+* Clean text
+* Simple animations
 * Responsive layouts
+* Large artwork
+* Clear buttons
+* Good spacing
 
-The portfolio artwork should remain the most important visual element on the site.
+Purple should be an accent rather than taking over the entire page.
 
-## Responsive Design
-
-The website is designed for:
-
-* Desktop
-* Laptop
-* Tablet
-* Mobile
-
-Portfolio images should adapt to different screen sizes without unnecessarily cropping the artwork.
-
-Forms should remain simple and easy to use on smaller screens.
-
-Navigation should also work properly on mobile.
+The avatar artwork should always be the thing that stands out most.
 
 ## Security
 
-Private information is handled server-side.
+There are several private values used by the site.
 
-The following values must never be exposed to the client:
+These must never be exposed publicly:
 
 ```text
 DATABASE_URL
+SUPABASE_SERVICE_ROLE_KEY
 ADMIN_PASSWORD
+RESEND_API_KEY
 DISCORD_WEBHOOK_URL
 ```
 
-These values must remain private environment variables.
+The Supabase service-role key is especially important because it has elevated database permissions.
 
-Only intentionally public values should use the `NEXT_PUBLIC_` prefix.
+### Admin
+
+Admin actions must be checked on the server.
+
+The admin password should not be hardcoded into a page or React component.
+
+### Database
+
+Database operations that require elevated permissions must happen server-side.
+
+The service-role key must never be included in client-side code.
 
 ### Client Information
 
-Commission submissions contain private client information such as names, email addresses, and commission details.
+Commission enquiries contain personal information, including email addresses.
 
-This information must only be available to authorized administration.
+That information should only be available to the people managing Panne Commissions.
 
-Client information must not be displayed publicly or returned through an unprotected API.
+It should never be returned through a public API or displayed on the public website.
 
-### Database Security
+### Uploads
 
-Prisma must only be used from server-side code.
+Uploaded files should be checked before being accepted.
 
-Prisma must never be imported into client components.
+The server should validate file type and file size rather than trusting information supplied by the browser.
 
-### Admin Security
+## Running Locally
 
-Admin API routes must verify the administrator's authenticated session before performing protected operations.
+Install the dependencies:
 
-### Upload Security
+```bash
+npm install
+```
 
-Portfolio uploads must be validated server-side.
+Create the local environment file:
 
-The server should validate:
+```bash
+cp .env.example .env.local
+```
 
-* File type
-* File size
-* Authentication
-* Upload request
+Add the required environment variables.
 
-Files should not be trusted simply because the browser reports them as valid.
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Then open:
+
+```text
+http://localhost:3000
+```
+
+## Building
+
+To create a production build:
+
+```bash
+npm run build
+```
+
+To run the production build locally:
+
+```bash
+npm run start
+```
 
 ## Deployment
 
-The production website is hosted using **Vercel**.
+The production site runs on **Vercel**.
 
-The database is hosted using **Supabase PostgreSQL**.
-
-Portfolio images are stored using **Vercel Blob**.
-
-Email is handled through Discord notifications.
-
-Discord notifications are handled through a private Discord webhook.
-
-### Production Setup
-
-1. Push the project to GitHub.
-2. Import the repository into Vercel.
-3. Create the Supabase PostgreSQL database.
-4. Configure Vercel Blob.
-5. Create the Discord webhook.
-7. Add the production environment variables to Vercel.
-8. Run the Prisma migrations.
-9. Deploy the website.
-10. Connect `pannecomissions.shop` to the Vercel project.
-
-### Production Environment
-
-```env
-DATABASE_URL=supabase-postgresql-connection-string
-ADMIN_PASSWORD=secure-admin-password
-DISCORD_WEBHOOK_URL=discord-webhook-url
-NEXT_PUBLIC_SITE_URL=https://pannecomissions.shop
-```
-
-## Data Flow
-
-### Commission Enquiry
-
-```text
-Client
-  ↓
-Commission Form
-  ↓
-Next.js API Route
-  ↓
-Validate Submission
-  ↓
-Save to Supabase PostgreSQL
-        ↓
-Discord Webhook
-        ↓
-Client receives confirmation
-```
-
-The commission is stored in the database before notifications are sent.
-
-This means the commission is not lost if Discord or email notification temporarily fails.
-
-### Portfolio Upload
-
-```text
-Admin
-  ↓
-Admin Dashboard
-  ↓
-Next.js API Route
-  ↓
-Validate Upload
-  ↓
-Vercel Blob
-  ↓
-Image URL
-  ↓
-Supabase PostgreSQL
-  ↓
-Public Portfolio
-```
-
-### Review Submission
-
-```text
-Client
-  ↓
-Review Form
-  ↓
-Next.js API Route
-  ↓
-Save Review
-  ↓
-Pending
-  ↓
-Admin Approval
-  ↓
-Public Review
-```
-
-### Support Request
-
-```text
-Client
-  ↓
-Support Form
-  ↓
-Next.js API Route
-  ↓
-Save to Neon PostgreSQL
-```
-
-## Important Notes
-
-* Panne Commissions is focused on VRChat avatar commissions.
-* Cash App is the preferred payment method.
-* PayPal is also accepted.
-* Art trades may be accepted on a case-by-case basis.
-* Alternative trades may also be considered.
-* Asset costs are separate from the listed commission prices.
-* Clients are responsible for additional asset costs required for their commission.
-* Paid assets must be used according to their original creator's licensing terms.
-* Reviews require approval before being publicly displayed.
-* Commission enquiries are saved to the database.
-* Commission enquiries trigger Discord notifications.
-* Support requests can trigger Discord notifications.
-* Client email addresses and commission information are private.
-* Do not hardcode passwords.
-* Do not commit `.env.local`.
-* Do not expose the Supabase database connection string.
-* Do not expose the Discord webhook.
-* Keep private operations server-side.
-* Keep Prisma server-side.
-* Validate uploaded files before storing them.
-
-## Production Website
-
-**Panne Commissions**
+The production domain is:
 
 **https://pannecomissions.shop**
 
-## License
-
-This project is private and intended for Panne Commissions.
-
-The source code, website design, branding, portfolio artwork, avatar images, and other website assets may not be copied, redistributed, resold, or reused without permission.
-
-
-## NSFW Page
-
-The website also includes a separate **18+ NSFW page** for adult VRChat avatar work.
-
-The NSFW section is kept separate from the normal portfolio so visitors can clearly distinguish between SFW and adult content.
-
-### NSFW Access
-
-The NSFW page is age-gated and should only be accessible to users who confirm that they are **18 or older**.
-
-The age gate should appear before any NSFW portfolio content is displayed.
-
-The NSFW section can include:
-
-* Adult avatar work
-* NSFW portfolio images
-* NSFW commission examples
-* NSFW-related project information
-* NSFW pricing or service information
-
-### NSFW Portfolio
-
-NSFW portfolio images are stored separately from the normal portfolio.
-
-The admin dashboard should provide a separate NSFW portfolio manager so adult content can be:
-
-* Uploaded
-* Deleted
-* Reordered
-* Edited
-* Managed independently from the SFW portfolio
-
-NSFW images should never accidentally appear in the normal public portfolio.
-
-### NSFW Pricing
-
-NSFW-specific pricing can be displayed separately from the standard commission pricing.
-
-This allows Panne to have different pricing or services for adult avatar work without changing the normal portfolio or pricing information.
-
-### NSFW Notifications
-
-NSFW commission submissions should use the same secure commission system as normal commissions.
-
-When an NSFW commission enquiry is submitted:
+The basic setup is:
 
 ```text
-Client
-  ↓
-18+ NSFW Commission Form
-  ↓
-Next.js API Route
-  ↓
-Validate Submission
-  ↓
-Save to Supabase PostgreSQL
-  ↓
-Discord Webhook
-  ↓
-Email Notification
+Panne Commissions
+       │
+       ▼
+     Vercel
+       │
+       ├───────────────┐
+       ▼               ▼
+   Next.js          API Routes
+                       │
+              ┌────────┼────────┐
+              ▼        ▼        ▼
+          Supabase   Resend   Discord
+          Database    Email    Webhook
 ```
 
-The Discord notification should clearly identify the submission as an **NSFW commission** so it can be distinguished from normal enquiries.
+### Vercel Environment Variables
 
-Private client information should remain protected in the same way as normal commission submissions.
+The following variables need to be configured in the Vercel project:
 
-### NSFW Security
+```text
+DATABASE_URL
+SUPABASE_URL
+SUPABASE_ANON_KEY
+SUPABASE_SERVICE_ROLE_KEY
+ADMIN_PASSWORD
+RESEND_API_KEY
+DISCORD_WEBHOOK_URL
+NEXT_PUBLIC_SITE_URL
+```
 
-NSFW content should remain separated from SFW content at both the database and application level.
+After changing production environment variables, the project needs to be redeployed for the new values to be available to the deployment.
 
-NSFW portfolio images should not be returned by normal portfolio API requests.
+## Important
 
-The public SFW portfolio must never display NSFW content.
+A few things should stay true as the project is developed:
 
-The NSFW page should also avoid displaying adult images before the age-gate has been completed.
+* Don't put secrets in the frontend.
+* Don't commit `.env.local`.
+* Don't expose the Supabase service-role key.
+* Don't expose the Discord webhook.
+* Don't hardcode the admin password.
+* Keep commission submissions private.
+* Keep client email addresses private.
+* Keep NSFW content separate from the normal portfolio.
+* Don't show pending reviews publicly.
+* Validate uploads server-side.
+* Keep the website focused on Panne's actual work.
 
-The age verification state should be handled separately from normal website navigation so that visiting the main website does not automatically grant access to the NSFW section.
+## Website
+
+**Panne Commissions**
+
+https://www.pannecomissions.shop/
+
+VRChat avatar commissions, customisation, clothing additions, complete avatar setups, toggles, textures, and other avatar work.
