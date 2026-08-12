@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export async function GET() {
   try {
     const reviews = await prisma.Review.findMany({
-      where: { status: "APPROVED" },
+      where: { status: "APPROVED", hidden: false },
       orderBy: { created_at: "desc" },
     });
     return NextResponse.json(reviews);
@@ -19,7 +19,10 @@ export async function POST(request: Request) {
     const body = await request.json();
     const review = await prisma.Review.create({
       data: {
-        ...body,
+        display_name: body.display_name,
+        rating: body.rating,
+        review_text: body.review_text,
+        image_url: body.image_url || null,
         status: "PENDING",
       },
     });
@@ -29,5 +32,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
   }
 }
-
-

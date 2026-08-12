@@ -38,10 +38,12 @@ export async function PUT(
     const review = await prisma.Review.update({
       where: { id },
       data: {
-        client_name: body.client_name,
+        display_name: body.display_name,
         rating: body.rating,
-        message: body.message,
+        review_text: body.review_text,
+        image_url: body.image_url !== undefined ? body.image_url : undefined,
         status: body.status,
+        hidden: body.hidden ?? false,
         rejection_reason: body.rejection_reason !== undefined ? body.rejection_reason : undefined,
       },
     });

@@ -50,7 +50,7 @@ export default async function AdminDashboard() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <RecentTable title="Recent Commissions" items={recentCommissions} fields={["client_name", "service", "status", "created_at"]} href="/admin/commissions" />
-            <RecentTable title="Recent Reviews" items={recentReviews} fields={["client_name", "rating", "status", "created_at"]} href="/admin/reviews" />
+            <RecentTable title="Recent Reviews" items={recentReviews} fields={["display_name", "rating", "status", "created_at"]} href="/admin/reviews" />
             <RecentTable title="Recent Support" items={recentSupport} fields={["client_name", "subject", "status", "created_at"]} href="/admin/support" />
           </div>
         </div>

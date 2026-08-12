@@ -26,10 +26,12 @@ export async function POST(request: Request) {
     const body = await request.json();
     const review = await prisma.Review.create({
       data: {
-        client_name: body.client_name,
+        display_name: body.display_name,
         rating: body.rating,
-        message: body.message,
+        review_text: body.review_text,
+        image_url: body.image_url || null,
         status: body.status || "PENDING",
+        hidden: body.hidden ?? false,
         rejection_reason: body.rejection_reason || null,
       },
     });
@@ -39,5 +41,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
   }
 }
-
-

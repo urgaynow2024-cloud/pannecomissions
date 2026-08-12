@@ -5,10 +5,11 @@ import Link from "next/link";
 
 interface Review {
   id: string;
-  client_name: string;
+  display_name: string;
   rating: number;
-  message: string;
-  created_at: Date;
+  review_text: string;
+  image_url: string | null;
+  created_at: string;
 }
 
 export default function ReviewsSection() {
@@ -60,7 +61,7 @@ export default function ReviewsSection() {
             </div>
           </div>
           <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-8 text-center">
-            <p className="text-red-400">Failed to load reviews. Please try again later.</p>
+            <p className="text-red-400">Reviews are temporarily unavailable.</p>
           </div>
         </div>
       </section>
@@ -78,7 +79,7 @@ export default function ReviewsSection() {
             </div>
           </div>
           <div className="text-center py-12">
-            <p className="text-gray-500">Reviews will appear here once clients have submitted them.</p>
+            <p className="text-gray-500">No reviews yet.</p>
           </div>
         </div>
       </section>
@@ -128,8 +129,8 @@ export default function ReviewsSection() {
                   </svg>
                 ))}
               </div>
-              <p className="text-sm text-gray-300 mb-4 leading-relaxed italic">&ldquo;{review.message}&rdquo;</p>
-              <p className="text-sm font-medium text-purple-400">— {review.client_name}</p>
+              <p className="text-sm text-gray-300 mb-4 leading-relaxed italic">&ldquo;{review.review_text}&rdquo;</p>
+              <p className="text-sm font-medium text-purple-400">— {review.display_name}</p>
             </div>
           ))}
         </div>

@@ -24,14 +24,16 @@ model PortfolioItem {
 }
 
 model Review {
-  id               String    @id @default(cuid())
-  client_name      String
-  rating           Int
-  message          String
-  status           String    @default("PENDING")
+  id             String    @id @default(cuid())
+  display_name   String    @map("display_name")
+  rating         Int
+  review_text    String    @map("review_text")
+  image_url      String?
+  status         String    @default("PENDING")
+  hidden         Boolean   @default(false)
   rejection_reason String?
-  created_at       DateTime  @default(now())
-  updated_at       DateTime  @updatedAt
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @updatedAt
 
   @@map("reviews")
 }

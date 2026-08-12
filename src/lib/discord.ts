@@ -20,7 +20,7 @@ export async function sendDiscordWebhook({
       content = `${nsfwTag}🎨 **New Commission Enquiry**\nClient: ${data.client_name}\nEmail: ${data.email}\nService: ${data.service}\nDescription: ${data.description || "None"}\nStatus: ${data.status}`;
       break;
     case "review":
-      content = `⭐ **New Review**\nClient: ${data.client_name}\nRating: ${data.rating}/5\nMessage: ${data.message}`;
+      content = `⭐ **New Review**\nClient: ${data.display_name}\nRating: ${data.rating}/5\nMessage: ${data.review_text}`;
       break;
     case "support":
       content = `🛠️ **New Support Request**\nClient: ${data.client_name}\nEmail: ${data.email}\nSubject: ${data.subject}\nMessage: ${data.message}`;
