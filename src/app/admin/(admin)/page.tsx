@@ -1,15 +1,101 @@
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
+import prisma from "@/lib/prisma";
 
-export default function AdminPage() {
+export default async function AdminDashboard() {
+  const [
+    portfolioCount,
+    nsfwCount,
+    pendingReviews,
+    pendingCommissions,
+    openSupport,
+    recentCommissions,
+    recentReviews,
+    recentSupport,
+  ] = await Promise.all([
+    prisma.PortfolioItem.count({ where: { nsfw: false } }),
+    prisma.PortfolioItem.count({ where: { nsfw: true } }),
+    prisma.Review.count({ where: { status: "PENDING" } }),
+    prisma.CommissionSubmission.count({ where: { status: "PENDING" } }),
+    prisma.SupportRequest.count({ where: { status: { not: "CLOSED" } } }),
+    prisma.CommissionSubmission.findMany({
+      take: 5,
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.Review.findMany({
+      take: 5,
+      orderBy: { created_at: "desc" },
+    }),
+    prisma.SupportRequest.findMany({
+      take: 5,
+      orderBy: { created_at: "desc" },
+    }),
+  ]);
+
   return (
-    <main className="min-h-screen bg-black text-white antialiased">
-      <Navbar />
-      <div className="mx-auto max-w-7xl px-6 pt-32 pb-20">
-        <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-        <p className="text-gray-400">Admin functionality coming soon.</p>
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
+        <p className="text-gray-400 mt-1">Overview of your website activity.</p>
       </div>
-      <Footer />
-    </main>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <StatCard title="Portfolio" value={portfolioCount.toString()} subtitle="SFW items" href="/admin/portfolio" />
+        <StatCard title="NSFW" value={nsfwCount.toString()} subtitle="NSFW items" href="/admin/nsfw" />
+        <StatCard title="Reviews" value={pendingReviews.toString()} subtitle="Pending approval" href="/admin/reviews" />
+        <StatCard title="Commissions" value={pendingCommissions.toString()} subtitle="New enquiries" href="/admin/commissions" />
+        <StatCard title="Support" value={openSupport.toString()} subtitle="Open requests" href="/admin/support" />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <RecentTable title="Recent Commissions" items={recentCommissions} fields={["client_name", "service", "status", "created_at"]} href="/admin/commissions" />
+        <RecentTable title="Recent Reviews" items={recentReviews} fields={["client_name", "rating", "status", "created_at"]} href="/admin/reviews" />
+        <RecentTable title="Recent Support" items={recentSupport} fields={["client_name", "subject", "status", "created_at"]} href="/admin/support" />
+      </div>
+    </div>
+  );
+}
+
+function StatCard({ title, value, subtitle, href }: { title: string; value: string; subtitle: string; href: string }) {
+  return (
+    <a href={href} className="block rounded-xl border border-white/5 bg-white/[0.02] p-6 hover:border-purple-500/30 transition-colors">
+      <p className="text-sm font-medium text-gray-400">{title}</p>
+      <p className="text-3xl font-bold text-white mt-2">{value}</p>
+      <p className="text-sm text-gray-500 mt-1">{subtitle}</p>
+    </a>
+  );
+}
+
+function RecentTable({
+  title,
+  items,
+  fields,
+  href,
+}: {
+  title: string;
+  items: any[];
+  fields: string[];
+  href: string;
+}) {
+  return (
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-sm font-semibold text-white">{title}</h3>
+        <a href={href} className="text-xs text-purple-400 hover:text-purple-300">View all</a>
+      </div>
+      {items.length === 0 ? (
+        <p className="text-sm text-gray-500">No entries yet.</p>
+      ) : (
+        <div className="space-y-3">
+          {items.map((item) => (
+            <div key={item.id} className="flex items-center justify-between text-sm">
+              <div className="min-w-0">
+                <p className="text-white truncate">{item[fields[0]]}</p>
+                <p className="text-gray-500 truncate">{item[fields[1]]}</p>
+              </div>
+              <span className="text-xs text-gray-400 shrink-0 ml-2">{new Date(item[fields[3]]).toLocaleDateString()}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
