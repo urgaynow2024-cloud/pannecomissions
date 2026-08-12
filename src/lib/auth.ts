@@ -15,7 +15,7 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
 
 export async function getAdmin() {
   return prisma.AdminUser.findFirst({
-    select: { id: true, username: true },
+    select: { id: true, username: true, password_hash: true },
   });
 }
 
