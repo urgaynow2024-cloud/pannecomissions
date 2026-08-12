@@ -10,8 +10,6 @@ async function requireAdmin() {
 const PUBLIC_SETTINGS = [
   "site_name",
   "site_url",
-  "contact_email",
-  "discord_contact",
   "social_links",
   "footer_text",
 ];

@@ -19,7 +19,6 @@ const EDITABLE_KEYS = [
   "reviews_heading",
   "pricing_heading",
   "footer_description",
-  "contact_info",
   "support_info",
 ];
 

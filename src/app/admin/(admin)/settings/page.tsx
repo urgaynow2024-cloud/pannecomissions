@@ -65,8 +65,6 @@ export default function SettingsPage() {
         {[
           ["site_name", "Site Name"],
           ["site_url", "Site URL"],
-          ["contact_email", "Contact Email"],
-          ["discord_contact", "Discord Contact"],
           ["social_links", "Social Links"],
           ["footer_text", "Footer Text"],
         ].map(([key, label]) => (
