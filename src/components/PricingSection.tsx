@@ -1,3 +1,21 @@
+const pricing = [
+  {
+    service: "Textures",
+    price: "$5–25",
+    note: "depending on complexity.",
+  },
+  {
+    service: "Entire Avatars",
+    price: "$55–100",
+    note: "depending on complexity.",
+  },
+  {
+    service: "Models",
+    price: "$65–150",
+    note: "depending on complexity.",
+  },
+];
+
 export default function Pricing() {
   return (
     <section className="py-20 border-t border-white/5">
@@ -12,28 +30,19 @@ export default function Pricing() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-            <p className="text-sm font-medium text-purple-400 mb-1">Textures</p>
-            <p className="text-3xl font-bold text-white">$5–25</p>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-            <p className="text-sm font-medium text-purple-400 mb-1">Entire Avatars</p>
-            <p className="text-3xl font-bold text-white">$55–100</p>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-            <p className="text-sm font-medium text-purple-400 mb-1">Models</p>
-            <p className="text-3xl font-bold text-white">$65–150</p>
-          </div>
+          {pricing.map((item) => (
+            <div key={item.service} className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
+              <p className="text-sm font-medium text-purple-400 mb-1">{item.service}</p>
+              <p className="text-3xl font-bold text-white mb-1">{item.price}</p>
+              <p className="text-sm text-gray-400">{item.note}</p>
+            </div>
+          ))}
         </div>
 
         <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 md:p-8 max-w-3xl">
-          <h3 className="text-lg font-semibold text-white mb-4">Details</h3>
           <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
             <p>
-              Prices depend on complexity. A more complicated project may cost more depending on the amount of work involved.
-            </p>
-            <p>
-              Paid assets required for a commission are <strong className="text-white">not included</strong> in the commission price. If an avatar needs an asset that has to be purchased, the cost is added separately.
+              Please note that these prices do <strong className="text-white">NOT</strong> include the prices of the assets I have to buy. Those, per terms, will have to be added onto the total. Like everyone does.
             </p>
             <div className="pt-4 border-t border-white/5">
               <p className="text-white font-medium mb-2">Payment</p>

@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import AgeVerifier from "@/components/AgeVerifier";
+import NSFWPortfolio from "@/components/NSFWPortfolio";
 
 export default function NSFWPage() {
   return (
@@ -16,15 +17,13 @@ export default function NSFWPage() {
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white mb-4">
-            NSFW Commissions
+            NSFW Portfolio
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl">
             Adult VRChat avatar work. You must be 18 or older.
           </p>
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-8 text-center">
-          <p className="text-gray-400">NSFW portfolio and commission form coming soon.</p>
-        </div>
+        <NSFWPortfolio />
       </div>
       <Footer />
     </main>
