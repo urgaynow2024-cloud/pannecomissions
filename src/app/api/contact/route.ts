@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const contact = await prisma.contactSubmission.create({
+    const contact = await prisma.ContactSubmission.create({
       data: body,
     });
 
@@ -14,3 +14,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to submit contact" }, { status: 500 });
   }
 }
+
+

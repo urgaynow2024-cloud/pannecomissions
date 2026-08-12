@@ -7,29 +7,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model portfolio_items {
-  id          String   @id @default(cuid())
+model PortfolioItem {
+  id          String    @id @default(cuid())
   title       String
   description String?
+  alt_text    String?
   image_url   String
-  sort_order  Int      @default(0)
-  featured    Boolean  @default(false)
-  nsfw        Boolean  @default(false)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  sort_order  Int       @default(0)
+  featured    Boolean   @default(false)
+  nsfw        Boolean   @default(false)
+  visible     Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("portfolio_items")
 }
 
-model reviews {
-  id         String   @id @default(cuid())
-  client_name String
-  rating     Int
-  message    String
-  status     String   @default("PENDING")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+model Review {
+  id               String    @id @default(cuid())
+  client_name      String
+  rating           Int
+  message          String
+  status           String    @default("PENDING")
+  rejection_reason String?
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  @@map("reviews")
 }
 
-model commission_submissions {
+model CommissionSubmission {
   id             String    @id @default(cuid())
   client_name    String
   email          String
@@ -40,38 +47,91 @@ model commission_submissions {
   nsfw           Boolean   @default(false)
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+
+  @@map("commission_submissions")
 }
 
-model support_requests {
-  id         String   @id @default(cuid())
+model SupportRequest {
+  id          String    @id @default(cuid())
   client_name String
-  email      String
-  message    String
-  status     String   @default("PENDING")
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  email       String
+  subject     String
+  message     String
+  status      String    @default("PENDING")
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("support_requests")
 }
 
-model site_settings {
-  id         String   @id @default(cuid())
-  key        String   @unique
+model SiteSetting {
+  id         String    @id @default(cuid())
+  key        String    @unique
   value      String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  @@map("site_settings")
 }
 
-model admin_users {
-  id         String   @id @default(cuid())
-  username   String   @unique
+model AdminUser {
+  id           String    @id @default(cuid())
+  username     String    @unique
   password_hash String
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  sessions Session[]
+
+  @@map("admin_users")
 }
 
-model contact_submissions {
-  id         String   @id @default(cuid())
+model Session {
+  id        String    @id @default(cuid())
+  adminId   String
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+
+  admin AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model ContactSubmission {
+  id         String    @id @default(cuid())
   name       String
   email      String
   message    String
-  created_at DateTime @default(now())
+  created_at DateTime  @default(now())
+
+  @@map("contact_submissions")
+}
+
+model Service {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  image_url   String?
+  sort_order  Int       @default(0)
+  visible     Boolean   @default(true)
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("services")
+}
+
+model Pricing {
+  id          String    @id @default(cuid())
+  name        String
+  min_price   Float?
+  max_price   Float?
+  description String?
+  visible     Boolean   @default(true)
+  sort_order  Int       @default(0)
+  category    String    @default("sfw")
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("pricing")
 }

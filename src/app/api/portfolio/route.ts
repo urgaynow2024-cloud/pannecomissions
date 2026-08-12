@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const items = await prisma.portfolioItem.findMany({
+    const items = await prisma.PortfolioItem.findMany({
       where: { nsfw: false },
       orderBy: { sortOrder: "asc" },
     });
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const item = await prisma.portfolioItem.create({
+    const item = await prisma.PortfolioItem.create({
       data: body,
     });
     return NextResponse.json(item, { status: 201 });
@@ -26,3 +26,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create portfolio item" }, { status: 500 });
   }
 }
+
+

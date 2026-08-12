@@ -16,13 +16,14 @@ export async function sendDiscordWebhook({
 
   switch (type) {
     case "commission":
-      content = `🎨 **New Commission Enquiry**\nClient: ${data.name}\nEmail: ${data.email}\nService: ${data.service}\nDescription: ${data.description}\nStatus: ${data.status}`;
+      const nsfwTag = data.nsfw ? "\n⚠️ **18+ NSFW COMMISSION**\n" : "";
+      content = `${nsfwTag}🎨 **New Commission Enquiry**\nClient: ${data.client_name}\nEmail: ${data.email}\nService: ${data.service}\nDescription: ${data.description || "None"}\nStatus: ${data.status}`;
       break;
     case "review":
-      content = `⭐ **New Review**\nClient: ${data.clientName}\nRating: ${data.rating}/5\nMessage: ${data.message}`;
+      content = `⭐ **New Review**\nClient: ${data.client_name}\nRating: ${data.rating}/5\nMessage: ${data.message}`;
       break;
     case "support":
-      content = `🛠️ **New Support Request**\nClient: ${data.name}\nEmail: ${data.email}\nMessage: ${data.message}`;
+      content = `🛠️ **New Support Request**\nClient: ${data.client_name}\nEmail: ${data.email}\nSubject: ${data.subject}\nMessage: ${data.message}`;
       break;
   }
 
@@ -37,3 +38,4 @@ export async function sendDiscordWebhook({
     throw error;
   }
 }
+

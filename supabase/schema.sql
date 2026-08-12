@@ -1,14 +1,13 @@
--- Panne Commissions Database Schema
--- Run this in Supabase SQL Editor if not using Prisma migrations
-
 CREATE TABLE IF NOT EXISTS portfolio_items (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   title TEXT NOT NULL,
   description TEXT,
+  alt_text TEXT,
   image_url TEXT NOT NULL,
   sort_order INTEGER NOT NULL DEFAULT 0,
   featured BOOLEAN NOT NULL DEFAULT false,
   nsfw BOOLEAN NOT NULL DEFAULT false,
+  visible BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
@@ -19,6 +18,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   rating INTEGER NOT NULL,
   message TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'PENDING',
+  rejection_reason TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS commission_submissions (
   email TEXT NOT NULL,
   service TEXT NOT NULL,
   description TEXT,
+  additional TEXT,
   status TEXT NOT NULL DEFAULT 'PENDING',
   nsfw BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
@@ -39,6 +40,7 @@ CREATE TABLE IF NOT EXISTS support_requests (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   client_name TEXT NOT NULL,
   email TEXT NOT NULL,
+  subject TEXT NOT NULL,
   message TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'PENDING',
   created_at TIMESTAMP NOT NULL DEFAULT now(),
@@ -61,6 +63,14 @@ CREATE TABLE IF NOT EXISTS admin_users (
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS sessions (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  admin_id TEXT NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
 CREATE TABLE IF NOT EXISTS contact_submissions (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   name TEXT NOT NULL,
@@ -68,3 +78,43 @@ CREATE TABLE IF NOT EXISTS contact_submissions (
   message TEXT NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT now()
 );
+
+CREATE TABLE IF NOT EXISTS services (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  description TEXT,
+  image_url TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  visible BOOLEAN NOT NULL DEFAULT true,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TABLE IF NOT EXISTS pricing (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  name TEXT NOT NULL,
+  min_price DOUBLE PRECISION,
+  max_price DOUBLE PRECISION,
+  description TEXT,
+  visible BOOLEAN NOT NULL DEFAULT true,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  category TEXT NOT NULL DEFAULT 'sfw',
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'alt_text') THEN
+    ALTER TABLE portfolio_items ADD COLUMN alt_text TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'visible') THEN
+    ALTER TABLE portfolio_items ADD COLUMN visible BOOLEAN NOT NULL DEFAULT true;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'rejection_reason') THEN
+    ALTER TABLE reviews ADD COLUMN rejection_reason TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'support_requests' AND column_name = 'subject') THEN
+    ALTER TABLE support_requests ADD COLUMN subject TEXT;
+  END IF;
+END $$;

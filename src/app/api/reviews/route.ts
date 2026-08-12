@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 
 export async function GET() {
   try {
-    const reviews = await prisma.review.findMany({
+    const reviews = await prisma.Review.findMany({
       where: { status: "APPROVED" },
       orderBy: { created_at: "desc" },
     });
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const review = await prisma.review.create({
+    const review = await prisma.Review.create({
       data: {
         ...body,
         status: "PENDING",
@@ -29,3 +29,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
   }
 }
+
+

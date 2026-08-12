@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { password } = body;
 
-    const admin = await prisma.adminUser.findFirst();
+    const admin = await prisma.AdminUser.findFirst();
 
     if (!admin) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -23,3 +23,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Authentication failed" }, { status: 500 });
   }
 }
+
+

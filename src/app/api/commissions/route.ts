@@ -5,7 +5,7 @@ import { sendDiscordWebhook } from "@/lib/discord";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const submission = await prisma.commissionSubmission.create({
+    const submission = await prisma.CommissionSubmission.create({
       data: body,
     });
 
@@ -20,3 +20,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to submit commission" }, { status: 500 });
   }
 }
+
+

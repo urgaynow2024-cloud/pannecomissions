@@ -5,7 +5,7 @@ import { sendDiscordWebhook } from "@/lib/discord";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const supportRequest = await prisma.supportRequest.create({
+    const supportRequest = await prisma.SupportRequest.create({
       data: body,
     });
 
@@ -20,3 +20,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to submit support request" }, { status: 500 });
   }
 }
+
+
