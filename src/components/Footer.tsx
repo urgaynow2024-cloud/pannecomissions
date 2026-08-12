@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="border-t border-white/5 bg-black">
       <div className="mx-auto max-w-7xl px-6 py-12">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-          <div>
+          <div className="col-span-2 md:col-span-1">
             <Link href="/" className="text-lg font-bold tracking-tight text-white">
               Panne <span className="text-purple-400">Commissions</span>
             </Link>
@@ -92,7 +92,7 @@ export default function Footer() {
           </p>
           <Link
             href="/commission"
-            className="inline-flex items-center rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-purple-500"
+            className="inline-flex items-center gap-2 rounded-lg bg-purple-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-purple-500"
           >
             Commission Me
           </Link>

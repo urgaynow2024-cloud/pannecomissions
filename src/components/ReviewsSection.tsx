@@ -13,16 +13,76 @@ interface Review {
 
 export default function ReviewsSection() {
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/reviews")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch reviews");
+        return res.json();
+      })
       .then(setReviews)
-      .catch(() => setReviews([]));
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
 
+  if (loading) {
+    return (
+      <section className="py-20 border-t border-white/5">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Reviews</h2>
+              <p className="text-gray-400 max-w-xl">What clients have said.</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-center py-12">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 border-t border-white/5">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Reviews</h2>
+              <p className="text-gray-400 max-w-xl">What clients have said.</p>
+            </div>
+          </div>
+          <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-8 text-center">
+            <p className="text-red-400">Failed to load reviews. Please try again later.</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   if (reviews.length === 0) {
-    return null;
+    return (
+      <section className="py-20 border-t border-white/5">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="flex items-end justify-between mb-10">
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Reviews</h2>
+              <p className="text-gray-400 max-w-xl">What clients have said.</p>
+            </div>
+          </div>
+          <div className="text-center py-12">
+            <p className="text-gray-500">Reviews will appear here once clients have submitted them.</p>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   const display = reviews.slice(0, 3);

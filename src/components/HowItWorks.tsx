@@ -32,10 +32,10 @@ export default function HowItWorks() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="max-w-2xl mb-12">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">
-            How Commissions Work
+            How It Works
           </h2>
           <p className="text-gray-400">
-            The process from enquiry to finished work.
+            From enquiry to finished work.
           </p>
         </div>
 

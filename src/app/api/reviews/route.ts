@@ -5,11 +5,12 @@ export async function GET() {
   try {
     const reviews = await prisma.review.findMany({
       where: { status: "APPROVED" },
-      orderBy: { createdAt: "desc" },
+      orderBy: { created_at: "desc" },
     });
     return NextResponse.json(reviews);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch reviews" }, { status: 500 });
+    console.error("Failed to fetch reviews:", error);
+    return NextResponse.json({ error: "Failed to fetch reviews", items: [] }, { status: 500 });
   }
 }
 
@@ -24,6 +25,7 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(review, { status: 201 });
   } catch (error) {
+    console.error("Failed to create review:", error);
     return NextResponse.json({ error: "Failed to create review" }, { status: 500 });
   }
 }

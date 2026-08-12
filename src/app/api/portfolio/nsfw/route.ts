@@ -9,7 +9,8 @@ export async function GET() {
     });
     return NextResponse.json(items);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch NSFW portfolio" }, { status: 500 });
+    console.error("Failed to fetch NSFW portfolio:", error);
+    return NextResponse.json({ error: "Failed to fetch NSFW portfolio", items: [] }, { status: 500 });
   }
 }
 
@@ -21,6 +22,7 @@ export async function POST(request: Request) {
     });
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
+    console.error("Failed to create NSFW portfolio item:", error);
     return NextResponse.json({ error: "Failed to create NSFW portfolio item" }, { status: 500 });
   }
 }

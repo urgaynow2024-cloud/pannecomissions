@@ -12,10 +12,12 @@ export default function CommissionForm() {
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       const res = await fetch("/api/commissions", {
@@ -27,9 +29,12 @@ export default function CommissionForm() {
       if (res.ok) {
         setSubmitted(true);
         setFormData({ name: "", email: "", service: "", description: "", additional: "" });
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Something went wrong. Please try again.");
       }
     } catch {
-      // handle error silently
+      setError("Network error. Please check your connection and try again.");
     } finally {
       setLoading(false);
     }
@@ -55,6 +60,12 @@ export default function CommissionForm() {
 
   return (
     <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-8">
+      {error && (
+        <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-center">
+          <p className="text-sm text-red-400">{error}</p>
+        </div>
+      )}
+
       <div>
         <h3 className="text-lg font-semibold text-white mb-1">About You</h3>
         <p className="text-sm text-gray-400 mb-4">Basic details so I can get in touch.</p>

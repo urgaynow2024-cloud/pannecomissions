@@ -12,18 +12,44 @@ interface Review {
 
 export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/reviews")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch reviews");
+        return res.json();
+      })
       .then(setReviews)
-      .catch(() => setReviews([]));
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-purple-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-8 text-center">
+        <p className="text-red-400">Failed to load reviews. Please try again later.</p>
+      </div>
+    );
+  }
 
   if (reviews.length === 0) {
     return (
       <div className="text-center py-20">
-        <p className="text-gray-500">No reviews yet.</p>
+        <p className="text-gray-500">Reviews will appear here once clients have submitted them.</p>
       </div>
     );
   }

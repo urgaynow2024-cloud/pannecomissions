@@ -9,14 +9,19 @@ export async function POST(request: Request) {
       data: body,
     });
 
-    await sendEmail({
-      to: body.email,
-      subject: "Contact Message Received",
-      content: "Thank you for contacting us. We will get back to you soon.",
-    });
+    try {
+      await sendEmail({
+        to: body.email,
+        subject: "Contact Message Received",
+        content: "Thank you for contacting me. I will get back to you soon.",
+      });
+    } catch (emailError) {
+      console.error("Failed to send email:", emailError);
+    }
 
     return NextResponse.json(contact, { status: 201 });
   } catch (error) {
+    console.error("Failed to submit contact:", error);
     return NextResponse.json({ error: "Failed to submit contact" }, { status: 500 });
   }
 }
