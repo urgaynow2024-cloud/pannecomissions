@@ -7,8 +7,13 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const admin = await verifySession();
-  if (!admin) {
+  try {
+    const admin = await verifySession();
+    if (!admin) {
+      redirect("/admin/login");
+    }
+  } catch (error) {
+    console.error("Admin auth error:", error);
     redirect("/admin/login");
   }
 
