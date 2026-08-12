@@ -48,7 +48,7 @@ export default function SupportForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-5">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-300">Name</label>
@@ -61,7 +61,6 @@ export default function SupportForm() {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
           />
         </div>
-
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
           <input
@@ -74,7 +73,6 @@ export default function SupportForm() {
           />
         </div>
       </div>
-
       <div>
         <label className="mb-2 block text-sm font-medium text-gray-300">Message</label>
         <textarea
@@ -86,7 +84,6 @@ export default function SupportForm() {
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
         />
       </div>
-
       <button
         type="submit"
         disabled={loading}

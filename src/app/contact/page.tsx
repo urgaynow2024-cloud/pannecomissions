@@ -12,7 +12,7 @@ export default function ContactPage() {
             Contact
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl">
-            Have a question or want to discuss a project? Send me a message.
+            General enquiries. For commission requests, use the commission form.
           </p>
         </div>
         <ContactForm />

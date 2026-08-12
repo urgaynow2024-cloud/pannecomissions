@@ -1,25 +1,42 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface PortfolioItem {
   id: string;
   title: string;
   description: string;
   image_url: string;
+  sort_order: number;
   featured: boolean;
+  nsfw: boolean;
 }
 
-export default function Portfolio() {
+export default function PortfolioPage() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
-  const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
   useEffect(() => {
     fetch("/api/portfolio")
       .then((res) => res.json())
-      .then(setItems)
+      .then((data: PortfolioItem[]) => {
+        const sfw = data.filter((item) => !item.nsfw);
+        setItems(sfw);
+      })
       .catch(() => setItems([]));
   }, []);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (selectedIndex === null) return;
+      if (e.key === "Escape") setSelectedIndex(null);
+      if (e.key === "ArrowRight") setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
+      if (e.key === "ArrowLeft") setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [selectedIndex, items.length]);
 
   if (items.length === 0) {
     return (
@@ -29,64 +46,89 @@ export default function Portfolio() {
     );
   }
 
+  const selected = selectedIndex !== null ? items[selectedIndex] : null;
+
   return (
     <div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {items.map((item) => (
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+        {items.map((item, index) => (
           <button
             key={item.id}
-            onClick={() => setSelectedItem(item)}
-            className="group relative aspect-[4/3] overflow-hidden rounded-xl border border-white/5 bg-gray-900 transition-all duration-300 hover:border-purple-500/30 hover:shadow-2xl hover:shadow-purple-500/10"
+            onClick={() => setSelectedIndex(index)}
+            className="group relative w-full overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:border-purple-500/30 break-inside-avoid"
           >
             <img
               src={item.image_url}
               alt={item.title}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-4 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <h3 className="text-lg font-semibold text-white">{item.title}</h3>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
+              <p className="text-base font-semibold text-white">{item.title}</p>
               {item.description && (
                 <p className="mt-1 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}
             </div>
-            {item.featured && (
-              <div className="absolute top-4 right-4 rounded-full bg-purple-600 px-3 py-1 text-xs font-medium text-white">
-                Featured
-              </div>
-            )}
           </button>
         ))}
       </div>
 
-      {selectedItem && (
+      {selected && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-          onClick={() => setSelectedItem(null)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
+          onClick={() => setSelectedIndex(null)}
         >
           <div
             className="relative max-w-5xl w-full max-h-[90vh] overflow-auto rounded-2xl border border-white/10 bg-gray-900"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              onClick={() => setSelectedItem(null)}
-              className="absolute top-4 right-4 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors"
-            >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <img
-              src={selectedItem.image_url}
-              alt={selectedItem.title}
-              className="w-full h-auto max-h-[80vh] object-contain"
-            />
-            <div className="p-6">
-              <h3 className="text-xl font-bold text-white">{selectedItem.title}</h3>
-              {selectedItem.description && (
-                <p className="mt-2 text-gray-400">{selectedItem.description}</p>
-              )}
+            <div className="flex items-center justify-between p-4">
+              <p className="text-sm font-medium text-white">{selected.title}</p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
+                  }}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
+                  }}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setSelectedIndex(null)}
+                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
+                >
+                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
+            <div className="px-4 pb-4">
+              <img
+                src={selected.image_url}
+                alt={selected.title}
+                className="w-full h-auto max-h-[75vh] object-contain mx-auto"
+              />
+            </div>
+            {selected.description && (
+              <div className="p-6 border-t border-white/5">
+                <p className="text-sm text-gray-400">{selected.description}</p>
+              </div>
+            )}
           </div>
         </div>
       )}

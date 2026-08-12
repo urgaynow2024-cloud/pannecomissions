@@ -12,7 +12,7 @@ export default function PortfolioPage() {
             Portfolio
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl">
-            A selection of recent VRChat avatar work. Click any piece to view it full-size.
+            VRChat avatar work.
           </p>
         </div>
         <Portfolio />

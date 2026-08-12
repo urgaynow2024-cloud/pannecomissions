@@ -10,7 +10,7 @@ interface Review {
   created_at: Date;
 }
 
-export default function Reviews() {
+export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
@@ -33,7 +33,7 @@ export default function Reviews() {
       {reviews.map((review) => (
         <div
           key={review.id}
-          className="group relative rounded-xl border border-white/5 bg-white/[0.02] p-6 transition-all duration-300 hover:border-purple-500/30 hover:bg-white/[0.04]"
+          className="rounded-xl border border-white/5 bg-white/[0.02] p-6 transition-colors hover:border-purple-500/30"
         >
           <div className="flex items-center gap-1 mb-4">
             {[...Array(5)].map((_, i) => (

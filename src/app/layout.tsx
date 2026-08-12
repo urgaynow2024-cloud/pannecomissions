@@ -3,7 +3,7 @@ import "../styles/globals.css";
 
 export const metadata: Metadata = {
   title: "Panne Commissions",
-  description: "VRChat avatar commission service - avatar customisation, clothing additions, complete avatar setups, toggles, custom textures, and more.",
+  description: "VRChat avatar commissions.",
 };
 
 export default function RootLayout({
@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="antialiased">{children}</body>
     </html>
   );
 }

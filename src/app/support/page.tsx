@@ -12,7 +12,7 @@ export default function SupportPage() {
             Support
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl">
-            Need help with an existing commission or have a question? I&apos;m here to help.
+            For existing clients with commission issues, or problems with delivered work.
           </p>
         </div>
         <SupportForm />

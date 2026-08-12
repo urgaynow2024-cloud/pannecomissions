@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CommissionForm from "@/components/CommissionForm";
 import AgeVerifier from "@/components/AgeVerifier";
 
 export default function NSFWPage() {
@@ -20,10 +19,12 @@ export default function NSFWPage() {
             NSFW Commissions
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl">
-            You must be 18 or older to view this content. All work here is intended for mature audiences only.
+            Adult VRChat avatar work. You must be 18 or older.
           </p>
         </div>
-        <CommissionForm nsfw={true} />
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-8 text-center">
+          <p className="text-gray-400">NSFW portfolio and commission form coming soon.</p>
+        </div>
       </div>
       <Footer />
     </main>
