@@ -23,6 +23,12 @@ export async function uploadImage(file: File): Promise<string> {
 
   if (error) {
     console.error("Supabase upload error:", error);
+    if (error.message.includes("row-level security") || error.message.includes("RLS")) {
+      throw new Error("Storage blocked: create a 'pannecomissions' bucket in Supabase Storage and make it Public");
+    }
+    if (error.message.includes("bucket") || error.message.includes("not found")) {
+      throw new Error("Storage bucket 'pannecomissions' not found. Create it in Supabase Storage.");
+    }
     throw new Error(`Storage upload failed: ${error.message}`);
   }
 

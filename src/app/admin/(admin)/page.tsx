@@ -146,6 +146,9 @@ export default async function AdminDashboard() {
     );
   } catch (error) {
     console.error("[Dashboard] Failed to load data:", error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    const isSchemaIssue = errorMessage.includes("does not exist");
+    
     return (
       <AdminLayout>
         <div className="space-y-10 animate-fade-in">
@@ -158,19 +161,51 @@ export default async function AdminDashboard() {
             </h1>
             <p className="text-gray-400 mt-2 text-sm">Here&apos;s what&apos;s happening with your studio.</p>
           </div>
-          <div className="rounded-xl border border-brand-purple-500/20 bg-brand-purple-500/5 p-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-purple-500/10 mb-4">
-              <span className="text-brand-purple-400 text-lg font-display">✦</span>
+          
+          {isSchemaIssue && (
+            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <span className="text-yellow-400 text-lg">⚠</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-white mb-1 font-display">Database setup required</h3>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Your database is missing required columns/tables. This is why uploads and some admin features are failing.
+                  </p>
+                  <div className="rounded-lg border border-white/5 bg-white/[0.02] p-4 mb-4">
+                    <p className="text-xs font-medium text-gray-300 mb-2 uppercase tracking-wider">Fix:</p>
+                    <ol className="text-sm text-gray-400 space-y-1 list-decimal list-inside">
+                      <li>Go to Supabase → <strong>SQL Editor</strong></li>
+                      <li>Open <code className="text-brand-purple-300 bg-white/5 px-1.5 py-0.5 rounded text-xs">supabase/schema.sql</code> in your project</li>
+                      <li>Paste the entire contents into the SQL Editor and run it</li>
+                      <li>Refresh this page</li>
+                    </ol>
+                  </div>
+                  <form method="GET" action="/admin">
+                    <button type="submit" className="rounded-lg bg-brand-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
+                      Refresh After Fix
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
-            <h3 className="text-lg font-semibold text-white mb-2 font-display">Unable to load dashboard data</h3>
-            <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">
-              We couldn&apos;t retrieve the latest information. Please check your connection and try again.
+          )}
+          
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
+            <h3 className="text-base font-semibold text-white mb-2 font-display">Unable to load dashboard data</h3>
+            <p className="text-sm text-gray-400 mb-4">
+              {isSchemaIssue 
+                ? "The database schema needs to be updated before the dashboard can load. Follow the instructions above."
+                : "We couldn't retrieve the latest information. Please check your connection and try again."}
             </p>
-            <form method="GET" action="/admin">
-              <button type="submit" className="rounded-lg bg-brand-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
-                Try Again
-              </button>
-            </form>
+            {!isSchemaIssue && (
+              <form method="GET" action="/admin">
+                <button type="submit" className="rounded-lg bg-brand-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
+                  Try Again
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </AdminLayout>
