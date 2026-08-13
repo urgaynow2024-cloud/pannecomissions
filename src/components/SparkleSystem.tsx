@@ -62,6 +62,7 @@ export default function SparkleSystem() {
         const rotation = rand(0, 360);
 
         el.textContent = pick(CHARS);
+        el.style.position = "absolute";
         el.style.top = `${top}%`;
         el.style.left = `${left}%`;
         el.style.fontSize = `${size}px`;

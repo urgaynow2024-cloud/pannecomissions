@@ -40,9 +40,6 @@ export default function Navbar() {
           >
             PANNE
             <Sparkles className="h-3.5 w-3.5 text-brand-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="text-brand-purple-400 group-hover:text-brand-purple-300 transition-colors duration-300">
-              Commissions
-            </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-8">
