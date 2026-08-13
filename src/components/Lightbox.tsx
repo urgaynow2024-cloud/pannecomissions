@@ -4,7 +4,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 
 interface LightboxItem {
   id: string;
-  title?: string;
   image_url: string;
   description?: string | null;
 }
@@ -79,8 +78,6 @@ export default function Lightbox({ items, initialIndex, onClose }: LightboxProps
   const item = items[index];
   if (!item) return null;
 
-  const displayTitle = item.title || "Artwork";
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4"
@@ -93,7 +90,7 @@ export default function Lightbox({ items, initialIndex, onClose }: LightboxProps
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 shrink-0">
-          <p className="text-sm font-medium text-white truncate">{displayTitle}</p>
+          <div className="w-8" />
           <div className="flex items-center gap-2">
             <button
               onClick={() => goTo(index - 1)}
@@ -162,7 +159,7 @@ export default function Lightbox({ items, initialIndex, onClose }: LightboxProps
         >
           <img
             src={item.image_url}
-            alt={displayTitle}
+            alt="Artwork"
             className="max-w-full max-h-[75vh] object-contain rounded-lg"
           />
         </div>

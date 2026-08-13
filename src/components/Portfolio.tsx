@@ -70,7 +70,7 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
             <div className="relative overflow-hidden">
               <img
                 src={item.image_url}
-                alt={item.display_title || "Portfolio artwork"}
+                alt="Portfolio artwork"
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 loading="lazy"
               />
@@ -81,9 +81,6 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
               </div>
             </div>
             <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-              {item.display_title && (
-                <p className="text-base font-semibold text-white font-display">{item.display_title}</p>
-              )}
               {item.description && (
                 <p className="mt-1.5 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}

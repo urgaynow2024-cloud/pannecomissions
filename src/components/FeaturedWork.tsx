@@ -79,36 +79,28 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
               >
                 <img
                   src={items[0].image_url}
-                  alt={items[0].display_title || "Featured artwork"}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  loading="lazy"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 via-brand-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  <span className="text-brand-purple-400/50 text-sm animate-sparkle-float">✦</span>
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                  <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1.5">
-                    Featured
-                  </p>
-                  {items[0].display_title && (
-                    <p className="text-lg md:text-xl font-semibold text-white font-display">{items[0].display_title}</p>
-                  )}
-                </div>
-              </button>
-            </ScrollReveal>
+                   alt="Artwork"
+                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                   loading="lazy"
+                 />
+                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                 <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 via-brand-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                 <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                   <span className="text-brand-purple-400/50 text-sm animate-sparkle-float">✦</span>
+                 </div>
+               </button>
+             </ScrollReveal>
 
-            <div className="lg:col-span-5 grid grid-cols-1 gap-4 md:gap-6">
-              {items.slice(1, 3).map((item, i) => (
-                <ScrollReveal key={item.id} delay={(i + 1) * 120}>
-                  <button
-                    onClick={() => openLightbox(i + 1)}
-                    className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
-                  >
-                    <img
-                      src={item.image_url}
-                      alt={item.display_title || "Featured artwork"}
+             <div className="lg:col-span-5 grid grid-cols-1 gap-4 md:gap-6">
+               {items.slice(1, 3).map((item, i) => (
+                 <ScrollReveal key={item.id} delay={(i + 1) * 120}>
+                   <button
+                     onClick={() => openLightbox(i + 1)}
+                     className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
+                   >
+                     <img
+                       src={item.image_url}
+                       alt="Artwork"
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -116,14 +108,6 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                       <span className="text-brand-purple-400/50 text-sm animate-sparkle-float" style={{ animationDelay: "-1s" }}>✦</span>
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                      <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
-                        Featured
-                      </p>
-                      {item.display_title && (
-                        <p className="text-base font-semibold text-white font-display">{item.display_title}</p>
-                      )}
                     </div>
                   </button>
                 </ScrollReveal>
@@ -141,22 +125,14 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                   onClick={() => openLightbox(i)}
                    className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
                 >
-                  <img
-                    src={item.image_url}
-                    alt={item.display_title || "Featured artwork"}
+                   <img
+                     src={item.image_url}
+                     alt="Artwork"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
-                    <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1.5">
-                      Featured
-                    </p>
-                    {item.display_title && (
-                      <p className="text-lg md:text-xl font-semibold text-white font-display">{item.display_title}</p>
-                    )}
-                  </div>
                 </button>
               ))}
             </div>

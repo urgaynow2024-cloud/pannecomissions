@@ -110,7 +110,7 @@ export default function Hero({ featuredItem }: HeroProps) {
                 <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-brand-purple-500/15 shadow-2xl artwork-glow">
                   <Image
                     src={featuredItem.image_url}
-                    alt={featuredItem.display_title || "Featured artwork"}
+                     alt="Featured artwork"
                     fill
                     className="object-cover transition-transform duration-700 hover:scale-[1.02]"
                     priority
@@ -125,11 +125,6 @@ export default function Hero({ featuredItem }: HeroProps) {
                   <div className="absolute top-4 left-4">
                     <span className="text-brand-purple-400/60 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
                   </div>
-                  {featuredItem.display_title && (
-                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                      <p className="text-xl font-semibold text-white font-display">{featuredItem.display_title}</p>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] border border-brand-purple-500/15 bg-white/[0.02] flex items-center justify-center rounded-2xl overflow-hidden">
