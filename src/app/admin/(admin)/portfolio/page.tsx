@@ -131,9 +131,11 @@ export default function PortfolioPage() {
         setUploadQueue((prev) =>
           prev.map((q) => (q.id === item.id ? { ...q, status: "uploaded", progress: 100 } : q))
         );
-      } catch {
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Upload failed";
+        console.error("Upload error:", message);
         setUploadQueue((prev) =>
-          prev.map((q) => (q.id === item.id ? { ...q, status: "error", error: "Upload failed" } : q))
+          prev.map((q) => (q.id === item.id ? { ...q, status: "error", error: message } : q))
         );
       }
     }
@@ -188,9 +190,15 @@ export default function PortfolioPage() {
       fd.append("portfolioItemId", editingId);
 
       try {
-        await fetch("/api/admin/photos", { method: "POST", body: fd });
-      } catch {
-        console.error("Photo upload failed");
+        const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || `Upload failed (${res.status})`);
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Photo upload failed";
+        console.error("Photo upload error:", message);
+        alert(message);
       }
     }
 

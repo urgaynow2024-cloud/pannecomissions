@@ -23,12 +23,16 @@ export async function uploadImage(file: File): Promise<string> {
 
   if (error) {
     console.error("Supabase upload error:", error);
-    throw new Error(error.message || "Upload failed");
+    throw new Error(`Storage upload failed: ${error.message}`);
   }
 
   const { data } = supabase.storage
     .from("pannecomissions")
     .getPublicUrl(path);
+
+  if (!data?.publicUrl) {
+    throw new Error("Failed to get public URL from Supabase Storage");
+  }
 
   return data.publicUrl;
 }
