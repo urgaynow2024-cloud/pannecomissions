@@ -1,8 +1,23 @@
 import AdminLayout from "@/app/admin/(admin)/layout";
 import prisma from "@/lib/prisma";
-import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare } from "lucide-react";
+import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, AlertTriangle, CheckCircle, XCircle } from "lucide-react";
+
+async function getHealth() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/admin/health`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
 
 export default async function AdminDashboard() {
+  const health = await getHealth();
+  const hasSchemaIssue = health?.missing?.length > 0;
+
   try {
     const [
       portfolioCount,
@@ -51,16 +66,46 @@ export default async function AdminDashboard() {
     return (
       <AdminLayout>
         <div className="space-y-10 animate-fade-in">
-          <div className="relative">
-            <h1 className="text-4xl font-bold tracking-tight text-white font-display">
-              Welcome back to{" "}
-              <span className="bg-gradient-to-r from-brand-purple-300 to-brand-purple-500 bg-clip-text text-transparent">
-                Panne.
-              </span>
-            </h1>
-            <p className="text-gray-400 mt-2 text-sm">Here&apos;s what&apos;s happening with your studio.</p>
-            <div className="absolute -top-4 -left-4 w-32 h-32 bg-brand-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-          </div>
+          {hasSchemaIssue && (
+            <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-6">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-white mb-1 font-display">Setup required before uploads work</h3>
+                  <p className="text-sm text-gray-400 mb-4">
+                    Your Supabase database/storage is missing required items. Follow these exact steps:
+                  </p>
+                  <div className="space-y-3">
+                    {health.missing.map((item: string, i: number) => (
+                      <div key={i} className="flex items-start gap-3 text-sm">
+                        <span className="text-brand-purple-400 font-mono text-xs mt-0.5">{i + 1}.</span>
+                        <span className="text-gray-300">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-4 rounded-lg border border-white/5 bg-white/[0.02] p-4">
+                    <p className="text-xs font-medium text-gray-300 mb-2 uppercase tracking-wider">How to fix:</p>
+                    <ol className="text-sm text-gray-400 space-y-1 list-decimal list-inside">
+                      <li>Open Supabase → <strong>SQL Editor</strong></li>
+                      <li>Paste the entire contents of <code className="text-brand-purple-300 bg-white/5 px-1.5 py-0.5 rounded text-xs">supabase/schema.sql</code></li>
+                      <li>Run it</li>
+                      <li>Go to Supabase → <strong>Storage</strong> → create bucket named <code className="text-brand-purple-300 bg-white/5 px-1.5 py-0.5 rounded text-xs">pannecomissions</code> (Public)</li>
+                      <li>Redeploy on Vercel</li>
+                    </ol>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {health && !hasSchemaIssue && (
+            <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 flex items-center gap-3">
+              <CheckCircle className="h-5 w-5 text-green-400 shrink-0" />
+              <p className="text-sm text-green-300">All systems ready — uploads should work.</p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
             {stats.map((stat) => (
