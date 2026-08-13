@@ -66,7 +66,13 @@ export async function POST(request: Request) {
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error("Failed to create NSFW portfolio item:", error);
-    return NextResponse.json({ error: "Failed to create NSFW portfolio item" }, { status: 500 });
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor." }, { status: 500 });
+    }
+    if (error instanceof Error && error.message.includes("Storage")) {
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create NSFW portfolio item" }, { status: 500 });
   }
 }
 

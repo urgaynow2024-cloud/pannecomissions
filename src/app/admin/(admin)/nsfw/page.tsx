@@ -107,11 +107,18 @@ export default function NSFWPortfolioPage() {
         const xhr = new XMLHttpRequest();
         await new Promise<void>((resolve, reject) => {
           xhr.open("POST", "/api/admin/nsfw");
-          xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) resolve();
-            else reject(new Error("Upload failed"));
+          xhr.onload = async () => {
+            if (xhr.status >= 200 && xhr.status < 300) return resolve();
+            let message = "Upload failed";
+            try {
+              const data = JSON.parse(xhr.responseText);
+              message = data.error || data.message || message;
+            } catch {
+              message = xhr.statusText || message;
+            }
+            reject(new Error(message));
           };
-          xhr.onerror = () => reject(new Error("Upload failed"));
+          xhr.onerror = () => reject(new Error("Network error — check your connection"));
           xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
               const pct = Math.round((e.loaded / e.total) * 100);
@@ -126,9 +133,12 @@ export default function NSFWPortfolioPage() {
         setUploadQueue((prev) =>
           prev.map((q) => (q.id === item.id ? { ...q, status: "uploaded", progress: 100 } : q))
         );
-      } catch {
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Upload failed";
+        console.error("NSFW upload error:", message);
+        alert(`UPLOAD FAILED:\n\n${message}\n\nCheck the browser console (F12) for more details.`);
         setUploadQueue((prev) =>
-          prev.map((q) => (q.id === item.id ? { ...q, status: "error", error: "Upload failed" } : q))
+          prev.map((q) => (q.id === item.id ? { ...q, status: "error", error: message } : q))
         );
       }
     }
