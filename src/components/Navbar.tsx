@@ -52,16 +52,19 @@ export default function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`relative text-[13px] tracking-wide transition-colors duration-200 py-1.5 group ${
+                  className={`relative text-[13px] tracking-wide transition-all duration-200 py-1.5 group ${
                     isActive ? "text-white" : "text-gray-400 hover:text-white"
                   }`}
                 >
                   {link.label}
                   <span
                     className={`absolute -bottom-0.5 left-0 h-px bg-brand-purple-400 transition-all duration-300 ${
-                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                      isActive ? "w-full shadow-[0_0_8px_rgba(168,85,247,0.4)]" : "w-0 group-hover:w-full group-hover:shadow-[0_0_8px_rgba(168,85,247,0.25)]"
                     }`}
                   />
+                  {isActive && (
+                    <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-brand-purple-400 shadow-[0_0_6px_rgba(168,85,247,0.5)]" />
+                  )}
                 </Link>
               );
             })}
@@ -73,11 +76,11 @@ export default function Navbar() {
             </Link>
             <Link
               href="/commission"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-purple-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_25px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_25px_rgba(147,51,234,0.2)] hover:-translate-y-0.5 btn-glow"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Commission Me
-                <span className="text-brand-purple-200 text-xs animate-sparkle-float inline-block">✦</span>
+                <span className="text-brand-purple-300 text-xs animate-sparkle-float inline-block">✦</span>
               </span>
             </Link>
             <AvailabilityIndicator />
@@ -115,11 +118,14 @@ export default function Navbar() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`block py-3.5 text-base transition-colors border-b border-white/5 last:border-0 ${
+                  className={`block py-3.5 text-base transition-colors border-b border-white/5 last:border-0 relative ${
                     isActive ? "text-white" : "text-gray-400 hover:text-white"
                   }`}
                 >
                   {link.label}
+                  {isActive && (
+                    <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 rounded-full bg-brand-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.4)]" />
+                  )}
                 </Link>
               );
             })}
@@ -134,7 +140,7 @@ export default function Navbar() {
               <Link
                 href="/commission"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center rounded-full bg-brand-purple-500 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-400 transition-colors"
+                className="block w-full text-center rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-500/15 hover:border-brand-purple-400 transition-all"
               >
                 Commission Me
               </Link>

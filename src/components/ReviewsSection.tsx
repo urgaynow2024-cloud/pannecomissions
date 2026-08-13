@@ -74,7 +74,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
                 return (
                   <div
                     key={review.id}
-                    className={`group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden transition-all duration-500 hover:border-brand-purple-500/20 hover:bg-white/[0.04] ${isLarge ? "md:col-span-2" : ""}`}
+                    className={`group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden transition-all duration-500 hover:border-brand-purple-500/25 hover:shadow-[0_0_40px_rgba(168,85,247,0.06)] hover:bg-white/[0.04] ${isLarge ? "md:col-span-2" : ""}`}
                   >
                     <div className="p-6 md:p-8">
                       {review.image_url && (

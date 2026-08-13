@@ -37,17 +37,6 @@ export default async function PricingPage() {
       <NoiseOverlay />
       <Navbar />
       <div className="pt-32 md:pt-40 pb-20 md:pb-32">
-        <div className="mx-auto max-w-7xl px-6 mb-12 md:mb-16">
-          <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-3">
-            Rates
-          </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-            Pricing
-          </h1>
-          <p className="text-lg text-gray-400 max-w-2xl mt-4">
-            Starting ranges. Final price depends on the work involved.
-          </p>
-        </div>
         <PricingSection pricing={pricing} />
       </div>
       <Footer />

@@ -32,6 +32,19 @@ body {
   overflow-x: hidden;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(124, 58, 237, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 50%, rgba(168, 85, 247, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 20% 60%, rgba(124, 58, 237, 0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 100% 60% at 50% 110%, rgba(147, 51, 234, 0.06) 0%, transparent 60%);
+}
+
 body::after {
   content: '';
   position: fixed;

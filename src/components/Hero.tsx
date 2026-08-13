@@ -27,9 +27,10 @@ export default function Hero({ featuredItem }: HeroProps) {
         className="absolute inset-0 -z-10"
         style={{ transform: bgTransform }}
       >
-        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-brand-purple-500/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite" }} />
-        <div className="absolute bottom-[15%] right-[10%] w-[400px] h-[400px] bg-brand-purple-600/6 rounded-full blur-[120px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 2s" }} />
-        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-brand-purple-500/4 rounded-full blur-[180px]" />
+        <div className="absolute top-[5%] left-[5%] w-[600px] h-[600px] bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[500px] h-[500px] bg-brand-purple-600/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 3s" }} />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-brand-purple-500/5 rounded-full blur-[200px]" />
+        <div className="absolute top-[20%] right-[20%] w-[300px] h-[300px] bg-brand-purple-400/6 rounded-full blur-[100px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 1.5s" }} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 w-full">
@@ -74,11 +75,11 @@ export default function Hero({ featuredItem }: HeroProps) {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/commission"
-                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_40px_rgba(147,51,234,0.35)] hover:-translate-y-0.5 btn-glow"
+                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_40px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Commission Me
-                  <span className="text-brand-purple-200 text-sm animate-sparkle-float inline-block" style={{ animationDuration: "3s" }}>✦</span>
+                  <span className="text-brand-purple-300 text-sm animate-sparkle-float inline-block" style={{ animationDuration: "3s" }}>✦</span>
                 </span>
               </Link>
               <Link
@@ -97,12 +98,13 @@ export default function Hero({ featuredItem }: HeroProps) {
             style={{ transform: imgTransform }}
           >
             <div className="relative lg:-mr-8 xl:-mr-16">
-              <div className="absolute -inset-6 bg-gradient-to-br from-brand-purple-500/12 via-brand-purple-500/6 to-transparent rounded-3xl blur-2xl" />
+              <div className="absolute -inset-8 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/8 to-transparent rounded-3xl blur-3xl" />
+              <div className="absolute -inset-4 bg-gradient-to-t from-brand-purple-500/6 via-transparent to-transparent rounded-2xl blur-xl" />
 
-              <SparkleField count={6} minSize={3} maxSize={10} minOpacity={0.15} maxOpacity={0.4} className="absolute inset-0 z-20 pointer-events-none" glow />
+              <SparkleField count={8} minSize={3} maxSize={10} minOpacity={0.15} maxOpacity={0.4} className="absolute inset-0 z-20 pointer-events-none" glow />
 
               {featuredItem ? (
-                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-white/5 shadow-2xl artwork-glow">
+                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-brand-purple-500/10 shadow-2xl artwork-glow">
                   <Image
                     src={featuredItem.image_url}
                     alt={featuredItem.title}
@@ -111,13 +113,14 @@ export default function Hero({ featuredItem }: HeroProps) {
                     priority
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/6 via-transparent to-transparent" />
                   <div className="absolute top-4 right-4">
-                    <span className="text-brand-purple-400/50 text-2xl animate-sparkle-float">✦</span>
+                    <span className="text-brand-purple-400/60 text-2xl animate-sparkle-float">✦</span>
                   </div>
                   <div className="absolute top-4 left-4">
-                    <span className="text-brand-purple-400/40 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
+                    <span className="text-brand-purple-400/50 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-2">
@@ -127,13 +130,19 @@ export default function Hero({ featuredItem }: HeroProps) {
                   </div>
                 </div>
               ) : (
-                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] border border-white/5 bg-white/[0.02] flex items-center justify-center rounded-2xl overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/8 via-transparent to-transparent" />
-                  <div className="text-center space-y-4 relative z-10">
-                    <span className="text-5xl text-brand-purple-400/20 animate-gentle-float inline-block">✦</span>
-                    <p className="text-sm text-gray-600 px-6">
-                      Featured work will appear here once portfolio items are added.
-                    </p>
+                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] border border-brand-purple-500/10 bg-white/[0.02] flex items-center justify-center rounded-2xl overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-brand-purple-500/4 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-brand-purple-500/6 via-transparent to-transparent" />
+                  <div className="text-center space-y-5 relative z-10">
+                    <span className="text-6xl text-brand-purple-400/25 animate-gentle-float inline-block">✦</span>
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-white/60 font-display tracking-widest uppercase">
+                        Featured Work
+                      </p>
+                      <p className="text-sm text-gray-600 max-w-[220px] mx-auto leading-relaxed">
+                        Your latest work will live here once portfolio pieces are added.
+                      </p>
+                    </div>
                   </div>
                 </div>
               )}

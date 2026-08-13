@@ -33,14 +33,17 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
   if (items.length === 0) {
     return (
       <div className="text-center py-24 relative">
-        <div className="space-y-4 relative z-10">
-          <span className="text-4xl text-brand-purple-400/20 animate-sparkle-float inline-block">✦</span>
-          <p className="text-gray-500 text-lg">No portfolio work yet.</p>
-          {isAdmin && (
-            <button className="text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors border border-brand-purple-500/30 rounded-lg px-4 py-2 hover:bg-brand-purple-500/5">
-              Upload Work
-            </button>
-          )}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <div className="w-[400px] h-[400px] bg-brand-purple-500/5 rounded-full blur-[100px]" />
+        </div>
+        <div className="space-y-5 relative z-10">
+          <span className="text-5xl text-brand-purple-400/25 animate-sparkle-float inline-block">✦</span>
+          <p className="text-lg font-semibold text-white/40 font-display tracking-wider uppercase">
+            Featured Work
+          </p>
+          <p className="text-sm text-gray-600 max-w-xs mx-auto leading-relaxed">
+            Your latest work will live here once portfolio pieces are added.
+          </p>
         </div>
       </div>
     );
@@ -58,7 +61,7 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
           <button
             key={item.id}
             onClick={() => openLightbox(index)}
-            className="group relative w-full break-inside-avoid text-left overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-700 hover:border-brand-purple-500/30 hover:shadow-[0_0_30px_rgba(168,85,247,0.08)] mb-4 md:mb-6 artwork-glow"
+            className="group relative w-full break-inside-avoid text-left overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-700 hover:border-brand-purple-500/30 hover:shadow-[0_0_40px_rgba(168,85,247,0.1)] mb-4 md:mb-6 artwork-glow"
           >
             <div className="relative overflow-hidden">
               <img

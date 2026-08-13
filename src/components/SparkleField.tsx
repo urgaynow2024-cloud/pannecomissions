@@ -3,9 +3,22 @@
 import { useEffect, useRef } from "react";
 
 const CHARS = ["✦", "✧", "⋆", "·"];
+const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce", "#ffffff", "#e9d5ff", "#f3e8ff"];
+const GLOW_COLORS = [
+  "rgba(168, 85, 247, 0.35)",
+  "rgba(192, 132, 252, 0.3)",
+  "rgba(216, 180, 254, 0.25)",
+  "rgba(126, 34, 206, 0.3)",
+  "rgba(255, 255, 255, 0.15)",
+  "rgba(233, 213, 255, 0.2)",
+];
 
 function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
+}
+
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 interface SparkleFieldProps {
@@ -55,9 +68,9 @@ export default function SparkleField({
       el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
       el.style.transform = `rotate(${rotation}deg)`;
 
-      if (glow && Math.random() > 0.6) {
+      if (glow && Math.random() > 0.5) {
         el.classList.add("has-glow");
-        el.style.textShadow = `0 0 ${rand(4, 10)}px rgba(168, 85, 247, ${rand(0.2, 0.5).toFixed(2)})`;
+        el.style.textShadow = `0 0 ${rand(4, 12)}px ${pick(GLOW_COLORS)}`;
       }
 
       fragment.appendChild(el);

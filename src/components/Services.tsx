@@ -49,6 +49,10 @@ export default function Services({ services }: ServicesProps) {
 
   return (
     <section className="py-24 md:py-40 relative">
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-[20%] left-[10%] w-[400px] h-[400px] bg-brand-purple-500/5 rounded-full blur-[120px]" style={{ animation: "ambient-pulse 8s ease-in-out infinite" }} />
+        <div className="absolute bottom-[20%] right-[10%] w-[350px] h-[350px] bg-brand-purple-600/4 rounded-full blur-[100px]" style={{ animation: "ambient-pulse 8s ease-in-out infinite 4s" }} />
+      </div>
       <SectionGlow intensity="subtle" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
@@ -72,7 +76,7 @@ export default function Services({ services }: ServicesProps) {
               <ScrollReveal key={service.id} delay={i * 100}>
                 <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center ${!isEven ? "lg:[&>:first-child]:order-2 lg:[&>:last-child]:order-1" : ""}`}>
                   <div className={`lg:col-span-5 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/20 artwork-glow`}>
+                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 hover:shadow-[0_0_40px_rgba(168,85,247,0.08)] artwork-glow`}>
                       {service.image_url ? (
                         <>
                           <img

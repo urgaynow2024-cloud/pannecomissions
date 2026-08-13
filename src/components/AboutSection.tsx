@@ -5,6 +5,9 @@ import ScrollReveal from "./ScrollReveal";
 export default function AboutSection() {
   return (
     <section className="py-24 md:py-40 relative overflow-hidden">
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-[10%] right-[10%] w-[350px] h-[350px] bg-brand-purple-500/5 rounded-full blur-[100px]" style={{ animation: "ambient-pulse 7s ease-in-out infinite" }} />
+      </div>
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
@@ -26,11 +29,11 @@ export default function AboutSection() {
 
             <div className="lg:col-span-7 relative">
               <div className="relative aspect-[4/3] md:aspect-[16/9] rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02]">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/8 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-brand-purple-500/4 to-transparent" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center space-y-4">
-                    <span className="text-6xl animate-gentle-float inline-block">✦</span>
-                    <p className="text-sm text-gray-600 max-w-xs mx-auto">
+                    <span className="text-6xl animate-gentle-float inline-block text-brand-purple-400/20">✦</span>
+                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
                       Real artwork will appear here from the portfolio.
                     </p>
                   </div>

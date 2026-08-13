@@ -42,7 +42,7 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
             {displayItems.map((item, i) => (
               <div
                 key={item.id}
-                className="group relative flex flex-col md:flex-row md:items-baseline justify-between py-8 md:py-10 border-b border-white/5 last:border-b-0 hover:border-brand-purple-500/20 transition-all duration-500 hover:bg-brand-purple-500/[0.02] px-2 -mx-2 rounded-lg"
+                className="group relative flex flex-col md:flex-row md:items-baseline justify-between py-8 md:py-10 border-b border-white/5 last:border-b-0 hover:border-brand-purple-500/25 transition-all duration-500 hover:bg-brand-purple-500/[0.03] px-2 -mx-2 rounded-lg"
               >
                 <div className="flex-1 pr-8">
                   <p className="text-lg md:text-xl font-medium text-white font-display tracking-tight group-hover:text-brand-purple-300 transition-colors">
