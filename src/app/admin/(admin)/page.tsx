@@ -6,6 +6,7 @@ async function getHealth() {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/admin/health`, {
       cache: "no-store",
+      headers: { cookie: "" },
     });
     if (!res.ok) return null;
     return res.json();
@@ -15,7 +16,12 @@ async function getHealth() {
 }
 
 export default async function AdminDashboard() {
-  const health = await getHealth();
+  let health: any = null;
+  try {
+    health = await getHealth();
+  } catch {
+    health = null;
+  }
   const hasSchemaIssue = health?.missing?.length > 0;
 
   try {
