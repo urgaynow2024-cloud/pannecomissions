@@ -38,7 +38,6 @@ export default function Hero({ featuredItem }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
             <div className="relative">
-              <SparkleField count={8} minSize={4} maxSize={12} minOpacity={0.2} maxOpacity={0.6} className="-inset-6" glow />
               <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-purple-500/25 bg-brand-purple-500/8 px-4 py-1.5 backdrop-blur-sm relative z-10">
                 <Sparkles className="h-3.5 w-3.5 text-brand-purple-400" />
                 <span className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em]">
