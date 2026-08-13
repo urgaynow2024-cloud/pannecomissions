@@ -236,6 +236,15 @@ body::after {
   text-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.1);
 }
 
+.text-shadow-white {
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.15), 0 0 60px rgba(255, 255, 255, 0.05);
+}
+
+.heading-pop {
+  text-shadow: 0 0 40px rgba(168, 85, 247, 0.2), 0 0 80px rgba(168, 85, 247, 0.08), 0 2px 4px rgba(0, 0, 0, 0.8);
+  letter-spacing: -0.02em;
+}
+
 .box-shadow-purple {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), 0 0 40px rgba(168, 85, 247, 0.05);
 }
@@ -373,6 +382,8 @@ body::after {
 .btn-glow {
   position: relative;
   overflow: hidden;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .btn-glow::before {
@@ -388,6 +399,11 @@ body::after {
 
 .btn-glow:hover::before {
   opacity: 1;
+}
+
+.btn-glow:active {
+  transform: scale(0.97) translateY(1px);
+  transition: transform 0.1s ease;
 }
 
 .artwork-glow {

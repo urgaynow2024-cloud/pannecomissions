@@ -36,7 +36,7 @@ export default async function ServicesPage() {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-3">
             What I Do
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
             Services
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mt-4">

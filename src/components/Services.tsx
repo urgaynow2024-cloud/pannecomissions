@@ -63,7 +63,7 @@ export default function Services({ services }: ServicesProps) {
               <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
                 What I Do
               </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
                 Services <span className="text-brand-purple-400">✦</span>
               </h2>
             </div>

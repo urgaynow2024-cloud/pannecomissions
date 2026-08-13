@@ -32,7 +32,7 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-3">
                 Kind Words
               </p>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display">
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display heading-pop">
                 Reviews <span className="text-brand-purple-400">✦</span>
               </h2>
             </div>

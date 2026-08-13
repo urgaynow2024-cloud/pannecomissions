@@ -36,7 +36,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link
             href="/"
-            className="text-lg md:text-xl font-bold tracking-tight text-white font-display group flex items-center gap-1"
+            className="text-lg md:text-xl font-bold tracking-tight text-white font-display group flex items-center gap-1 heading-pop"
           >
             PANNE
             <Sparkles className="h-3.5 w-3.5 text-brand-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -73,7 +73,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/commission"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_25px_rgba(147,51,234,0.2)] hover:-translate-y-0.5 btn-glow"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_25px_rgba(147,51,234,0.2)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Commission Me
@@ -137,7 +137,7 @@ export default function Navbar() {
               <Link
                 href="/commission"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-500/15 hover:border-brand-purple-400 transition-all"
+                className="block w-full text-center rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-500/15 hover:border-brand-purple-400 transition-all active:scale-[0.97]"
               >
                 Commission Me
               </Link>

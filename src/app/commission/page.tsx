@@ -34,7 +34,7 @@ export default async function CommissionPage() {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-3">
             Commission
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
             Start a Project
           </h1>
           <p className="text-lg text-gray-400 mt-4">

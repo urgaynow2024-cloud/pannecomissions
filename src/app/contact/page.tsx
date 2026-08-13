@@ -13,7 +13,7 @@ export default function ContactPage() {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-3">
             Contact
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
             Got a Question?
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mt-4">

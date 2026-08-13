@@ -16,7 +16,7 @@ export default function AboutSection() {
               <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em]">
                 About
               </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display leading-[0.95]">
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display leading-[0.95] heading-pop">
                 HEY, I&apos;M PANNE.
                 <span className="text-brand-purple-400"> ✦</span>
               </h2>

@@ -40,10 +40,10 @@ export default function Hero({ featuredItem }: HeroProps) {
             <div className="relative">
               <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.15} maxOpacity={0.4} className="-inset-8" glow />
               <div className="relative z-10 space-y-1">
-                <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative">
+                <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative heading-pop">
                   PANNE
                 </h1>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display heading-pop">
                   VRCHAT AVATAR
                   <br />
                   <span className="text-brand-purple-400">COMMISSIONS</span>
@@ -58,7 +58,7 @@ export default function Hero({ featuredItem }: HeroProps) {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/commission"
-                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_40px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow"
+                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_40px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Commission Me
@@ -67,7 +67,7 @@ export default function Hero({ featuredItem }: HeroProps) {
               </Link>
               <Link
                 href="/portfolio"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.02] px-8 py-4 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-brand-purple-500/40 hover:bg-white/5 hover:text-white hover:-translate-y-0.5"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.02] px-8 py-4 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-brand-purple-500/40 hover:bg-white/5 hover:text-white hover:-translate-y-0.5 active:scale-[0.97] active:translate-y-0"
               >
                 View Portfolio
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
