@@ -31,13 +31,14 @@ export async function POST(request: Request) {
   try {
     await requireAdmin();
     const formData = await request.formData();
-    const title = formData.get("title") as string;
+    let title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const altText = formData.get("altText") as string;
     const file = formData.get("image") as File | null;
 
-    if (!title) {
-      return NextResponse.json({ error: "Title is required" }, { status: 400 });
+    if (!title && file instanceof File) {
+      const fallback = file.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " ");
+      title = fallback.charAt(0).toUpperCase() + fallback.slice(1) || "Untitled Work";
     }
 
     let imageUrl = "";
@@ -55,7 +56,7 @@ export async function POST(request: Request) {
 
     const item = await prisma.PortfolioItem.create({
       data: {
-        title,
+        title: title || "Untitled Work",
         description: description || null,
         alt_text: altText || null,
         image_url: imageUrl,
@@ -75,6 +76,5 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create NSFW portfolio item" }, { status: 500 });
   }
 }
-
 
 
