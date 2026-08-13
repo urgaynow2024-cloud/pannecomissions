@@ -51,7 +51,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
           <div className="flex items-end justify-between mb-10 md:mb-14 relative">
-            <SparkleField count={4} minSize={3} maxSize={8} minOpacity={0.2} maxOpacity={0.5} className="-inset-4" glow />
+            <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.25} maxOpacity={0.55} className="-inset-6" glow />
             <div className="relative z-10">
               <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-3">
                 Selected Work

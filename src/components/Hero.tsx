@@ -37,15 +37,18 @@ export default function Hero({ featuredItem }: HeroProps) {
       <div className="mx-auto max-w-7xl px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
-            <div className="space-y-1 relative">
-              <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative">
-                PANNE
-              </h1>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display">
-                VRCHAT AVATAR
-                <br />
-                <span className="text-brand-purple-400">COMMISSIONS</span>
-              </h2>
+            <div className="relative">
+              <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.15} maxOpacity={0.4} className="-inset-8" glow />
+              <div className="relative z-10 space-y-1">
+                <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative">
+                  PANNE
+                </h1>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display">
+                  VRCHAT AVATAR
+                  <br />
+                  <span className="text-brand-purple-400">COMMISSIONS</span>
+                </h2>
+              </div>
             </div>
 
             <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed relative z-10">

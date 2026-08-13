@@ -1,5 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
 import SectionGlow from "./SectionGlow";
+import SparkleField from "./SparkleField";
 
 interface PricingItem {
   id: string;
@@ -31,13 +32,16 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
       <SectionGlow intensity="subtle" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
-          <div className="mb-16 md:mb-24">
-            <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
-              Rates
-            </p>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-              Pricing <span className="text-brand-purple-400">✦</span>
-            </h2>
+          <div className="mb-16 md:mb-24 relative">
+            <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.2} maxOpacity={0.5} className="-inset-6" glow />
+            <div className="relative z-10">
+              <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
+                Rates
+              </p>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+                Pricing <span className="text-brand-purple-400">✦</span>
+              </h2>
+            </div>
           </div>
         </ScrollReveal>
 

@@ -58,7 +58,7 @@ export default function Services({ services }: ServicesProps) {
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
           <div className="mb-20 md:mb-28 relative">
-            <SparkleField count={4} minSize={3} maxSize={8} minOpacity={0.2} maxOpacity={0.5} className="-inset-4" glow />
+            <SparkleField count={8} minSize={4} maxSize={14} minOpacity={0.25} maxOpacity={0.6} className="-inset-6" glow />
             <div className="relative z-10">
               <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
                 What I Do
