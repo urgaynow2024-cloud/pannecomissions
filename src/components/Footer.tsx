@@ -17,14 +17,18 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
   const displayItems = portfolioItems.slice(0, 6);
 
   return (
-    <footer className="relative border-t border-white/5 bg-brand-dark">
+    <footer className="relative border-t border-white/5 bg-brand-dark overflow-hidden">
+      <div className="absolute inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 left-[30%] w-[300px] h-[200px] bg-brand-purple-500/3 rounded-full blur-[80px]" />
+      </div>
+
       {displayItems.length > 0 && (
         <div className="mx-auto max-w-7xl px-6 pt-10 pb-6">
           <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
             {displayItems.map((item, i) => (
               <div
                 key={i}
-                className="aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/[0.02] opacity-60 hover:opacity-100 transition-opacity duration-300"
+                className="aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/[0.02] opacity-50 hover:opacity-100 transition-opacity duration-300 hover:border-brand-purple-500/20"
               >
                 <img
                   src={item.image_url}
@@ -43,7 +47,7 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
           <div className="text-center md:text-left">
             <Link href="/" className="inline-block text-xl font-bold tracking-tight text-white font-display group">
               PANNE
-              <span className="text-brand-purple-400 group-hover:text-brand-purple-300 transition-colors duration-300">
+              <span className="text-brand-purple-400 group-hover:text-brand-purple-300 transition-colors duration-300 animate-sparkle-float inline-block">
                 {" "}✦
               </span>
             </Link>
@@ -71,11 +75,11 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
           </p>
           <Link
             href="/commission"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-purple-500 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_20px_rgba(147,51,234,0.25)]"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-purple-500 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_25px_rgba(147,51,234,0.3)] hover:-translate-y-0.5"
           >
             <span className="relative z-10 flex items-center gap-2">
               Commission Me
-              <span className="text-brand-purple-200 text-xs">✦</span>
+              <span className="text-brand-purple-200 text-xs animate-sparkle-float inline-block">✦</span>
             </span>
           </Link>
         </div>

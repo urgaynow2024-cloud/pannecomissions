@@ -1,5 +1,7 @@
 import Link from "next/link";
 import ScrollReveal from "./ScrollReveal";
+import SectionGlow from "./SectionGlow";
+import SparkleField from "./SparkleField";
 
 interface Service {
   id: string;
@@ -25,9 +27,9 @@ const ASPECTS = ["aspect-[4/5]", "aspect-square", "aspect-[3/4]", "aspect-[4/3]"
 function ServiceImageFallback({ name, index }: { name: string; index: number }) {
   return (
     <div className={`relative w-full ${ASPECTS[index % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] group`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-brand-purple-500/5 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/12 via-brand-purple-500/6 to-transparent" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <span className="text-brand-purple-400/30 text-3xl animate-sparkle-float">✦</span>
+        <span className="text-brand-purple-400/25 text-3xl animate-sparkle-float">✦</span>
         <p className="text-sm font-medium text-gray-500 text-center px-6 font-display tracking-wide">
           {name}
         </p>
@@ -47,15 +49,19 @@ export default function Services({ services }: ServicesProps) {
 
   return (
     <section className="py-24 md:py-40 relative">
-      <div className="mx-auto max-w-7xl px-6">
+      <SectionGlow intensity="subtle" />
+      <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
-          <div className="mb-20 md:mb-28">
-            <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
-              What I Do
-            </p>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-              Services
-            </h2>
+          <div className="mb-20 md:mb-28 relative">
+            <SparkleField count={4} minSize={3} maxSize={8} minOpacity={0.2} maxOpacity={0.5} className="-inset-4" glow />
+            <div className="relative z-10">
+              <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
+                What I Do
+              </p>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+                Services <span className="text-brand-purple-400">✦</span>
+              </h2>
+            </div>
           </div>
         </ScrollReveal>
 
@@ -66,7 +72,7 @@ export default function Services({ services }: ServicesProps) {
               <ScrollReveal key={service.id} delay={i * 100}>
                 <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center ${!isEven ? "lg:[&>:first-child]:order-2 lg:[&>:last-child]:order-1" : ""}`}>
                   <div className={`lg:col-span-5 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/20`}>
+                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/20 artwork-glow`}>
                       {service.image_url ? (
                         <>
                           <img

@@ -1,4 +1,6 @@
 import ScrollReveal from "./ScrollReveal";
+import SectionGlow from "./SectionGlow";
+import SparkleField from "./SparkleField";
 import Sparkle from "./Sparkle";
 
 const steps = [
@@ -32,15 +34,19 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="py-24 md:py-40 relative">
-      <div className="mx-auto max-w-7xl px-6">
+      <SectionGlow intensity="subtle" />
+      <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
-          <div className="mb-16 md:mb-24 text-center">
-            <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
-              The Process
-            </p>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-              How It Works
-            </h2>
+          <div className="mb-16 md:mb-24 text-center relative">
+            <SparkleField count={4} minSize={3} maxSize={8} minOpacity={0.2} maxOpacity={0.5} className="-inset-4" glow />
+            <div className="relative z-10">
+              <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
+                The Process
+              </p>
+              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+                How It Works <span className="text-brand-purple-400">✦</span>
+              </h2>
+            </div>
           </div>
         </ScrollReveal>
 

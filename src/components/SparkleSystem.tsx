@@ -2,17 +2,33 @@
 
 import { useEffect, useRef } from "react";
 
-const SPARKLE_COUNT = 25;
-const SPARKLE_CHARS = ["✦", "✧", "⋆"];
-const TINTS = ["#a855f7", "#c084fc", "#7e22ce"];
+const CHARS = ["✦", "✧", "⋆", "·"];
+const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce"];
 
-function random(min: number, max: number) {
+function rand(min: number, max: number) {
   return min + Math.random() * (max - min);
 }
 
 function pick<T>(arr: T[]): T {
   return arr[Math.floor(Math.random() * arr.length)];
 }
+
+interface Layer {
+  count: number;
+  minSize: number;
+  maxSize: number;
+  minOpacity: number;
+  maxOpacity: number;
+  minDuration: number;
+  maxDuration: number;
+  zIndex: number;
+}
+
+const LAYERS: Layer[] = [
+  { count: 12, minSize: 4, maxSize: 10, minOpacity: 0.04, maxOpacity: 0.12, minDuration: 8, maxDuration: 16, zIndex: 0 },
+  { count: 8, minSize: 6, maxSize: 14, minOpacity: 0.08, maxOpacity: 0.22, minDuration: 5, maxDuration: 10, zIndex: 1 },
+  { count: 5, minSize: 8, maxSize: 18, minOpacity: 0.12, maxOpacity: 0.32, minDuration: 3, maxDuration: 7, zIndex: 2 },
+];
 
 export default function SparkleSystem() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -23,82 +39,51 @@ export default function SparkleSystem() {
 
     const fragment = document.createDocumentFragment();
 
-    for (let i = 0; i < SPARKLE_COUNT; i++) {
-      const el = document.createElement("span");
-      el.setAttribute("aria-hidden", "true");
+    LAYERS.forEach((layer) => {
+      for (let i = 0; i < layer.count; i++) {
+        const el = document.createElement("span");
+        el.setAttribute("aria-hidden", "true");
 
-      const size = Math.random() < 0.7 ? random(8, 12) : random(12, 18);
-      const opacity = random(0.08, 0.2);
-      const duration = random(5, 10);
-      const delay = random(0, 6);
-      const hasGlow = Math.random() > 0.75;
+        const size = rand(layer.minSize, layer.maxSize);
+        const opacity = rand(layer.minOpacity, layer.maxOpacity);
+        const duration = rand(layer.minDuration, layer.maxDuration);
+        const delay = rand(0, layer.maxDuration);
+        const hasGlow = Math.random() > 0.7;
+        const top = rand(0, 100);
+        const left = rand(0, 100);
+        const rotation = rand(0, 360);
 
-      el.textContent = pick(SPARKLE_CHARS);
-      el.style.left = `${random(0, 100)}%`;
-      el.style.top = `${random(0, 100)}%`;
-      el.style.fontSize = `${size}px`;
-      el.style.color = pick(TINTS);
-      el.style.setProperty("--duration", `${duration.toFixed(2)}s`);
-      el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
-      el.style.setProperty("--base-opacity", String(opacity));
+        el.textContent = pick(CHARS);
+        el.style.top = `${top}%`;
+        el.style.left = `${left}%`;
+        el.style.fontSize = `${size}px`;
+        el.style.color = pick(TINTS);
+        el.style.zIndex = String(layer.zIndex);
+        el.style.setProperty("--base-opacity", String(opacity));
+        el.style.setProperty("--duration", `${duration.toFixed(2)}s`);
+        el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
+        el.style.transform = `rotate(${rotation}deg)`;
 
-      if (hasGlow) {
-        el.style.textShadow = "0 0 8px rgba(168, 85, 247, 0.35)";
+        if (hasGlow) {
+          el.style.textShadow = `0 0 ${rand(5, 12)}px rgba(168, 85, 247, ${rand(0.25, 0.5).toFixed(2)})`;
+        }
+
+        fragment.appendChild(el);
       }
-
-      fragment.appendChild(el);
-    }
+    });
 
     container.appendChild(fragment);
+
+    return () => {
+      container.innerHTML = "";
+    };
   }, []);
 
   return (
-    <>
-      <div ref={containerRef} aria-hidden="true" />
-      <style>{css}</style>
-    </>
+    <div
+      ref={containerRef}
+      className="sparkle-system"
+      aria-hidden="true"
+    />
   );
 }
-
-const css = `
-  .sparkle-system {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    overflow: hidden;
-  }
-
-  .sparkle {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    line-height: 1;
-    opacity: var(--base-opacity, 0.15);
-    animation: sparkle-float var(--duration, 7s) ease-in-out var(--delay, 0s) infinite;
-    transform: translate3d(0, 0, 0);
-  }
-
-  @keyframes sparkle-float {
-    0%, 100% {
-      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-      opacity: var(--base-opacity, 0.15);
-    }
-    33% {
-      transform: translate3d(4px, -8px, 0) rotate(30deg) scale(1.05);
-      opacity: calc(var(--base-opacity, 0.15) * 1.4);
-    }
-    66% {
-      transform: translate3d(-3px, -12px, 0) rotate(-15deg) scale(0.95);
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .sparkle {
-      animation: none;
-      display: none;
-    }
-  }
-`;

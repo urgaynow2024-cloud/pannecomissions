@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParallax } from "./ScrollReveal";
 import { ArrowRight, Sparkles } from "lucide-react";
+import SparkleField from "./SparkleField";
 
 interface PortfolioItem {
   id: string;
@@ -16,8 +17,8 @@ interface HeroProps {
 }
 
 export default function Hero({ featuredItem }: HeroProps) {
-  const { ref: bgRef, transform: bgTransform } = useParallax(0.12);
-  const { ref: imgRef, transform: imgTransform } = useParallax(0.06);
+  const { ref: bgRef, transform: bgTransform } = useParallax(0.1);
+  const { ref: imgRef, transform: imgTransform } = useParallax(0.05);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12">
@@ -26,44 +27,58 @@ export default function Hero({ featuredItem }: HeroProps) {
         className="absolute inset-0 -z-10"
         style={{ transform: bgTransform }}
       >
-        <div className="absolute top-[15%] left-[10%] w-[500px] h-[500px] bg-brand-purple-500/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite" }} />
-        <div className="absolute bottom-[20%] right-[15%] w-[400px] h-[400px] bg-brand-purple-600/4 rounded-full blur-[120px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 2s" }} />
-        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-purple-500/3 rounded-full blur-[160px]" />
+        <div className="absolute top-[10%] left-[5%] w-[500px] h-[500px] bg-brand-purple-500/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite" }} />
+        <div className="absolute bottom-[15%] right-[10%] w-[400px] h-[400px] bg-brand-purple-600/6 rounded-full blur-[120px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 2s" }} />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] bg-brand-purple-500/4 rounded-full blur-[180px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
-            <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-purple-500/20 bg-brand-purple-500/5 px-4 py-1.5 backdrop-blur-sm">
-              <Sparkles className="h-3.5 w-3.5 text-brand-purple-400" />
-              <span className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em]">
-                VRChat Avatar Creator
-              </span>
+            <div className="relative">
+              <SparkleField count={8} minSize={4} maxSize={12} minOpacity={0.2} maxOpacity={0.6} className="-inset-6" glow />
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-purple-500/25 bg-brand-purple-500/8 px-4 py-1.5 backdrop-blur-sm relative z-10">
+                <Sparkles className="h-3.5 w-3.5 text-brand-purple-400" />
+                <span className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em]">
+                  VRChat Avatar Creator
+                </span>
+              </div>
             </div>
 
-            <div className="space-y-1">
-              <h1 className="text-6xl md:text-7xl lg:text-[6.5rem] font-bold tracking-tighter text-white leading-[0.9] font-display">
+            <div className="space-y-1 relative">
+              <div className="absolute -inset-4 -z-10">
+                <div className="absolute top-0 right-0">
+                  <span className="text-brand-purple-400/30 text-2xl animate-sparkle-float heading-sparkle">✦</span>
+                </div>
+                <div className="absolute bottom-0 left-0">
+                  <span className="text-brand-purple-400/25 text-xl animate-sparkle-float heading-sparkle" style={{ animationDelay: "-2s" }}>✧</span>
+                </div>
+              </div>
+              <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative">
                 PANNE
               </h1>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display">
                 VRCHAT AVATAR
                 <br />
-                <span className="text-brand-purple-400">COMMISSIONS</span>
+                <span className="text-brand-purple-400 relative">
+                  COMMISSIONS
+                  <span className="absolute -right-6 top-0 text-brand-purple-400/40 text-xl animate-sparkle-pulse heading-sparkle">✦</span>
+                </span>
               </h2>
             </div>
 
-            <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed">
+            <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed relative z-10">
               Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/commission"
-                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_35px_rgba(147,51,234,0.3)] hover:-translate-y-0.5"
+                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_40px_rgba(147,51,234,0.35)] hover:-translate-y-0.5 btn-glow"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Commission Me
-                  <span className="text-brand-purple-200 text-sm">✦</span>
+                  <span className="text-brand-purple-200 text-sm animate-sparkle-float inline-block" style={{ animationDuration: "3s" }}>✦</span>
                 </span>
               </Link>
               <Link
@@ -82,10 +97,12 @@ export default function Hero({ featuredItem }: HeroProps) {
             style={{ transform: imgTransform }}
           >
             <div className="relative lg:-mr-8 xl:-mr-16">
-              <div className="absolute -inset-4 bg-gradient-to-br from-brand-purple-500/10 via-brand-purple-500/5 to-transparent rounded-3xl blur-2xl" />
+              <div className="absolute -inset-6 bg-gradient-to-br from-brand-purple-500/12 via-brand-purple-500/6 to-transparent rounded-3xl blur-2xl" />
+
+              <SparkleField count={6} minSize={3} maxSize={10} minOpacity={0.15} maxOpacity={0.4} className="absolute inset-0 z-20 pointer-events-none" glow />
 
               {featuredItem ? (
-                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-white/5 shadow-2xl">
+                <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-white/5 shadow-2xl artwork-glow">
                   <Image
                     src={featuredItem.image_url}
                     alt={featuredItem.title}
@@ -95,12 +112,12 @@ export default function Hero({ featuredItem }: HeroProps) {
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/5 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent" />
                   <div className="absolute top-4 right-4">
-                    <span className="text-brand-purple-400/40 text-2xl animate-sparkle-float">✦</span>
+                    <span className="text-brand-purple-400/50 text-2xl animate-sparkle-float">✦</span>
                   </div>
                   <div className="absolute top-4 left-4">
-                    <span className="text-brand-purple-400/30 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
+                    <span className="text-brand-purple-400/40 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
                   </div>
                   <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
                     <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-2">

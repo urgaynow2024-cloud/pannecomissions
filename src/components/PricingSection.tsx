@@ -1,4 +1,5 @@
 import ScrollReveal from "./ScrollReveal";
+import SectionGlow from "./SectionGlow";
 
 interface PricingItem {
   id: string;
@@ -23,14 +24,15 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
 
   return (
     <section className="py-24 md:py-40 relative">
-      <div className="mx-auto max-w-7xl px-6">
+      <SectionGlow intensity="subtle" />
+      <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
           <div className="mb-16 md:mb-24">
             <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
               Rates
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-              Pricing
+              Pricing <span className="text-brand-purple-400">✦</span>
             </h2>
           </div>
         </ScrollReveal>
@@ -40,10 +42,10 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
             {displayItems.map((item, i) => (
               <div
                 key={item.id}
-                className="group relative flex flex-col md:flex-row md:items-baseline justify-between py-8 md:py-10 border-b border-white/5 last:border-b-0 hover:border-brand-purple-500/20 transition-colors duration-500"
+                className="group relative flex flex-col md:flex-row md:items-baseline justify-between py-8 md:py-10 border-b border-white/5 last:border-b-0 hover:border-brand-purple-500/20 transition-all duration-500 hover:bg-brand-purple-500/[0.02] px-2 -mx-2 rounded-lg"
               >
                 <div className="flex-1 pr-8">
-                  <p className="text-lg md:text-xl font-medium text-white font-display tracking-tight">
+                  <p className="text-lg md:text-xl font-medium text-white font-display tracking-tight group-hover:text-brand-purple-300 transition-colors">
                     {item.name}
                   </p>
                   <p className="text-xs text-gray-600 mt-1">
@@ -51,7 +53,7 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
                   </p>
                 </div>
                 <div className="mt-3 md:mt-0 md:text-right flex-shrink-0">
-                  <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-white font-display tracking-tight">
+                  <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-white font-display tracking-tight group-hover:text-brand-purple-300 transition-colors">
                     {item.min_price !== null && item.max_price !== null
                       ? `$${item.min_price}–$${item.max_price}`
                       : "Custom"}

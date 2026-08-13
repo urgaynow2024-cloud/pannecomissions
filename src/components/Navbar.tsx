@@ -1,8 +1,8 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { Menu, X, Sparkles, ArrowRight } from "lucide-react";
 import AvailabilityIndicator from "./AvailabilityIndicator";
 
@@ -73,11 +73,11 @@ export default function Navbar() {
             </Link>
             <Link
               href="/commission"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-purple-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_25px_rgba(147,51,234,0.25)] hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-brand-purple-500 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_25px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Commission Me
-                <span className="text-brand-purple-200 text-xs">✦</span>
+                <span className="text-brand-purple-200 text-xs animate-sparkle-float inline-block">✦</span>
               </span>
             </Link>
             <AvailabilityIndicator />

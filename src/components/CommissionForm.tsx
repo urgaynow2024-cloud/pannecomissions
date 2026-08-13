@@ -324,30 +324,34 @@ export default function CommissionForm({ services }: CommissionFormProps) {
           <button
             type="button"
             onClick={nextStep}
-            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20"
+            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20 hover:-translate-y-0.5 btn-glow"
           >
-            Next
-            <svg
-              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
+            <span className="relative z-10 flex items-center gap-2">
+              Next
+              <svg
+                className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
           </button>
         ) : (
           <button
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed btn-glow"
           >
             {loading ? "Sending..." : (
               <>
-                Send Commission
-                <span className="text-brand-purple-200">✦</span>
+                <span className="relative z-10 flex items-center gap-2">
+                  Send Commission
+                  <span className="text-brand-purple-200 animate-sparkle-float inline-block" style={{ animationDuration: "2.5s" }}>✦</span>
+                </span>
               </>
             )}
           </button>
