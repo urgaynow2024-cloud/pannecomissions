@@ -125,6 +125,8 @@ CREATE INDEX IF NOT EXISTS idx_photos_portfolio_item ON photos(portfolio_item_id
 CREATE INDEX IF NOT EXISTS idx_photos_service ON photos(service_id);
 CREATE INDEX IF NOT EXISTS idx_photos_review ON photos(review_id);
 
+ALTER TABLE photos ENABLE ROW LEVEL SECURITY;
+
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'alt_text') THEN
