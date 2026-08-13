@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { createClient } from "@supabase/supabase-js";
 
 async function requireAdmin() {
   const admin = await verifySession();
@@ -32,26 +33,25 @@ export async function GET() {
     }
 
     try {
-      await prisma.$queryRaw`SELECT 1 FROM portfolio_items LIMIT 1`;
-      checks.portfolio_items = true;
+      const supabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_SERVICE_ROLE_KEY!
+      );
+      const { data, error } = await supabase.storage.from("pannecomissions").list("", { limit: 1 });
+      checks.storage_bucket = !error;
+      if (error) {
+        missing.push(`storage bucket 'pannecomissions' (error: ${error.message})`);
+      }
     } catch {
-      checks.portfolio_items = false;
-      missing.push("portfolio_items table");
-    }
-
-    try {
-      await prisma.$queryRaw`SELECT 1 FROM services LIMIT 1`;
-      checks.services = true;
-    } catch {
-      checks.services = false;
-      missing.push("services table");
+      checks.storage_bucket = false;
+      missing.push("storage bucket 'pannecomissions'");
     }
 
     return NextResponse.json({
       ok: missing.length === 0,
       checks,
       missing,
-      fix: missing.length > 0 ? "Run supabase/schema.sql in Supabase SQL Editor" : null,
+      fix: missing.length > 0 ? "Check each item below and fix in Supabase" : null,
     });
   } catch {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
