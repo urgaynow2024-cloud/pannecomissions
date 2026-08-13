@@ -1,6 +1,5 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import SparkleSystem from "@/components/SparkleSystem";
 import NoiseOverlay from "@/components/NoiseOverlay";
 import CommissionForm from "@/components/CommissionForm";
 import prisma from "@/lib/prisma";
@@ -28,7 +27,6 @@ export default async function CommissionPage() {
 
   return (
     <main className="min-h-screen bg-brand-black text-white antialiased relative">
-      <SparkleSystem />
       <NoiseOverlay />
       <Navbar />
       <div className="mx-auto max-w-7xl px-6 pt-32 md:pt-40 pb-20 md:pb-32">

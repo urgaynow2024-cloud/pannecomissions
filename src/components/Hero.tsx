@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useParallax } from "./ScrollReveal";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import SparkleField from "./SparkleField";
 
 interface PortfolioItem {
@@ -38,24 +38,13 @@ export default function Hero({ featuredItem }: HeroProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
             <div className="space-y-1 relative">
-              <div className="absolute -inset-4">
-                <div className="absolute top-0 right-0">
-                  <span className="text-brand-purple-400/30 text-2xl animate-sparkle-float heading-sparkle">✦</span>
-                </div>
-                <div className="absolute bottom-0 left-0">
-                  <span className="text-brand-purple-400/25 text-xl animate-sparkle-float heading-sparkle" style={{ animationDelay: "-2s" }}>✧</span>
-                </div>
-              </div>
               <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative">
                 PANNE
               </h1>
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display">
                 VRCHAT AVATAR
                 <br />
-                <span className="text-brand-purple-400 relative">
-                  COMMISSIONS
-                  <span className="absolute -right-6 top-0 text-brand-purple-400/40 text-xl animate-sparkle-pulse heading-sparkle">✦</span>
-                </span>
+                <span className="text-brand-purple-400">COMMISSIONS</span>
               </h2>
             </div>
 
