@@ -39,11 +39,6 @@ export async function POST(request: Request) {
     const featured = formData.get("featured") === "true";
     const file = formData.get("image") as File | null;
 
-    if (!title && file instanceof File) {
-      const fallback = file.name.replace(/\.[^.]+$/, "").replace(/[_-]/g, " ");
-      title = fallback.charAt(0).toUpperCase() + fallback.slice(1) || "Untitled Work";
-    }
-
     let imageUrl = "";
     if (file && file.size > 0) {
       if (!file.type.startsWith("image/")) {
@@ -59,7 +54,7 @@ export async function POST(request: Request) {
 
     const item = await prisma.PortfolioItem.create({
       data: {
-        title: title || "Untitled Work",
+        title: title || null,
         description: description || null,
         alt_text: altText || null,
         image_url: imageUrl,

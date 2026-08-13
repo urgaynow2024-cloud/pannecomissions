@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS portfolio_items (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  title TEXT NOT NULL,
+  title TEXT,
   description TEXT,
   alt_text TEXT,
   image_url TEXT NOT NULL,

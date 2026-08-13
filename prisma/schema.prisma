@@ -9,7 +9,7 @@ datasource db {
 
 model PortfolioItem {
   id          String    @id @default(cuid())
-  title       String
+  title       String?
   description String?
   alt_text    String?
   image_url   String
