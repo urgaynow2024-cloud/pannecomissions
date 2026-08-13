@@ -11,6 +11,7 @@ interface PortfolioItem {
   featured: boolean;
   visible: boolean;
   sort_order: number;
+  photos: { id: string; url: string; alt_text: string | null; sort_order: number }[];
 }
 
 interface UploadQueueItem {
@@ -62,9 +63,11 @@ export default function PortfolioPage() {
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropInputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchItems();
@@ -169,6 +172,37 @@ export default function PortfolioPage() {
     if (res.ok) {
       setItems(items.filter((i) => i.id !== id));
       setDeleteId(null);
+    }
+  }
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || !editingId) return;
+
+    setPhotoUploading(true);
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) continue;
+      const fd = new FormData();
+      fd.append("image", file);
+      fd.append("altText", "");
+      fd.append("portfolioItemId", editingId);
+
+      try {
+        await fetch("/api/admin/photos", { method: "POST", body: fd });
+      } catch {
+        console.error("Photo upload failed");
+      }
+    }
+
+    await fetchItems();
+    setPhotoUploading(false);
+    e.target.value = "";
+  }
+
+  async function handlePhotoDelete(photoId: string) {
+    const res = await fetch(`/api/admin/photos/${photoId}`, { method: "DELETE" });
+    if (res.ok && editingId) {
+      setItems(items.map((item) => item.id === editingId ? { ...item, photos: item.photos.filter((p) => p.id !== photoId) } : item));
     }
   }
 
@@ -356,6 +390,34 @@ export default function PortfolioPage() {
               <span className="text-sm text-gray-300">Featured</span>
             </label>
           </div>
+          {editingId && (() => {
+            const item = items.find((i) => i.id === editingId);
+            if (!item) return null;
+            return (
+              <div className="pt-4 border-t border-white/5">
+                <p className="text-sm font-medium text-gray-300 mb-3">Additional Photos</p>
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 mb-3">
+                  {item.photos?.map((photo) => (
+                    <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/5 group">
+                      <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                      <button onClick={() => handlePhotoDelete(photo.id)} className="absolute top-1 right-1 p-1 rounded bg-black/60 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <label className="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-dashed border-white/10 px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-white/20 transition-colors">
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                  </svg>
+                  {photoUploading ? "Uploading..." : "Add Photos"}
+                  <input ref={photoInputRef} type="file" accept=".png,.jpg,.jpeg,.webp" multiple className="hidden" onChange={handlePhotoUpload} />
+                </label>
+              </div>
+            );
+          })()}
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
               {saving ? "Saving..." : "Save"}
