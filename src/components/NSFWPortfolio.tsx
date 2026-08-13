@@ -8,6 +8,7 @@ interface PortfolioItem {
   display_title: string | null;
   description?: string | null;
   image_url: string;
+  category?: string | null;
 }
 
 interface NSFWPortfolioProps {
@@ -61,6 +62,11 @@ export default function NSFWPortfolio({ items }: NSFWPortfolioProps) {
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+              {item.category && (
+                <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
+                  {item.category}
+                </p>
+              )}
               {item.description && (
                 <p className="mt-1.5 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}

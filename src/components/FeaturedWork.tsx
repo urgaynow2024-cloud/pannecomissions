@@ -77,12 +77,16 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                 onClick={() => openLightbox(0)}
                  className="group relative lg:col-span-7 aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
               >
-                <img
-                  src={items[0].image_url}
-                   alt="Artwork"
-                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                   loading="lazy"
-                 />
+                 <img
+                   src={items[0].image_url}
+                    alt="Artwork"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    loading="lazy"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src =
+                        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                    }}
+                  />
                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                  <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 via-brand-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                  <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -98,12 +102,16 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                      onClick={() => openLightbox(i + 1)}
                      className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
                    >
-                     <img
-                       src={item.image_url}
-                       alt="Artwork"
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                      <img
+                        src={item.image_url}
+                        alt="Artwork"
+                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                       loading="lazy"
+                       onError={(e) => {
+                         (e.target as HTMLImageElement).src =
+                           "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                       }}
+                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
@@ -128,9 +136,13 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                    <img
                      src={item.image_url}
                      alt="Artwork"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    loading="lazy"
-                  />
+                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                     loading="lazy"
+                     onError={(e) => {
+                       (e.target as HTMLImageElement).src =
+                         "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                     }}
+                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </button>

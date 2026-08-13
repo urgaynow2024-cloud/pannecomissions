@@ -8,6 +8,7 @@ interface PortfolioItem {
   display_title: string | null;
   description?: string | null;
   image_url: string;
+  category?: string | null;
 }
 
 interface PortfolioProps {
@@ -73,6 +74,10 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
                 alt="Portfolio artwork"
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 loading="lazy"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
               <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 via-brand-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -81,6 +86,11 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
               </div>
             </div>
             <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
+              {item.category && (
+                <span className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
+                  {item.category}
+                </span>
+              )}
               {item.description && (
                 <p className="mt-1.5 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}

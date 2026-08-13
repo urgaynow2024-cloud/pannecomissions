@@ -241,6 +241,14 @@ export default function NSFWPortfolioPage() {
     setFormData({ displayTitle: "", description: "", category: "", visible: true });
   }
 
+  const CATEGORIES = [
+    "Clothing Add-ons",
+    "Complete Avatars",
+    "Toggles",
+    "Custom Textures",
+    "Models",
+  ];
+
   function removeFromQueue(id: string) {
     setUploadQueue((prev) => {
       const item = prev.find((q) => q.id === id);
@@ -366,7 +374,16 @@ export default function NSFWPortfolioPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Category <span className="text-gray-500 text-xs">(optional)</span></label>
-            <input value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="e.g. Avatar, Outfit, Texture" />
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
+            >
+              <option value="">No category</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
