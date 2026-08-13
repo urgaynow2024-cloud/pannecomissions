@@ -37,15 +37,6 @@ export default function Hero({ featuredItem }: HeroProps) {
       <div className="mx-auto max-w-7xl px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
-            <div className="relative">
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-brand-purple-500/25 bg-brand-purple-500/8 px-4 py-1.5 backdrop-blur-sm relative z-10">
-                <Sparkles className="h-3.5 w-3.5 text-brand-purple-400" />
-                <span className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em]">
-                  VRChat Avatar Creator
-                </span>
-              </div>
-            </div>
-
             <div className="space-y-1 relative">
               <div className="absolute -inset-4">
                 <div className="absolute top-0 right-0">

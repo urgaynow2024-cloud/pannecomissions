@@ -35,8 +35,8 @@ export default function SparkleField({
   count = 10,
   minSize = 6,
   maxSize = 18,
-  minOpacity = 0.08,
-  maxOpacity = 0.35,
+  minOpacity = 0.15,
+  maxOpacity = 0.45,
   className = "",
   glow = true,
 }: SparkleFieldProps) {
@@ -68,9 +68,9 @@ export default function SparkleField({
       el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
       el.style.transform = `rotate(${rotation}deg)`;
 
-      if (glow && Math.random() > 0.5) {
+      if (glow && Math.random() > 0.4) {
         el.classList.add("has-glow");
-        el.style.textShadow = `0 0 ${rand(4, 12)}px ${pick(GLOW_COLORS)}`;
+        el.style.textShadow = `0 0 ${rand(6, 14)}px ${pick(GLOW_COLORS)}`;
       }
 
       fragment.appendChild(el);

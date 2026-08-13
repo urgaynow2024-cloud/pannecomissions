@@ -33,9 +33,9 @@ interface Layer {
 }
 
 const LAYERS: Layer[] = [
-  { count: 12, minSize: 4, maxSize: 10, minOpacity: 0.04, maxOpacity: 0.12, minDuration: 8, maxDuration: 16, zIndex: 0 },
-  { count: 8, minSize: 6, maxSize: 14, minOpacity: 0.08, maxOpacity: 0.22, minDuration: 5, maxDuration: 10, zIndex: 1 },
-  { count: 5, minSize: 8, maxSize: 18, minOpacity: 0.12, maxOpacity: 0.32, minDuration: 3, maxDuration: 7, zIndex: 2 },
+  { count: 15, minSize: 4, maxSize: 10, minOpacity: 0.1, maxOpacity: 0.25, minDuration: 8, maxDuration: 16, zIndex: 0 },
+  { count: 10, minSize: 6, maxSize: 14, minOpacity: 0.18, maxOpacity: 0.4, minDuration: 5, maxDuration: 10, zIndex: 1 },
+  { count: 6, minSize: 8, maxSize: 18, minOpacity: 0.28, maxOpacity: 0.55, minDuration: 3, maxDuration: 7, zIndex: 2 },
 ];
 
 export default function SparkleSystem() {
@@ -56,7 +56,7 @@ export default function SparkleSystem() {
         const opacity = rand(layer.minOpacity, layer.maxOpacity);
         const duration = rand(layer.minDuration, layer.maxDuration);
         const delay = rand(0, layer.maxDuration);
-        const hasGlow = Math.random() > 0.7;
+        const hasGlow = Math.random() > 0.5;
         const top = rand(0, 100);
         const left = rand(0, 100);
         const rotation = rand(0, 360);
@@ -73,7 +73,7 @@ export default function SparkleSystem() {
         el.style.transform = `rotate(${rotation}deg)`;
 
         if (hasGlow) {
-          el.style.textShadow = `0 0 ${rand(5, 14)}px ${pick(GLOW_COLORS)}`;
+          el.style.textShadow = `0 0 ${rand(8, 18)}px ${pick(GLOW_COLORS)}`;
         }
 
         fragment.appendChild(el);
