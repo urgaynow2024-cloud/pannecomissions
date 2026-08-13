@@ -5,7 +5,9 @@ import NoiseOverlay from "@/components/NoiseOverlay";
 import Hero from "@/components/Hero";
 import FeaturedWork from "@/components/FeaturedWork";
 import Services from "@/components/Services";
+import AboutSection from "@/components/AboutSection";
 import HowItWorks from "@/components/HowItWorks";
+import HorizontalStrip from "@/components/HorizontalStrip";
 import PricingSection from "@/components/PricingSection";
 import ReviewsSection from "@/components/ReviewsSection";
 import FinalCTA from "@/components/FinalCTA";
@@ -41,13 +43,15 @@ export default async function Home() {
       <NoiseOverlay />
       <Navbar />
       <Hero featuredItem={featured} />
+      <HorizontalStrip />
       <FeaturedWork items={featuredWork} />
       <Services services={services} />
+      <AboutSection />
       <HowItWorks />
       <PricingSection pricing={pricing} />
       <ReviewsSection reviews={reviews} />
       <FinalCTA />
-      <Footer />
+      <Footer portfolioItems={portfolio.slice(0, 6)} />
     </main>
   );
 }

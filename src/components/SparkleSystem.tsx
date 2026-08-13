@@ -2,9 +2,9 @@
 
 import { useEffect, useRef } from "react";
 
-const SPARKLE_COUNT = 40;
+const SPARKLE_COUNT = 25;
 const SPARKLE_CHARS = ["✦", "✧", "⋆"];
-const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce"];
+const TINTS = ["#a855f7", "#c084fc", "#7e22ce"];
 
 function random(min: number, max: number) {
   return min + Math.random() * (max - min);
@@ -25,14 +25,13 @@ export default function SparkleSystem() {
 
     for (let i = 0; i < SPARKLE_COUNT; i++) {
       const el = document.createElement("span");
-      el.className = "sparkle";
       el.setAttribute("aria-hidden", "true");
 
-      const size = Math.random() < 0.65 ? random(8, 14) : random(14, 20);
-      const opacity = Math.random() < 0.7 ? random(0.1, 0.3) : random(0.3, 0.6);
-      const duration = random(4, 12);
-      const delay = random(0, 8);
-      const hasGlow = Math.random() > 0.65;
+      const size = Math.random() < 0.7 ? random(8, 12) : random(12, 18);
+      const opacity = random(0.08, 0.2);
+      const duration = random(5, 10);
+      const delay = random(0, 6);
+      const hasGlow = Math.random() > 0.75;
 
       el.textContent = pick(SPARKLE_CHARS);
       el.style.left = `${random(0, 100)}%`;
@@ -44,7 +43,7 @@ export default function SparkleSystem() {
       el.style.setProperty("--base-opacity", String(opacity));
 
       if (hasGlow) {
-        el.style.textShadow = "0 0 6px rgba(168, 85, 247, 0.45)";
+        el.style.textShadow = "0 0 8px rgba(168, 85, 247, 0.35)";
       }
 
       fragment.appendChild(el);
@@ -55,7 +54,7 @@ export default function SparkleSystem() {
 
   return (
     <>
-      <div ref={containerRef} className="sparkle-system" aria-hidden="true" />
+      <div ref={containerRef} aria-hidden="true" />
       <style>{css}</style>
     </>
   );
@@ -77,27 +76,29 @@ const css = `
     display: block;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     line-height: 1;
-    opacity: var(--base-opacity, 0.3);
-    animation: sparkle-drift var(--duration, 8s) ease-in-out var(--delay, 0s) infinite;
+    opacity: var(--base-opacity, 0.15);
+    animation: sparkle-float var(--duration, 7s) ease-in-out var(--delay, 0s) infinite;
     transform: translate3d(0, 0, 0);
   }
 
-  @keyframes sparkle-drift {
+  @keyframes sparkle-float {
     0%, 100% {
       transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      opacity: var(--base-opacity, 0.15);
     }
     33% {
-      transform: translate3d(6px, -10px, 0) rotate(40deg) scale(1.05);
+      transform: translate3d(4px, -8px, 0) rotate(30deg) scale(1.05);
+      opacity: calc(var(--base-opacity, 0.15) * 1.4);
     }
     66% {
-      transform: translate3d(-4px, -14px, 0) rotate(-20deg) scale(0.95);
+      transform: translate3d(-3px, -12px, 0) rotate(-15deg) scale(0.95);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .sparkle {
       animation: none;
-      opacity: 0;
+      display: none;
     }
   }
 `;

@@ -1,6 +1,6 @@
 import AdminLayout from "@/app/admin/(admin)/layout";
 import prisma from "@/lib/prisma";
-import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, Settings } from "lucide-react";
+import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare } from "lucide-react";
 
 export default async function AdminDashboard() {
   try {
@@ -45,7 +45,7 @@ export default async function AdminDashboard() {
       { label: "Upload Portfolio Work", href: "/admin/portfolio", icon: Upload },
       { label: "Add NSFW Work", href: "/admin/nsfw", icon: EyeOff },
       { label: "Review Submissions", href: "/admin/reviews", icon: CheckSquare },
-      { label: "Edit Pricing", href: "/admin/pricing", icon: Settings },
+      { label: "Edit Pricing", href: "/admin/pricing", icon: DollarSign },
     ];
 
     return (
@@ -58,7 +58,7 @@ export default async function AdminDashboard() {
                 Panne.
               </span>
             </h1>
-            <p className="text-gray-400 mt-2 text-sm">Here's what's happening with your studio.</p>
+            <p className="text-gray-400 mt-2 text-sm">Here&apos;s what&apos;s happening with your studio.</p>
             <div className="absolute -top-4 -left-4 w-32 h-32 bg-brand-purple-500/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
@@ -156,17 +156,15 @@ export default async function AdminDashboard() {
                 Panne.
               </span>
             </h1>
-            <p className="text-gray-400 mt-2 text-sm">Here's what's happening with your studio.</p>
+            <p className="text-gray-400 mt-2 text-sm">Here&apos;s what&apos;s happening with your studio.</p>
           </div>
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-8 text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 mb-4">
-              <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
-              </svg>
+          <div className="rounded-xl border border-brand-purple-500/20 bg-brand-purple-500/5 p-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-brand-purple-500/10 mb-4">
+              <span className="text-brand-purple-400 text-lg font-display">✦</span>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2 font-display">Unable to load dashboard data</h3>
             <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">
-              We couldn't retrieve the latest information. Please check your connection and try again.
+              We couldn&apos;t retrieve the latest information. Please check your connection and try again.
             </p>
             <form method="GET" action="/admin">
               <button type="submit" className="rounded-lg bg-brand-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">

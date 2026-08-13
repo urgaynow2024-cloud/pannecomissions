@@ -99,6 +99,50 @@ body::after {
   }
 }
 
+@keyframes sparkle-drift {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
+  33% {
+    transform: translate3d(6px, -10px, 0) rotate(40deg) scale(1.05);
+  }
+  66% {
+    transform: translate3d(-4px, -14px, 0) rotate(-20deg) scale(0.95);
+  }
+}
+
+@keyframes sparkle-float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) rotate(0deg);
+    opacity: var(--base-opacity, 0.3);
+  }
+  25% {
+    transform: translate3d(3px, -8px, 0) rotate(15deg);
+  }
+  50% {
+    transform: translate3d(-2px, -4px, 0) rotate(-10deg);
+    opacity: calc(var(--base-opacity, 0.3) * 1.3);
+  }
+  75% {
+    transform: translate3d(4px, -12px, 0) rotate(25deg);
+  }
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.5); }
+}
+
+@keyframes scroll-strip {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@keyframes gentle-float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
 .animate-fade-in-up {
   animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
@@ -107,12 +151,57 @@ body::after {
   animation: pulseGlow 4s ease-in-out infinite;
 }
 
+.animate-sparkle-drift {
+  animation: sparkle-drift 6s ease-in-out infinite;
+}
+
+.animate-sparkle-float {
+  animation: sparkle-float 5s ease-in-out infinite;
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+.animate-scroll-strip {
+  animation: scroll-strip 30s linear infinite;
+}
+
+.animate-gentle-float {
+  animation: gentle-float 4s ease-in-out infinite;
+}
+
 .text-shadow-purple {
   text-shadow: 0 0 20px rgba(168, 85, 247, 0.3), 0 0 40px rgba(168, 85, 247, 0.1);
 }
 
 .box-shadow-purple {
   box-shadow: 0 0 20px rgba(168, 85, 247, 0.15), 0 0 40px rgba(168, 85, 247, 0.05);
+}
+
+.sparkle-inline {
+  display: inline-block;
+  animation: sparkle-float 4s ease-in-out infinite;
+  transform-origin: center;
+}
+
+.sparkle-inline:nth-child(2n) {
+  animation-delay: -1.5s;
+  animation-duration: 5s;
+}
+
+.sparkle-inline:nth-child(3n) {
+  animation-delay: -3s;
+  animation-duration: 3.5s;
+}
+
+.sparkle-ambient {
+  position: absolute;
+  pointer-events: none;
+  animation: sparkle-float var(--duration, 6s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+  opacity: var(--base-opacity, 0.25);
+  z-index: 1;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -125,5 +214,10 @@ body::after {
     opacity: 1;
     transform: none;
     transition: none;
+  }
+  .sparkle-ambient,
+  .sparkle-inline,
+  .animate-scroll-strip {
+    display: none;
   }
 }

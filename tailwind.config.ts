@@ -35,6 +35,10 @@ const config: Config = {
         "float": "float 6s ease-in-out infinite",
         "drift": "drift 8s ease-in-out infinite",
         "spin-slow": "spinSlow 20s linear infinite",
+        "pulse-dot": "pulseDot 2s ease-in-out infinite",
+        "scroll-strip": "scrollStrip 30s linear infinite",
+        "gentle-float": "gentleFloat 4s ease-in-out infinite",
+        "sparkle-float": "sparkleFloat 4s ease-in-out infinite",
       },
       keyframes: {
         fadeIn: {
@@ -70,6 +74,24 @@ const config: Config = {
         spinSlow: {
           "0%": { transform: "rotate(0deg)" },
           "100%": { transform: "rotate(360deg)" },
+        },
+        pulseDot: {
+          "0%, 100%": { opacity: "1", transform: "scale(1)" },
+          "50%": { opacity: "0.5", transform: "scale(1.5)" },
+        },
+        scrollStrip: {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
+        gentleFloat: {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-6px)" },
+        },
+        sparkleFloat: {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)", opacity: "var(--base-opacity, 0.3)" },
+          "25%": { transform: "translate3d(3px, -8px, 0) rotate(15deg)" },
+          "50%": { transform: "translate3d(-2px, -4px, 0) rotate(-10deg)", opacity: "calc(var(--base-opacity, 0.3) * 1.3)" },
+          "75%": { transform: "translate3d(4px, -12px, 0) rotate(25deg)" },
         },
       },
       backgroundImage: {

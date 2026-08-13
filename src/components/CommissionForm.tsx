@@ -22,11 +22,12 @@ type FormData = {
 type StepErrors = Partial<Record<keyof FormData, string>>;
 
 const STEPS = [
-  { label: "About You", hint: "Basic details so I can get in touch." },
-  { label: "What Do You Want?", hint: "Pick the service that matches what you need." },
+  { label: "Hey!", hint: "What should I call you?" },
+  { label: "What Are We Making?", hint: "Pick the service that matches what you need." },
   { label: "Tell Me About It", hint: "Describe what you need in as much detail as possible." },
   { label: "Anything Else?", hint: "Optional. Reference images, deadlines, or other notes." },
-  { label: "Review & Submit", hint: "Double-check everything looks right." },
+  { label: "How Should Panne Contact You?", hint: "Your email so I can reply." },
+  { label: "Review", hint: "Double-check everything looks right." },
 ] as const;
 
 const initialFormData: FormData = {
@@ -57,6 +58,10 @@ export default function CommissionForm({ services }: CommissionFormProps) {
     }
     if (step === 2) {
       if (!formData.description.trim()) errors.description = "Please describe what you need.";
+    }
+    if (step === 4) {
+      if (!formData.email.trim()) errors.email = "Please enter your email.";
+      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Please enter a valid email.";
     }
     setStepErrors(errors);
     return Object.keys(errors).length === 0;
@@ -209,22 +214,27 @@ export default function CommissionForm({ services }: CommissionFormProps) {
 
       {currentStep === 1 && (
         <div className="animate-fade-in" key="step-1">
-          <label className="mb-2 block text-sm font-medium text-gray-300">Service</label>
-          <select
-            required
-            className={`w-full rounded-xl border bg-white/5 px-4 py-3.5 text-white outline-none transition-all duration-200 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)] appearance-none ${stepErrors.service ? "border-red-500/50" : "border-white/10 focus:border-brand-purple-500/50"}`}
-            value={formData.service}
-            onChange={(e) => {
-              setFormData({ ...formData, service: e.target.value });
-              if (stepErrors.service) setStepErrors({ ...stepErrors, service: "" });
-            }}
-          >
-            <option value="">Select a service</option>
+          <label className="mb-3 block text-sm font-medium text-gray-300">Service</label>
+          <div className="grid grid-cols-1 gap-3">
             {services.map((service) => (
-              <option key={service.id} value={service.id}>{service.name}</option>
+              <button
+                key={service.id}
+                type="button"
+                onClick={() => {
+                  setFormData({ ...formData, service: service.id });
+                  if (stepErrors.service) setStepErrors({ ...stepErrors, service: "" });
+                }}
+                className={`text-left rounded-xl border px-5 py-4 transition-all duration-300 ${
+                  formData.service === service.id
+                    ? "border-brand-purple-500/50 bg-brand-purple-500/10 shadow-[0_0_20px_rgba(147,51,234,0.1)]"
+                    : "border-white/10 bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]"
+                }`}
+              >
+                <p className="text-sm font-medium text-white font-display">{service.name}</p>
+              </button>
             ))}
-          </select>
-          {stepErrors.service && <p className="text-xs text-red-400 mt-1.5">{stepErrors.service}</p>}
+          </div>
+          {stepErrors.service && <p className="text-xs text-red-400 mt-3">{stepErrors.service}</p>}
         </div>
       )}
 
@@ -235,7 +245,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
             required
             rows={6}
             className={`w-full rounded-xl border bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 outline-none transition-all duration-200 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)] resize-none ${stepErrors.description ? "border-red-500/50" : "border-white/10 focus:border-brand-purple-500/50"}`}
-            placeholder="Describe your commission..."
+            placeholder="Describe what you need..."
             value={formData.description}
             onChange={(e) => {
               setFormData({ ...formData, description: e.target.value });
@@ -260,17 +270,35 @@ export default function CommissionForm({ services }: CommissionFormProps) {
       )}
 
       {currentStep === 4 && (
-        <div className="animate-fade-in space-y-6" key="step-4">
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] divide-y divide-white/5">
+        <div className="animate-fade-in" key="step-4">
+          <label className="mb-2 block text-sm font-medium text-gray-300">Email</label>
+          <input
+            type="email"
+            required
+            className={`w-full rounded-xl border bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 outline-none transition-all duration-200 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)] ${stepErrors.email ? "border-red-500/50" : "border-white/10 focus:border-brand-purple-500/50"}`}
+            placeholder="you@example.com"
+            value={formData.email}
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+              if (stepErrors.email) setStepErrors({ ...stepErrors, email: "" });
+            }}
+          />
+          {stepErrors.email && <p className="text-xs text-red-400 mt-1.5">{stepErrors.email}</p>}
+        </div>
+      )}
+
+      {currentStep === 5 && (
+        <div className="animate-fade-in space-y-6" key="step-5">
+          <div className="rounded-xl border border-brand-purple-500/20 bg-brand-purple-500/5 divide-y divide-white/5">
             {[
               { label: "Name", value: formData.name },
-              { label: "Email", value: formData.email },
               { label: "Service", value: serviceName },
               { label: "Description", value: formData.description },
               { label: "Additional Info", value: formData.additional || "None" },
+              { label: "Email", value: formData.email },
             ].map((field) => (
               <div key={field.label} className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-6 py-4 px-5">
-                <p className="text-xs font-semibold text-brand-purple-300 uppercase tracking-widest w-28 shrink-0">
+                <p className="text-xs font-semibold text-brand-purple-300 uppercase tracking-widest w-32 shrink-0">
                   {field.label}
                 </p>
                 <p className="text-sm text-gray-300 leading-relaxed">{field.value}</p>
@@ -290,7 +318,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
           disabled={currentStep === 0}
           className="text-sm font-medium text-gray-400 hover:text-white transition-colors disabled:opacity-30 disabled:cursor-not-allowed px-4 py-2"
         >
-          Back
+          ← Back
         </button>
         {currentStep < STEPS.length - 1 ? (
           <button
@@ -298,7 +326,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
             onClick={nextStep}
             className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20"
           >
-            Continue
+            Next
             <svg
               className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
               fill="none"
@@ -318,7 +346,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
           >
             {loading ? "Sending..." : (
               <>
-                Send Enquiry
+                Send Commission
                 <span className="text-brand-purple-200">✦</span>
               </>
             )}

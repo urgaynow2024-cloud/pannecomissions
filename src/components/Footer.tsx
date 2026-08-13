@@ -9,20 +9,46 @@ const footerLinks = [
   { href: "/nsfw", label: "18+ NSFW" },
 ];
 
-export default function Footer() {
+interface FooterProps {
+  portfolioItems?: { image_url: string }[];
+}
+
+export default function Footer({ portfolioItems = [] }: FooterProps) {
+  const displayItems = portfolioItems.slice(0, 6);
+
   return (
     <footer className="relative border-t border-white/5 bg-brand-dark">
+      {displayItems.length > 0 && (
+        <div className="mx-auto max-w-7xl px-6 pt-10 pb-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
+            {displayItems.map((item, i) => (
+              <div
+                key={i}
+                className="aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/[0.02] opacity-60 hover:opacity-100 transition-opacity duration-300"
+              >
+                <img
+                  src={item.image_url}
+                  alt=""
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
             <Link href="/" className="inline-block text-xl font-bold tracking-tight text-white font-display group">
               PANNE
               <span className="text-brand-purple-400 group-hover:text-brand-purple-300 transition-colors duration-300">
-                {" "}Commissions
+                {" "}✦
               </span>
             </Link>
             <p className="mt-2 text-xs text-gray-600">
-              VRChat avatar commissions. Custom work for your avatar.
+              VRCHAT COMMISSIONS
             </p>
           </div>
 
@@ -31,7 +57,7 @@ export default function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm text-gray-500 hover:text-white transition-colors duration-200"
+                className="text-[13px] text-gray-500 hover:text-white transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -41,7 +67,7 @@ export default function Footer() {
 
         <div className="mt-12 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-xs text-gray-600">
-            © {new Date().getFullYear()} Panne Commissions. All rights reserved.
+            © {new Date().getFullYear()} Panne. All rights reserved.
           </p>
           <Link
             href="/commission"
@@ -49,15 +75,7 @@ export default function Footer() {
           >
             <span className="relative z-10 flex items-center gap-2">
               Commission Me
-              <svg
-                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2.5}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
+              <span className="text-brand-purple-200 text-xs">✦</span>
             </span>
           </Link>
         </div>

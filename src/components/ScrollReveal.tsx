@@ -6,12 +6,21 @@ interface ScrollRevealProps {
   children: React.ReactNode;
   delay?: number;
   threshold?: number;
+  direction?: "up" | "left" | "right" | "scale";
 }
+
+const TRANSFORMS = {
+  up: "translateY(24px)",
+  left: "translateX(-24px)",
+  right: "translateX(24px)",
+  scale: "scale(0.96)",
+};
 
 export default function ScrollReveal({
   children,
   delay = 0,
   threshold = 0.1,
+  direction = "up",
 }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
@@ -48,10 +57,13 @@ export default function ScrollReveal({
 
   const delayClass = delay > 0 ? `reveal-delay-${Math.min(delay, 4)}` : "";
 
+  const initialTransform = reducedMotion ? "none" : TRANSFORMS[direction];
+
   return (
     <div
       ref={ref}
       className={`reveal ${visible ? "is-visible" : ""} ${delayClass}`}
+      style={!visible && !reducedMotion ? { transform: initialTransform } : undefined}
     >
       {children}
     </div>

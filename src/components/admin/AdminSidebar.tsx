@@ -13,6 +13,7 @@ import {
   HelpCircle,
   ExternalLink,
   LogOut,
+  Settings,
 } from "lucide-react";
 
 const navItems = [

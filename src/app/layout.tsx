@@ -16,8 +16,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Panne Commissions",
-  description: "VRChat avatar commissions.",
+  title: "Panne Commissions — VRChat Avatar Creator",
+  description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
 };
 
 export default function RootLayout({

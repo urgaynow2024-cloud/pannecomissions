@@ -13,9 +13,9 @@ interface PricingSectionProps {
 }
 
 const DEFAULT_PRICING: PricingItem[] = [
-  { id: "textures", name: "Textures", min_price: 5, max_price: 25, description: "depending on complexity." },
-  { id: "entire-avatar", name: "Entire Avatars", min_price: 55, max_price: 100, description: "depending on complexity." },
-  { id: "models", name: "Models", min_price: 65, max_price: 150, description: "depending on complexity." },
+  { id: "textures", name: "Textures", min_price: 5, max_price: 25, description: "depending on complexity" },
+  { id: "entire-avatar", name: "Entire Avatars", min_price: 55, max_price: 100, description: "depending on complexity" },
+  { id: "models", name: "Models", min_price: 65, max_price: 150, description: "depending on complexity" },
 ];
 
 export default function PricingSection({ pricing }: PricingSectionProps) {
@@ -24,14 +24,16 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
   return (
     <section className="py-24 md:py-40 relative">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-16 md:mb-24">
-          <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
-            Rates
-          </p>
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
-            Pricing
-          </h2>
-        </div>
+        <ScrollReveal>
+          <div className="mb-16 md:mb-24">
+            <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
+              Rates
+            </p>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display">
+              Pricing
+            </h2>
+          </div>
+        </ScrollReveal>
 
         <ScrollReveal>
           <div className="max-w-3xl">
@@ -44,15 +46,15 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
                   <p className="text-lg md:text-xl font-medium text-white font-display tracking-tight">
                     {item.name}
                   </p>
+                  <p className="text-xs text-gray-600 mt-1">
+                    {item.description || "depending on complexity"}
+                  </p>
                 </div>
-                <div className="mt-2 md:mt-0 md:text-right">
+                <div className="mt-3 md:mt-0 md:text-right flex-shrink-0">
                   <p className="text-4xl md:text-5xl lg:text-6xl font-bold text-white font-display tracking-tight">
                     {item.min_price !== null && item.max_price !== null
                       ? `$${item.min_price}–$${item.max_price}`
                       : "Custom"}
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">
-                    {item.description || "depending on complexity."}
                   </p>
                 </div>
               </div>
@@ -66,15 +68,15 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
               These prices do <strong className="text-white font-medium">not</strong> include the cost of assets I may need to purchase. Those costs, per terms, will be added to the total before work begins.
             </p>
 
-            <div className="space-y-6 pt-8 border-t border-white/5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-8 border-t border-white/5">
               <div>
-                <p className="text-xs font-semibold text-brand-purple-400 uppercase tracking-[0.15em] mb-2">Payment</p>
+                <p className="text-xs font-semibold text-brand-purple-400 uppercase tracking-[0.15em] mb-3">Payment</p>
                 <p className="text-sm text-gray-400 leading-relaxed">
                   Cash App is preferred. PayPal is also available. Payment details are agreed upon before work starts.
                 </p>
               </div>
               <div>
-                <p className="text-xs font-semibold text-brand-purple-400 uppercase tracking-[0.15em] mb-2">Trades</p>
+                <p className="text-xs font-semibold text-brand-purple-400 uppercase tracking-[0.15em] mb-3">Trades</p>
                 <p className="text-sm text-gray-400 leading-relaxed">
                   Art trades may be considered on a case-by-case basis. Other trades may also be considered, including FBT equipment or other useful VRChat-related items.
                 </p>
