@@ -1,5 +1,6 @@
 import AdminLayout from "@/app/admin/(admin)/layout";
 import prisma from "@/lib/prisma";
+import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, Settings } from "lucide-react";
 
 export default async function AdminDashboard() {
   try {
@@ -32,50 +33,146 @@ export default async function AdminDashboard() {
       }),
     ]);
 
+    const stats = [
+      { label: "Portfolio", value: portfolioCount, subtitle: "SFW published", href: "/admin/portfolio", icon: Image },
+      { label: "NSFW", value: nsfwCount, subtitle: "Adult published", href: "/admin/nsfw", icon: Shield },
+      { label: "Reviews", value: pendingReviews, subtitle: "Pending approval", href: "/admin/reviews", icon: Star },
+      { label: "Commissions", value: pendingCommissions, subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList },
+      { label: "Support", value: openSupport, subtitle: "Open requests", href: "/admin/support", icon: HelpCircle },
+    ];
+
+    const quickActions = [
+      { label: "Upload Portfolio Work", href: "/admin/portfolio", icon: Upload },
+      { label: "Add NSFW Work", href: "/admin/nsfw", icon: EyeOff },
+      { label: "Review Submissions", href: "/admin/reviews", icon: CheckSquare },
+      { label: "Edit Pricing", href: "/admin/pricing", icon: Settings },
+    ];
+
     return (
       <AdminLayout>
-        <div className="space-y-8">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white font-display">Dashboard</h1>
-            <p className="text-gray-400 mt-1 text-sm">Overview of Panne Commissions.</p>
+        <div className="space-y-10 animate-fade-in">
+          <div className="relative">
+            <h1 className="text-4xl font-bold tracking-tight text-white font-display">
+              Welcome back to{" "}
+              <span className="bg-gradient-to-r from-brand-purple-300 to-brand-purple-500 bg-clip-text text-transparent">
+                Panne.
+              </span>
+            </h1>
+            <p className="text-gray-400 mt-2 text-sm">Here's what's happening with your studio.</p>
+            <div className="absolute -top-4 -left-4 w-32 h-32 bg-brand-purple-500/10 rounded-full blur-3xl pointer-events-none" />
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-            <StatCard title="Portfolio" value={portfolioCount.toString()} subtitle="SFW items" href="/admin/portfolio" />
-            <StatCard title="NSFW" value={nsfwCount.toString()} subtitle="NSFW items" href="/admin/nsfw" />
-            <StatCard title="Reviews" value={pendingReviews.toString()} subtitle="Pending approval" href="/admin/reviews" />
-            <StatCard title="Commissions" value={pendingCommissions.toString()} subtitle="New enquiries" href="/admin/commissions" />
-            <StatCard title="Support" value={openSupport.toString()} subtitle="Open requests" href="/admin/support" />
+            {stats.map((stat) => (
+              <a
+                key={stat.label}
+                href={stat.href}
+                className="group relative flex flex-col rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-brand-purple-400/30 transition-all duration-200 overflow-hidden"
+              >
+                <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-purple-500/0 via-brand-purple-500 to-brand-purple-500/0 opacity-60 group-hover:opacity-100 transition-opacity" />
+                <div className="flex items-center gap-2 mb-3">
+                  <stat.icon className="h-4 w-4 text-gray-500 group-hover:text-brand-purple-400 transition-colors" />
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{stat.label}</p>
+                </div>
+                <p className="text-4xl font-bold text-white font-display tracking-tight">
+                  {stat.value.toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-500 mt-1.5">{stat.subtitle}</p>
+              </a>
+            ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <RecentTable title="Recent Commissions" items={recentCommissions} fields={["client_name", "service", "status", "created_at"]} href="/admin/commissions" />
-            <RecentTable title="Recent Reviews" items={recentReviews} fields={["display_name", "rating", "status", "created_at"]} href="/admin/reviews" />
-            <RecentTable title="Recent Support" items={recentSupport} fields={["client_name", "subject", "status", "created_at"]} href="/admin/support" />
+          <div>
+            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 font-display">Quick Actions</h2>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {quickActions.map((action) => (
+                <a
+                  key={action.label}
+                  href={action.href}
+                  className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-brand-purple-400/30 hover:bg-brand-purple-500/5 transition-all duration-200 group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-brand-purple-500/10 flex items-center justify-center text-brand-purple-400 group-hover:bg-brand-purple-500 group-hover:text-white transition-all duration-200 shrink-0">
+                    <action.icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors truncate">{action.label}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 font-display">Recent Activity</h2>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+              <ActivityTable
+                title="Recent Commissions"
+                items={recentCommissions}
+                fields={[
+                  { key: "client_name", label: "Client" },
+                  { key: "service", label: "Service" },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/commissions"
+                emptyMessage="No commissions yet."
+              />
+              <ActivityTable
+                title="Recent Reviews"
+                items={recentReviews}
+                fields={[
+                  { key: "display_name", label: "Reviewer" },
+                  { key: "rating", label: "Rating" },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/reviews"
+                emptyMessage="No reviews yet."
+              />
+              <ActivityTable
+                title="Recent Support"
+                items={recentSupport}
+                fields={[
+                  { key: "client_name", label: "Client" },
+                  { key: "subject", label: "Subject" },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/support"
+                emptyMessage="No support requests yet."
+              />
+            </div>
           </div>
         </div>
       </AdminLayout>
     );
   } catch (error) {
-    console.error("Dashboard error:", error);
+    console.error("[Dashboard] Failed to load data:", error);
     return (
       <AdminLayout>
-        <div className="space-y-8">
+        <div className="space-y-10 animate-fade-in">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white font-display">Dashboard</h1>
-            <p className="text-gray-400 mt-1 text-sm">Overview of Panne Commissions.</p>
+            <h1 className="text-4xl font-bold tracking-tight text-white font-display">
+              Welcome back to{" "}
+              <span className="bg-gradient-to-r from-brand-purple-300 to-brand-purple-500 bg-clip-text text-transparent">
+                Panne.
+              </span>
+            </h1>
+            <p className="text-gray-400 mt-2 text-sm">Here's what's happening with your studio.</p>
           </div>
-          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-            <h3 className="text-lg font-semibold text-red-400 mb-2 font-display">Database Connection Error</h3>
-            <p className="text-sm text-gray-400 mb-4">
-              Could not connect to the database. Please make sure:
+          <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-red-500/10 mb-4">
+              <svg className="w-6 h-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-white mb-2 font-display">Unable to load dashboard data</h3>
+            <p className="text-sm text-gray-400 mb-6 max-w-md mx-auto">
+              We couldn't retrieve the latest information. Please check your connection and try again.
             </p>
-            <ul className="list-disc list-inside text-sm text-gray-400 space-y-1">
-              <li>Your Supabase project is not paused</li>
-              <li>The DATABASE_URL is correct in your environment variables</li>
-              <li>You have run the schema.sql in Supabase SQL Editor</li>
-              <li>Your database tables exist</li>
-            </ul>
+            <form method="GET" action="/admin">
+              <button type="submit" className="rounded-lg bg-brand-purple-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
+                Try Again
+              </button>
+            </form>
           </div>
         </div>
       </AdminLayout>
@@ -83,49 +180,45 @@ export default async function AdminDashboard() {
   }
 }
 
-function StatCard({ title, value, subtitle, href }: { title: string; value: string; subtitle: string; href: string }) {
-  return (
-    <a href={href} className="group block rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-brand-purple-400/30 transition-all duration-200">
-      <div className="h-1 w-8 rounded-full bg-brand-purple-400/0 group-hover:bg-brand-purple-400 transition-all duration-200 mb-3" />
-      <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{title}</p>
-      <p className="text-2xl font-bold text-white mt-1">{value}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
-    </a>
-  );
-}
-
-function RecentTable({
+function ActivityTable({
   title,
   items,
   fields,
   href,
+  emptyMessage,
 }: {
   title: string;
   items: any[];
-  fields: string[];
+  fields: { key: string; label: string; isStatus?: boolean; isDate?: boolean }[];
   href: string;
+  emptyMessage: string;
 }) {
   return (
-    <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
         <h3 className="text-sm font-semibold text-white font-display">{title}</h3>
-        <a href={href} className="text-xs text-brand-purple-400 hover:text-brand-purple-300 transition-colors">View all</a>
+        <a href={href} className="text-xs text-brand-purple-400 hover:text-brand-purple-300 transition-colors font-medium">
+          View all
+        </a>
       </div>
-      <div className="divide-y divide-white/5">
+      <div className="divide-y divide-white/5 flex-1">
         {items.length === 0 ? (
-          <div className="px-5 py-8 text-center">
-            <p className="text-sm text-gray-500">No entries yet.</p>
+          <div className="px-5 py-10 text-center">
+            <p className="text-3xl font-bold text-white/5 font-display mb-1">0</p>
+            <p className="text-xs text-gray-500">{emptyMessage}</p>
           </div>
         ) : (
           items.map((item) => (
             <div key={item.id} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors">
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-white truncate">{item[fields[0]]}</p>
-                <p className="text-xs text-gray-500 truncate">{item[fields[1]]}</p>
+                <p className="text-sm text-white truncate">{String(item[fields[0].key])}</p>
+                <p className="text-xs text-gray-500 truncate">{String(item[fields[1].key])}</p>
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-3">
-                <StatusBadge status={item[fields[2]]} />
-                <span className="text-xs text-gray-500">{new Date(item[fields[3]]).toLocaleDateString()}</span>
+                <StatusBadge status={String(item[fields[2].key])} />
+                <span className="text-xs text-gray-500 tabular-nums">
+                  {fields[3].isDate ? new Date(item[fields[3].key]).toLocaleDateString() : String(item[fields[3].key])}
+                </span>
               </div>
             </div>
           ))

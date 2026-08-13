@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SparkleSystem from "@/components/SparkleSystem";
+import NoiseOverlay from "@/components/NoiseOverlay";
 import Reviews from "@/components/Reviews";
 import prisma from "@/lib/prisma";
 
@@ -13,12 +14,13 @@ async function getData() {
       orderBy: { created_at: "desc" },
     });
 
-    return reviews.map((review: { id: string; display_name: string; rating: number; review_text: string; image_url: string | null }) => ({
+    return reviews.map((review: { id: string; display_name: string; rating: number; review_text: string; image_url: string | null; created_at: Date }) => ({
       id: review.id,
       display_name: review.display_name,
       rating: review.rating,
       review_text: review.review_text,
       image_url: review.image_url,
+      created_at: review.created_at.toISOString(),
     }));
   } catch {
     return [];
@@ -31,6 +33,7 @@ export default async function ReviewsPage() {
   return (
     <main className="min-h-screen bg-brand-black text-white antialiased relative">
       <SparkleSystem />
+      <NoiseOverlay />
       <Navbar />
       <div className="mx-auto max-w-7xl px-6 pt-32 md:pt-40 pb-20 md:pb-32">
         <div className="mb-12 md:mb-16">
@@ -41,7 +44,7 @@ export default async function ReviewsPage() {
             Reviews
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mt-4">
-            What clients have said.
+            What clients have said about working with me.
           </p>
         </div>
         <Reviews reviews={reviews} />

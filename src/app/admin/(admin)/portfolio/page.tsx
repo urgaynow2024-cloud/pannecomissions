@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 interface PortfolioItem {
   id: string;
@@ -13,6 +13,15 @@ interface PortfolioItem {
   sort_order: number;
 }
 
+interface UploadQueueItem {
+  id: string;
+  file: File;
+  preview: string;
+  status: "uploading" | "uploaded" | "error";
+  progress: number;
+  error?: string;
+}
+
 function SkeletonCard() {
   return (
     <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
@@ -20,10 +29,6 @@ function SkeletonCard() {
       <div className="p-4 space-y-3">
         <div className="h-4 bg-white/5 rounded animate-pulse w-3/4" />
         <div className="h-3 bg-white/5 rounded animate-pulse w-1/2" />
-        <div className="flex gap-2 pt-2">
-          <div className="h-8 bg-white/5 rounded animate-pulse flex-1" />
-          <div className="h-8 bg-white/5 rounded animate-pulse w-16" />
-        </div>
       </div>
     </div>
   );
@@ -37,9 +42,9 @@ function EmptyState({ onUpload }: { onUpload: () => void }) {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
       </div>
-      <p className="text-gray-400 mb-4 text-sm">No portfolio images yet.</p>
+      <p className="text-gray-400 mb-4 text-sm">No portfolio work yet.</p>
       <button onClick={onUpload} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
-        Upload First Image
+        Upload Work
       </button>
     </div>
   );
@@ -49,13 +54,17 @@ export default function PortfolioPage() {
   const [items, setItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ title: "", description: "", altText: "", featured: false, visible: true });
-  const [file, setFile] = useState<File | null>(null);
+  const [formData, setFormData] = useState({ title: "", description: "", featured: false, visible: true });
   const [saving, setSaving] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const dropInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchItems();
@@ -74,16 +83,69 @@ export default function PortfolioPage() {
     }
   }
 
+  const handleFiles = useCallback(async (files: FileList) => {
+    const accepted = Array.from(files).filter((f) => /\.(png|jpe?g|webp)$/i.test(f.name));
+    if (accepted.length === 0) return;
+
+    const queue: UploadQueueItem[] = accepted.map((file) => ({
+      id: crypto.randomUUID(),
+      file,
+      preview: URL.createObjectURL(file),
+      status: "uploading",
+      progress: 0,
+    }));
+
+    setUploadQueue((prev) => [...prev, ...queue]);
+
+    for (const item of queue) {
+      try {
+        const fd = new FormData();
+        fd.append("image", item.file);
+        fd.append("title", "");
+        fd.append("description", "");
+        fd.append("featured", "false");
+        fd.append("visible", "true");
+
+        const xhr = new XMLHttpRequest();
+        await new Promise<void>((resolve, reject) => {
+          xhr.open("POST", "/api/admin/portfolio");
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) resolve();
+            else reject(new Error("Upload failed"));
+          };
+          xhr.onerror = () => reject(new Error("Upload failed"));
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const pct = Math.round((e.loaded / e.total) * 100);
+              setUploadQueue((prev) =>
+                prev.map((q) => (q.id === item.id ? { ...q, progress: pct } : q))
+              );
+            }
+          };
+          xhr.send(fd);
+        });
+
+        setUploadQueue((prev) =>
+          prev.map((q) => (q.id === item.id ? { ...q, status: "uploaded", progress: 100 } : q))
+        );
+      } catch {
+        setUploadQueue((prev) =>
+          prev.map((q) => (q.id === item.id ? { ...q, status: "error", error: "Upload failed" } : q))
+        );
+      }
+    }
+
+    await fetchItems();
+  }, []);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     const fd = new FormData();
     fd.append("title", formData.title);
     fd.append("description", formData.description);
-    fd.append("altText", formData.altText);
     fd.append("featured", String(formData.featured));
     fd.append("visible", String(formData.visible));
-    if (file) fd.append("image", file);
 
     try {
       const url = editingId ? `/api/admin/portfolio/${editingId}` : "/api/admin/portfolio";
@@ -103,16 +165,39 @@ export default function PortfolioPage() {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this portfolio image?")) return;
     const res = await fetch(`/api/admin/portfolio/${id}`, { method: "DELETE" });
-    if (res.ok) setItems(items.filter((i) => i.id !== id));
+    if (res.ok) {
+      setItems(items.filter((i) => i.id !== id));
+      setDeleteId(null);
+    }
   }
 
   function handleEdit(item: PortfolioItem) {
     setEditingId(item.id);
-    setFormData({ title: item.title, description: item.description || "", altText: item.alt_text || "", featured: item.featured, visible: item.visible });
-    setFile(null);
+    setFormData({ title: item.title, description: item.description || "", featured: item.featured, visible: item.visible });
     setShowForm(true);
+  }
+
+  async function handleToggleFeatured(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const res = await fetch(`/api/admin/portfolio/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ featured: !item.featured }),
+    });
+    if (res.ok) setItems(items.map((i) => (i.id === id ? { ...i, featured: !i.featured } : i)));
+  }
+
+  async function handleToggleVisibility(id: string) {
+    const item = items.find((i) => i.id === id);
+    if (!item) return;
+    const res = await fetch(`/api/admin/portfolio/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visible: !item.visible }),
+    });
+    if (res.ok) setItems(items.map((i) => (i.id === id ? { ...i, visible: !i.visible } : i)));
   }
 
   async function handleReorder(fromIndex: number, toIndex: number) {
@@ -135,18 +220,23 @@ export default function PortfolioPage() {
   function resetForm() {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ title: "", description: "", altText: "", featured: false, visible: true });
-    setFile(null);
+    setFormData({ title: "", description: "", featured: false, visible: true });
+  }
+
+  function removeFromQueue(id: string) {
+    setUploadQueue((prev) => {
+      const item = prev.find((q) => q.id === id);
+      if (item) URL.revokeObjectURL(item.preview);
+      return prev.filter((q) => q.id !== id);
+    });
   }
 
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="h-8 bg-white/5 rounded w-40 animate-pulse mb-2" />
-            <div className="h-4 bg-white/5 rounded w-64 animate-pulse" />
-          </div>
+        <div>
+          <div className="h-8 bg-white/5 rounded w-40 animate-pulse mb-2" />
+          <div className="h-4 bg-white/5 rounded w-64 animate-pulse" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <SkeletonCard />
@@ -162,7 +252,7 @@ export default function PortfolioPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Portfolio</h1>
-          <p className="text-gray-400 mt-1 text-sm">Manage SFW portfolio images.</p>
+          <p className="text-gray-400 mt-1 text-sm">Manage your portfolio work.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
@@ -179,52 +269,91 @@ export default function PortfolioPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Portfolio</h1>
-          <p className="text-gray-400 mt-1 text-sm">Manage SFW portfolio images.</p>
+          <p className="text-gray-400 mt-1 text-sm">Manage your portfolio work.</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
-          Upload Image
-        </button>
       </div>
+
+      <div
+        className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer ${dragOver ? "border-brand-purple-400 bg-brand-purple-500/5" : "border-white/10 hover:border-white/20 bg-white/[0.02]"}`}
+        onClick={() => dropInputRef.current?.click()}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={(e) => { e.preventDefault(); setDragOver(false); if (e.dataTransfer.files.length) handleFiles(e.dataTransfer.files); }}
+      >
+        <input
+          ref={dropInputRef}
+          type="file"
+          accept=".png,.jpg,.jpeg,.webp"
+          multiple
+          className="hidden"
+          onChange={(e) => { if (e.target.files?.length) handleFiles(e.target.files); e.target.value = ""; }}
+        />
+        <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/5 mb-4">
+          <svg className="w-6 h-6 text-brand-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+          </svg>
+        </div>
+        <p className="text-white font-medium mb-1">DROP YOUR ARTWORK HERE</p>
+        <p className="text-gray-500 text-sm">or click to browse</p>
+        <p className="text-gray-600 text-xs mt-2">PNG, JPG, WEBP</p>
+      </div>
+
+      {uploadQueue.length > 0 && (
+        <div className="space-y-3">
+          <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider">Upload Queue</h3>
+          {uploadQueue.map((item) => (
+            <div key={item.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-4 flex items-center gap-4">
+              <img src={item.preview} alt="" className="w-12 h-12 rounded-lg object-cover border border-white/10" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-white truncate">{item.file.name}</p>
+                <div className="mt-1.5 h-1.5 bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-300 ${item.status === "error" ? "bg-red-500" : "bg-brand-purple-500"}`}
+                    style={{ width: `${item.progress}%` }}
+                  />
+                </div>
+                <p className="text-xs text-gray-500 mt-1">
+                  {item.status === "uploading" && `Uploading... ${item.progress}%`}
+                  {item.status === "uploaded" && "Uploaded"}
+                  {item.status === "error" && (item.error || "Error")}
+                </p>
+              </div>
+              <button onClick={() => removeFromQueue(item.id)} className="text-gray-400 hover:text-white transition-colors p-1">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Image" : "Upload Image"}</h3>
+            <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Work" : "Add New Work"}</h3>
             <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
-              <input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1">Alt Text</label>
-              <input value={formData.altText} onChange={(e) => setFormData({ ...formData, altText: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" />
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
+            <input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
             <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Image</label>
-            <div className="flex items-center gap-4">
-              <input type="file" accept="image/*" onChange={(e) => setFile(e.target.files?.[0] || null)} className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-brand-purple-600 file:text-white hover:file:bg-brand-purple-500 file:cursor-pointer" required={!editingId} />
-              {file && <span className="text-xs text-gray-500">{file.name}</span>}
-            </div>
-          </div>
           <div className="flex items-center gap-6">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={formData.featured} onChange={(e) => setFormData({ ...formData, featured: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
-              <span className="text-sm text-gray-300">Featured</span>
-            </label>
             <label className="flex items-center gap-2 cursor-pointer">
               <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
               <span className="text-sm text-gray-300">Visible</span>
+            </label>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={formData.featured} onChange={(e) => setFormData({ ...formData, featured: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
+              <span className="text-sm text-gray-300">Featured</span>
             </label>
           </div>
           <div className="flex gap-3 pt-2">
@@ -237,37 +366,66 @@ export default function PortfolioPage() {
       )}
 
       {items.length === 0 ? (
-        <EmptyState onUpload={() => { resetForm(); setShowForm(true); }} />
+        <EmptyState onUpload={() => setShowForm(true)} />
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {items.map((item, idx) => (
             <div
               key={item.id}
               draggable
-              onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-              onDragLeave={() => setDragOver(false)}
+              onDragOver={(e) => { e.preventDefault(); }}
               onDragStart={() => setDragId(item.id)}
-              onDrop={(e) => { e.preventDefault(); setDragOver(false); if (dragId) handleReorder(items.findIndex((i) => i.id === dragId), idx); }}
-              className={`group rounded-xl border bg-white/[0.02] overflow-hidden transition-all duration-200 ${dragOver ? "border-brand-purple-400/50 scale-[1.02]" : "border-white/5 hover:border-white/10"}`}
+              onDrop={(e) => { e.preventDefault(); if (dragId) handleReorder(items.findIndex((i) => i.id === dragId), idx); setDragId(null); }}
+              className={`group relative rounded-xl border bg-white/[0.02] overflow-hidden transition-all duration-200 ${dragOver ? "border-brand-purple-400/50 scale-[1.02]" : "border-white/5 hover:border-white/10"}`}
             >
               <div className="aspect-[4/3] bg-black relative overflow-hidden">
-                <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
+                <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute top-2 left-2 flex gap-2">
                   {item.featured && <span className="bg-brand-purple-600 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">Featured</span>}
                   {!item.visible && <span className="bg-black/60 text-gray-300 text-[10px] font-medium px-2 py-0.5 rounded-full">Hidden</span>}
                 </div>
-              </div>
-              <div className="p-4 space-y-2">
-                <h3 className="font-semibold text-white truncate">{item.title}</h3>
-                <p className="text-xs text-gray-500 truncate">{item.alt_text || "No alt text"}</p>
-                <div className="flex gap-2 pt-1">
-                  <button onClick={() => handleEdit(item)} className="flex-1 rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors">Edit</button>
-                  <button onClick={() => handleDelete(item.id)} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/5 transition-colors">Delete</button>
+                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button
+                    onMouseDown={(e) => { e.preventDefault(); }}
+                    onDragStart={(e) => { e.preventDefault(); setDragId(item.id); }}
+                    className="p-1.5 rounded-lg bg-black/40 text-gray-300 hover:text-white hover:bg-black/60 transition-colors cursor-grab active:cursor-grabbing"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                    </svg>
+                  </button>
                 </div>
+                <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <button onClick={() => handleEdit(item)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">Edit</button>
+                  <button onClick={() => handleToggleVisibility(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
+                    {item.visible ? "Hide" : "Show"}
+                  </button>
+                  <button onClick={() => handleToggleFeatured(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
+                    {item.featured ? "Unfeature" : "Feature"}
+                  </button>
+                  <button onClick={() => setDeleteId(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-red-300 hover:text-red-100 hover:bg-black/60 backdrop-blur-sm transition-colors">Delete</button>
+                </div>
+              </div>
+              <div className="p-4 space-y-1">
+                <h3 className="font-semibold text-white truncate">{item.title}</h3>
+                <p className="text-xs text-gray-500 truncate">{item.alt_text || "No description"}</p>
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {deleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 max-w-sm w-full mx-4 shadow-2xl">
+            <h3 className="text-lg font-semibold text-white font-display text-center mb-2">DELETE THIS WORK?</h3>
+            <p className="text-sm text-gray-400 text-center mb-6">This action cannot be undone.</p>
+            <div className="flex gap-3">
+              <button onClick={() => setDeleteId(null)} className="flex-1 rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>
+              <button onClick={() => handleDelete(deleteId)} className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition-colors">Delete</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

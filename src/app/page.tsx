@@ -1,6 +1,7 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SparkleSystem from "@/components/SparkleSystem";
+import NoiseOverlay from "@/components/NoiseOverlay";
 import Hero from "@/components/Hero";
 import FeaturedWork from "@/components/FeaturedWork";
 import Services from "@/components/Services";
@@ -37,6 +38,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-brand-black text-white antialiased relative">
       <SparkleSystem />
+      <NoiseOverlay />
       <Navbar />
       <Hero featuredItem={featured} />
       <FeaturedWork items={featuredWork} />

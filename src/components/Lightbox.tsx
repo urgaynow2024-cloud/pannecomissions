@@ -1,22 +1,37 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+
+interface LightboxItem {
+  id: string;
+  title: string;
+  image_url: string;
+  description?: string;
+}
 
 interface LightboxProps {
-  items: { id: string; title: string; image_url: string; description?: string }[];
-  initialIndex?: number;
+  items: LightboxItem[];
+  initialIndex: number;
   onClose: () => void;
 }
 
-export default function Lightbox({ items, initialIndex = 0, onClose }: LightboxProps) {
+export default function Lightbox({ items, initialIndex, onClose }: LightboxProps) {
   const [index, setIndex] = useState(initialIndex);
+  const [isOpen, setIsOpen] = useState(false);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
 
-  const goTo = useCallback((newIndex: number) => {
-    setIndex((prev) => {
+  const goTo = useCallback(
+    (newIndex: number) => {
       const wrapped = ((newIndex % items.length) + items.length) % items.length;
-      return wrapped;
-    });
-  }, [items.length]);
+      setIndex(wrapped);
+    },
+    [items.length]
+  );
+
+  useEffect(() => {
+    setIndex(initialIndex);
+  }, [initialIndex]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -24,29 +39,55 @@ export default function Lightbox({ items, initialIndex = 0, onClose }: LightboxP
       if (e.key === "ArrowRight") goTo(index + 1);
       if (e.key === "ArrowLeft") goTo(index - 1);
     };
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) {
+      setIsOpen(true);
+    } else {
+      const raf = requestAnimationFrame(() => setIsOpen(true));
+      return () => cancelAnimationFrame(raf);
+    }
+
     window.addEventListener("keydown", handleKey);
     document.body.style.overflow = "hidden";
+
     return () => {
       window.removeEventListener("keydown", handleKey);
       document.body.style.overflow = "";
     };
   }, [onClose, goTo, index]);
 
-  useEffect(() => {
-    setIndex(initialIndex);
-  }, [initialIndex]);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) goTo(index + 1);
+      else goTo(index - 1);
+    }
+  };
 
   const item = items[index];
-
   if (!item) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4 animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4"
       onClick={onClose}
     >
       <div
-        className="relative max-w-5xl w-full max-h-[90vh] flex flex-col"
+        className={`relative max-w-5xl w-full max-h-[90vh] flex flex-col ${
+          isOpen ? "animate-fade-in" : ""
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between p-4 shrink-0">
@@ -54,34 +95,69 @@ export default function Lightbox({ items, initialIndex = 0, onClose }: LightboxP
           <div className="flex items-center gap-2">
             <button
               onClick={() => goTo(index - 1)}
-              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-white/10 transition-all duration-200 hover:border-purple-500/30"
+              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-purple-500/10 transition-all duration-200 hover:border-purple-500/30"
               aria-label="Previous"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
             <button
               onClick={() => goTo(index + 1)}
-              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-white/10 transition-all duration-200 hover:border-purple-500/30"
+              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-purple-500/10 transition-all duration-200 hover:border-purple-500/30"
               aria-label="Next"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
             </button>
             <button
               onClick={onClose}
-              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-white/10 transition-all duration-200 hover:border-purple-500/30"
+              className="rounded-lg border border-white/10 bg-white/5 p-2.5 text-white hover:bg-purple-500/10 transition-all duration-200 hover:border-purple-500/30"
               aria-label="Close"
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
         </div>
-        <div className="flex-1 overflow-auto px-4 pb-4 flex items-center justify-center">
+        <div
+          className="flex-1 overflow-auto px-4 pb-4 flex items-center justify-center"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           <img
             src={item.image_url}
             alt={item.title}
@@ -90,7 +166,9 @@ export default function Lightbox({ items, initialIndex = 0, onClose }: LightboxP
         </div>
         {item.description && (
           <div className="p-6 pt-2 border-t border-white/5 shrink-0">
-            <p className="text-sm text-gray-400 leading-relaxed">{item.description}</p>
+            <p className="text-sm text-gray-400 leading-relaxed">
+              {item.description}
+            </p>
           </div>
         )}
       </div>

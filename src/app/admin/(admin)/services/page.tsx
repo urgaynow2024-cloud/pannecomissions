@@ -11,17 +11,12 @@ interface Service {
   visible: boolean;
 }
 
-function SkeletonRow() {
+function SkeletonCard() {
   return (
-    <div className="flex items-center gap-4 px-5 py-4">
-      <div className="h-10 w-10 rounded-lg bg-white/5 animate-pulse shrink-0" />
-      <div className="flex-1 space-y-2">
-        <div className="h-4 bg-white/5 rounded animate-pulse w-48" />
-        <div className="h-3 bg-white/5 rounded animate-pulse w-72" />
-      </div>
-      <div className="h-8 w-16 bg-white/5 rounded animate-pulse" />
-      <div className="h-8 w-8 bg-white/5 rounded animate-pulse" />
-      <div className="h-8 w-8 bg-white/5 rounded animate-pulse" />
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 space-y-3">
+      <div className="h-5 bg-white/5 rounded animate-pulse w-32" />
+      <div className="h-3 bg-white/5 rounded animate-pulse w-full" />
+      <div className="h-3 bg-white/5 rounded animate-pulse w-2/3" />
     </div>
   );
 }
@@ -113,16 +108,14 @@ export default function ServicesPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <div className="h-8 bg-white/5 rounded w-32 animate-pulse mb-2" />
-            <div className="h-4 bg-white/5 rounded w-48 animate-pulse" />
-          </div>
+        <div>
+          <div className="h-8 bg-white/5 rounded w-32 animate-pulse mb-2" />
+          <div className="h-4 bg-white/5 rounded w-48 animate-pulse" />
         </div>
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden divide-y divide-white/5">
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
       </div>
     );
@@ -203,40 +196,40 @@ export default function ServicesPage() {
       {items.length === 0 ? (
         <EmptyState onAdd={() => { resetForm(); setShowForm(true); }} />
       ) : (
-        <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
-          <div className="divide-y divide-white/5">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center gap-4 px-5 py-4 hover:bg-white/[0.02] transition-colors">
-                <div className="shrink-0">
-                  {item.image_url ? (
-                    <img src={item.image_url} alt={item.name} className="h-10 w-10 rounded-lg object-cover" />
-                  ) : (
-                    <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center">
-                      <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-white truncate">{item.name}</h3>
-                    {item.visible ? (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-500/10 text-green-400">Visible</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {items.map((item) => (
+            <div key={item.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-white/10 transition-colors">
+              <div className="flex items-start justify-between gap-3 mb-3">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="shrink-0">
+                    {item.image_url ? (
+                      <img src={item.image_url} alt={item.name} className="h-10 w-10 rounded-lg object-cover" />
                     ) : (
-                      <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400">Hidden</span>
+                      <div className="h-10 w-10 rounded-lg bg-white/5 flex items-center justify-center">
+                        <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                        </svg>
+                      </div>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 truncate">{item.description || "No description"}</p>
+                  <h3 className="font-semibold text-white truncate font-display">{item.name}</h3>
                 </div>
-                <span className="text-xs text-gray-500 w-8 text-center shrink-0">{item.sort_order}</span>
-                <div className="flex gap-2 shrink-0">
+                {item.visible ? (
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 border border-green-500/20 shrink-0">Visible</span>
+                ) : (
+                  <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-gray-500/10 text-gray-400 border border-gray-500/20 shrink-0">Hidden</span>
+                )}
+              </div>
+              <p className="text-sm text-gray-500 mb-4 line-clamp-2">{item.description || "No description"}</p>
+              <div className="flex items-center justify-between pt-3 border-t border-white/5">
+                <span className="text-xs text-gray-500">Order: {item.sort_order}</span>
+                <div className="flex gap-2">
                   <button onClick={() => handleEdit(item)} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors">Edit</button>
                   <button onClick={() => handleDelete(item.id)} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/5 transition-colors">Delete</button>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

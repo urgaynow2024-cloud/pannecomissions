@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { verifySession } from "@/lib/auth";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import AdminTopBar from "@/components/admin/AdminTopBar";
 
 export default async function AdminLayout({
   children,
@@ -12,19 +13,19 @@ export default async function AdminLayout({
     if (!admin) {
       redirect("/admin/login");
     }
-  } catch (error) {
-    console.error("Admin auth error:", error);
+
+    return (
+      <div className="min-h-screen bg-brand-dark text-white antialiased flex">
+        <AdminSidebar />
+        <div className="flex-1 min-h-screen flex flex-col">
+          <AdminTopBar username={admin.username} />
+          <main className="flex-1 p-4 md:p-8 lg:p-10 max-w-7xl">
+            {children}
+          </main>
+        </div>
+      </div>
+    );
+  } catch {
     redirect("/admin/login");
   }
-
-  return (
-    <div className="min-h-screen bg-brand-dark text-white antialiased flex">
-      <AdminSidebar />
-      <main className="flex-1 min-h-screen">
-        <div className="p-4 md:p-8 lg:p-10 max-w-7xl">
-          {children}
-        </div>
-      </main>
-    </div>
-  );
 }

@@ -12,18 +12,54 @@ export async function sendDiscordWebhook({
     return;
   }
 
-  let content = "";
+  let embed: any = {};
 
   switch (type) {
     case "commission":
-      const nsfwTag = data.nsfw ? "\n⚠️ **18+ NSFW COMMISSION**\n" : "";
-      content = `${nsfwTag}🎨 **New Commission Enquiry**\nClient: ${data.client_name}\nEmail: ${data.email}\nService: ${data.service}\nDescription: ${data.description || "None"}\nStatus: ${data.status}`;
+      embed = {
+        title: "✦ NEW COMMISSION REQUEST",
+        color: 0x9333ea,
+        fields: [
+          { name: "Client", value: String(data.client_name || "Unknown"), inline: true },
+          { name: "Email", value: String(data.email || "N/A"), inline: true },
+          { name: "Service", value: String(data.service || "N/A"), inline: false },
+          { name: "Description", value: String(data.description || "None"), inline: false },
+          ...(data.additional ? [{ name: "Additional Info", value: String(data.additional), inline: false }] : []),
+          { name: "Status", value: String(data.status || "PENDING"), inline: true },
+          ...(data.nsfw ? [{ name: "Content", value: "⚠️ 18+ NSFW", inline: true }] : []),
+          { name: "Submitted", value: new Date().toLocaleString(), inline: true },
+          { name: "Website", value: "https://www.pannecomissions.shop/", inline: false },
+        ],
+        footer: { text: "Panne Commissions" },
+        timestamp: new Date().toISOString(),
+      };
       break;
     case "review":
-      content = `⭐ **New Review**\nClient: ${data.display_name}\nRating: ${data.rating}/5\nMessage: ${data.review_text}`;
+      embed = {
+        title: "⭐ NEW REVIEW",
+        color: 0xeab308,
+        fields: [
+          { name: "Client", value: String(data.display_name || "Unknown"), inline: true },
+          { name: "Rating", value: `${data.rating || 0}/5`, inline: true },
+          { name: "Message", value: String(data.review_text || "N/A"), inline: false },
+        ],
+        footer: { text: "Panne Commissions" },
+        timestamp: new Date().toISOString(),
+      };
       break;
     case "support":
-      content = `🛠️ **New Support Request**\nClient: ${data.client_name}\nEmail: ${data.email}\nSubject: ${data.subject}\nMessage: ${data.message}`;
+      embed = {
+        title: "🛠️ NEW SUPPORT REQUEST",
+        color: 0x3b82f6,
+        fields: [
+          { name: "Client", value: String(data.client_name || "Unknown"), inline: true },
+          { name: "Email", value: String(data.email || "N/A"), inline: true },
+          { name: "Subject", value: String(data.subject || "N/A"), inline: false },
+          { name: "Message", value: String(data.message || "N/A"), inline: false },
+        ],
+        footer: { text: "Panne Commissions" },
+        timestamp: new Date().toISOString(),
+      };
       break;
   }
 
@@ -31,7 +67,7 @@ export async function sendDiscordWebhook({
     await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ embeds: [embed] }),
     });
   } catch (error) {
     console.error("Failed to send Discord webhook:", error);

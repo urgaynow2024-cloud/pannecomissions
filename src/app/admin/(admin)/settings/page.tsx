@@ -72,28 +72,30 @@ export default function SettingsPage() {
     );
   }
 
+  const settings = [
+    ["site_name", "Site Name"],
+    ["site_url", "Site URL"],
+    ["social_links", "Social Links"],
+    ["footer_text", "Footer Text"],
+  ];
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Settings</h1>
-        <p className="text-gray-400 mt-1 text-sm">Read-only environment settings. To update, edit your environment variables and redeploy.</p>
+        <p className="text-gray-400 mt-1 text-sm">Read-only environment settings.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
-        <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 text-sm text-blue-300 flex items-start gap-3">
+        <div className="rounded-xl border border-brand-purple-500/20 bg-brand-purple-500/5 p-4 text-sm text-brand-purple-300 flex items-start gap-3">
           <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <p>These settings are managed via environment variables. Changes here are for reference only.</p>
+          <p>These settings are managed via environment variables. To update, edit your environment variables and redeploy.</p>
         </div>
 
         <div className="space-y-5">
-          {[
-            ["site_name", "Site Name"],
-            ["site_url", "Site URL"],
-            ["social_links", "Social Links"],
-            ["footer_text", "Footer Text"],
-          ].map(([key, label]) => (
+          {settings.map(([key, label]) => (
             <div key={key}>
               <label className="block text-sm font-medium text-gray-300 mb-1">{label}</label>
               <input
@@ -112,9 +114,11 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
-          {saving ? "Saving..." : "Save Changes"}
-        </button>
+        <div className="flex gap-3">
+          <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
+            {saving ? "Saving..." : "Save Changes"}
+          </button>
+        </div>
       </form>
     </div>
   );

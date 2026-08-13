@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Space_Grotesk, Inter } from "next/font/google";
 import "../styles/globals.css";
+import NoiseOverlay from "@/components/NoiseOverlay";
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -26,7 +27,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-brand-black text-white min-h-screen relative`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-brand-black text-white min-h-screen relative overflow-x-hidden`}>
+        <NoiseOverlay />
         {children}
       </body>
     </html>

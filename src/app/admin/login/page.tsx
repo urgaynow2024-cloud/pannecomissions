@@ -42,16 +42,17 @@ export default function AdminLogin() {
   return (
     <div className="min-h-screen bg-black flex items-center justify-center p-4">
       <div className="w-full max-w-md">
-        <div className="bg-[#0f0f0f] border border-white/5 rounded-2xl p-8 shadow-2xl shadow-purple-500/5">
+        <div className="bg-brand-dark border border-white/5 rounded-2xl p-8 shadow-2xl shadow-purple-500/5">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-white mb-2">
-              Panne Commissions
+            <h1 className="text-3xl font-bold tracking-tight text-white font-display">
+              PANNE
             </h1>
-            <p className="text-purple-400 font-medium text-sm tracking-widest uppercase">
-              Admin
+            <p className="text-brand-purple-400 font-medium text-sm tracking-widest uppercase mt-1">
+              CREATOR STUDIO
             </p>
-            <p className="text-gray-400 text-sm mt-3">
-              Sign in to manage the website.
+            <div className="mx-auto mt-4 h-0.5 w-8 bg-brand-purple-500 rounded-full" />
+            <p className="text-gray-400 text-sm mt-4">
+              Enter admin password to continue.
             </p>
           </div>
 
@@ -66,7 +67,7 @@ export default function AdminLogin() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none transition-colors"
+                  className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 focus:border-brand-purple-500 focus:ring-1 focus:ring-brand-purple-500 focus:outline-none transition-colors"
                   placeholder="Enter admin password"
                   required
                   autoFocus
@@ -99,7 +100,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full rounded-lg bg-purple-600 px-4 py-3 text-sm font-semibold text-white hover:bg-purple-500 hover:shadow-lg hover:shadow-purple-500/25 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-[#0f0f0f] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full rounded-lg bg-brand-purple-600 px-4 py-3 text-sm font-semibold text-white hover:bg-brand-purple-500 hover:shadow-lg hover:shadow-brand-purple-500/25 focus:outline-none focus:ring-2 focus:ring-brand-purple-500 focus:ring-offset-2 focus:ring-offset-brand-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -116,7 +117,7 @@ export default function AdminLogin() {
           </form>
 
           <div className="mt-6 text-center">
-            <Link href="/" className="text-sm text-gray-400 hover:text-purple-400 transition-colors">
+            <Link href="/" className="text-sm text-gray-400 hover:text-brand-purple-400 transition-colors">
               Back to website
             </Link>
           </div>

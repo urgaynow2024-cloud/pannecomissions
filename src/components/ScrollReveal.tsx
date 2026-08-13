@@ -1,20 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
+
+interface ScrollRevealProps {
+  children: React.ReactNode;
+  delay?: number;
+  threshold?: number;
+}
 
 export default function ScrollReveal({
   children,
-  className = "",
   delay = 0,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  delay?: number;
-}) {
+  threshold = 0.1,
+}: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [visible, setVisible] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(motionQuery.matches);
+
+    const handleChange = () => setReducedMotion(motionQuery.matches);
+    motionQuery.addEventListener("change", handleChange);
+
+    if (reducedMotion) {
+      setVisible(true);
+      return;
+    }
+
     const el = ref.current;
     if (!el) return;
 
@@ -25,18 +39,19 @@ export default function ScrollReveal({
           observer.unobserve(el);
         }
       },
-      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
+      { threshold }
     );
 
     observer.observe(el);
     return () => observer.disconnect();
-  }, []);
+  }, [reducedMotion, threshold]);
+
+  const delayClass = delay > 0 ? `reveal-delay-${Math.min(delay, 4)}` : "";
 
   return (
     <div
       ref={ref}
-      className={`reveal ${visible ? "is-visible" : ""} ${delay ? `reveal-delay-${delay}` : ""} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      className={`reveal ${visible ? "is-visible" : ""} ${delayClass}`}
     >
       {children}
     </div>

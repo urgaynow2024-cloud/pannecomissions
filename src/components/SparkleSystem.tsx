@@ -1,146 +1,103 @@
 "use client";
 
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 
-const SPARKLE_COUNT = 35;
-const SPARKLE_CHARS = ["✦", "✧", "⋆", "·", "✶"];
+const SPARKLE_COUNT = 40;
+const SPARKLE_CHARS = ["✦", "✧", "⋆"];
+const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce"];
 
-interface Sparkle {
-  x: number;
-  y: number;
-  char: string;
-  size: number;
-  opacity: number;
-  speed: number;
-  drift: number;
-  rotation: number;
-  rotationSpeed: number;
-  life: number;
-  maxLife: number;
-  type: "fade" | "drift" | "pulse";
+function random(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
+
+function pick<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 export default function SparkleSystem() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sparklesRef = useRef<Sparkle[]>([]);
-  const frameRef = useRef<number>(0);
-  const mouseRef = useRef({ x: -1000, y: -1000 });
-  const reducedMotion = useRef(
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false
-  );
-
-  const initSparkles = useCallback(() => {
-    const sparkles: Sparkle[] = [];
-    for (let i = 0; i < SPARKLE_COUNT; i++) {
-      sparkles.push(createSparkle(true));
-    }
-    sparklesRef.current = sparkles;
-  }, []);
-
-  const createSparkle = (randomY = false): Sparkle => {
-    const types: Sparkle["type"][] = ["fade", "drift", "pulse"];
-    return {
-      x: Math.random() * window.innerWidth,
-      y: randomY ? Math.random() * window.innerHeight : window.innerHeight + 20,
-      char: SPARKLE_CHARS[Math.floor(Math.random() * SPARKLE_CHARS.length)],
-      size: 8 + Math.random() * 14,
-      opacity: 0.1 + Math.random() * 0.4,
-      speed: 0.2 + Math.random() * 0.5,
-      drift: (Math.random() - 0.5) * 0.3,
-      rotation: Math.random() * 360,
-      rotationSpeed: (Math.random() - 0.5) * 0.5,
-      life: 0,
-      maxLife: 200 + Math.random() * 400,
-      type: types[Math.floor(Math.random() * types.length)],
-    };
-  };
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (reducedMotion.current) return;
+    const container = containerRef.current;
+    if (!container) return;
 
-    initSparkles();
+    const fragment = document.createDocumentFragment();
 
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    for (let i = 0; i < SPARKLE_COUNT; i++) {
+      const el = document.createElement("span");
+      el.className = "sparkle";
+      el.setAttribute("aria-hidden", "true");
 
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
+      const size = Math.random() < 0.65 ? random(8, 14) : random(14, 20);
+      const opacity = Math.random() < 0.7 ? random(0.1, 0.3) : random(0.3, 0.6);
+      const duration = random(4, 12);
+      const delay = random(0, 8);
+      const hasGlow = Math.random() > 0.65;
 
-    const resize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    resize();
-    window.addEventListener("resize", resize);
+      el.textContent = pick(SPARKLE_CHARS);
+      el.style.left = `${random(0, 100)}%`;
+      el.style.top = `${random(0, 100)}%`;
+      el.style.fontSize = `${size}px`;
+      el.style.color = pick(TINTS);
+      el.style.setProperty("--duration", `${duration.toFixed(2)}s`);
+      el.style.setProperty("--delay", `${delay.toFixed(2)}s`);
+      el.style.setProperty("--base-opacity", String(opacity));
 
-    const handleMouse = (e: MouseEvent) => {
-      mouseRef.current = { x: e.clientX, y: e.clientY };
-    };
-    window.addEventListener("mousemove", handleMouse);
+      if (hasGlow) {
+        el.style.textShadow = "0 0 6px rgba(168, 85, 247, 0.45)";
+      }
 
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      fragment.appendChild(el);
+    }
 
-      sparklesRef.current.forEach((s, i) => {
-        s.life += 1;
-        s.y -= s.speed;
-        s.x += s.drift;
-        s.rotation += s.rotationSpeed;
-
-        let alpha = s.opacity;
-        const lifeRatio = s.life / s.maxLife;
-
-        if (s.type === "fade") {
-          alpha = s.opacity * (lifeRatio < 0.5 ? lifeRatio * 2 : 2 - lifeRatio * 2);
-        } else if (s.type === "pulse") {
-          alpha = s.opacity * (0.5 + 0.5 * Math.sin(s.life * 0.05));
-        }
-
-        const mouseDist = Math.hypot(s.x - mouseRef.current.x, s.y - mouseRef.current.y);
-        if (mouseDist < 120) {
-          alpha = Math.min(1, alpha + 0.4 * (1 - mouseDist / 120));
-        }
-
-        if (s.life >= s.maxLife || s.y < -20 || s.x < -20 || s.x > canvas.width + 20) {
-          sparklesRef.current[i] = createSparkle();
-          return;
-        }
-
-        ctx.save();
-        ctx.translate(s.x, s.y);
-        ctx.rotate((s.rotation * Math.PI) / 180);
-        ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
-        ctx.font = `${s.size}px system-ui`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillStyle = "#a855f7";
-        ctx.shadowColor = "rgba(168, 85, 247, 0.6)";
-        ctx.shadowBlur = 8;
-        ctx.fillText(s.char, 0, 0);
-        ctx.restore();
-      });
-
-      frameRef.current = requestAnimationFrame(animate);
-    };
-
-    animate();
-
-    return () => {
-      window.removeEventListener("resize", resize);
-      window.removeEventListener("mousemove", handleMouse);
-      cancelAnimationFrame(frameRef.current);
-    };
-  }, [initSparkles]);
-
-  if (reducedMotion.current) return null;
+    container.appendChild(fragment);
+  }, []);
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="sparkle-canvas"
-      aria-hidden="true"
-    />
+    <>
+      <div ref={containerRef} className="sparkle-system" aria-hidden="true" />
+      <style>{css}</style>
+    </>
   );
 }
+
+const css = `
+  .sparkle-system {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .sparkle {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1;
+    opacity: var(--base-opacity, 0.3);
+    animation: sparkle-drift var(--duration, 8s) ease-in-out var(--delay, 0s) infinite;
+    transform: translate3d(0, 0, 0);
+  }
+
+  @keyframes sparkle-drift {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    }
+    33% {
+      transform: translate3d(6px, -10px, 0) rotate(40deg) scale(1.05);
+    }
+    66% {
+      transform: translate3d(-4px, -14px, 0) rotate(-20deg) scale(0.95);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sparkle {
+      animation: none;
+      opacity: 0;
+    }
+  }
+`;
