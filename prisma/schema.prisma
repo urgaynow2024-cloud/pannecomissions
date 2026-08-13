@@ -20,6 +20,8 @@ model PortfolioItem {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 
+  photos Photo[]
+
   @@map("portfolio_items")
 }
 
@@ -34,6 +36,8 @@ model Review {
   rejection_reason String?
   created_at     DateTime  @default(now())
   updated_at     DateTime  @updatedAt
+
+  photos Photo[]
 
   @@map("reviews")
 }
@@ -120,7 +124,33 @@ model Service {
   created_at  DateTime  @default(now())
   updated_at  DateTime  @updatedAt
 
+  photos Photo[]
+
   @@map("services")
+}
+
+model Photo {
+  id               String    @id @default(cuid())
+  url              String
+  alt_text         String?
+  width            Int?
+  height           Int?
+  file_size        Int?
+  mime_type        String?
+  sort_order       Int       @default(0)
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
+
+  portfolioItemId  String?
+  portfolioItem    PortfolioItem? @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
+
+  serviceId        String?
+  service          Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  reviewId         String?
+  review           Review? @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@map("photos")
 }
 
 model Pricing {

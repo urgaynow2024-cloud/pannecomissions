@@ -6,6 +6,11 @@ export async function GET() {
     const items = await prisma.PortfolioItem.findMany({
       where: { nsfw: true },
       orderBy: { sort_order: "asc" },
+      include: {
+        photos: {
+          orderBy: { sort_order: "asc" },
+        },
+      },
     });
     return NextResponse.json(items);
   } catch (error) {

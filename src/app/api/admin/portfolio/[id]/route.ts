@@ -18,6 +18,11 @@ export async function GET(
     const { id } = await params;
     const item = await prisma.PortfolioItem.findUnique({
       where: { id },
+      include: {
+        photos: {
+          orderBy: { sort_order: "asc" },
+        },
+      },
     });
     if (!item || item.nsfw) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -72,6 +77,11 @@ export async function PUT(
         featured,
         visible,
         sort_order,
+      },
+      include: {
+        photos: {
+          orderBy: { sort_order: "asc" },
+        },
       },
     });
 

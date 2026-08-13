@@ -105,6 +105,26 @@ CREATE TABLE IF NOT EXISTS pricing (
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS photos (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  url TEXT NOT NULL,
+  alt_text TEXT,
+  width INTEGER,
+  height INTEGER,
+  file_size INTEGER,
+  mime_type TEXT,
+  sort_order INTEGER NOT NULL DEFAULT 0,
+  portfolio_item_id TEXT REFERENCES portfolio_items(id) ON DELETE CASCADE,
+  service_id TEXT REFERENCES services(id) ON DELETE CASCADE,
+  review_id TEXT REFERENCES reviews(id) ON DELETE CASCADE,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_photos_portfolio_item ON photos(portfolio_item_id);
+CREATE INDEX IF NOT EXISTS idx_photos_service ON photos(service_id);
+CREATE INDEX IF NOT EXISTS idx_photos_review ON photos(review_id);
+
 DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'alt_text') THEN
