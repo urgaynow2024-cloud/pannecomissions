@@ -18,9 +18,9 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
 
   return (
     <footer className="relative border-t border-white/5 bg-brand-dark overflow-hidden">
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-0 left-[30%] w-[300px] h-[200px] bg-brand-purple-500/4 rounded-full blur-[80px]" />
-        <div className="absolute bottom-0 left-[50%] -translate-x-1/2 w-[500px] h-[120px] bg-brand-purple-500/5 rounded-full blur-[100px]" />
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-0 left-[20%] w-[500px] h-[400px] bg-brand-purple-500/6 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 left-[50%] -translate-x-1/2 w-[600px] h-[200px] bg-brand-purple-500/8 rounded-full blur-[140px]" />
       </div>
 
       {displayItems.length > 0 && (

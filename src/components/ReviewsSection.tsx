@@ -19,6 +19,10 @@ interface ReviewsSectionProps {
 export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
   return (
     <section className="py-24 md:py-40 relative">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[10%] w-[700px] h-[500px] bg-brand-purple-500/8 rounded-full blur-[160px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[10%] w-[600px] h-[400px] bg-brand-purple-600/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
+      </div>
       <SectionGlow intensity="subtle" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
@@ -72,11 +76,12 @@ export default function ReviewsSection({ reviews }: ReviewsSectionProps) {
               {reviews.map((review, i) => {
                 const isLarge = review.image_url && i === 0;
                 return (
-                  <div
-                    key={review.id}
-                    className={`group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden transition-all duration-500 hover:border-brand-purple-500/25 hover:shadow-[0_0_40px_rgba(168,85,247,0.06)] hover:bg-white/[0.04] ${isLarge ? "md:col-span-2" : ""}`}
-                  >
-                    <div className="p-6 md:p-8">
+                    <div
+                      key={review.id}
+                      className={`group relative rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden transition-all duration-500 hover:border-brand-purple-500/30 hover:shadow-[0_0_50px_rgba(168,85,247,0.08)] hover:bg-white/[0.04] ${isLarge ? "md:col-span-2" : ""}`}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                      <div className="p-6 md:p-8 relative z-10">
                       {review.image_url && (
                         <div className={`mb-5 ${isLarge ? "-mx-6 md:-mx-8 -mt-6 md:-mt-8" : ""}`}>
                           <div className={`relative overflow-hidden ${isLarge ? "aspect-[2/1]" : "aspect-video"}`}>

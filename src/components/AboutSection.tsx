@@ -5,8 +5,9 @@ import ScrollReveal from "./ScrollReveal";
 export default function AboutSection() {
   return (
     <section className="py-24 md:py-40 relative overflow-hidden">
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-[10%] right-[10%] w-[350px] h-[350px] bg-brand-purple-500/5 rounded-full blur-[100px]" style={{ animation: "ambient-pulse 7s ease-in-out infinite" }} />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[5%] right-[5%] w-[700px] h-[600px] bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] left-[10%] w-[500px] h-[400px] bg-brand-purple-600/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 4s" }} />
       </div>
       <div className="mx-auto max-w-7xl px-6">
         <ScrollReveal>
@@ -29,10 +30,10 @@ export default function AboutSection() {
 
             <div className="lg:col-span-7 relative">
               <div className="relative aspect-[4/3] md:aspect-[16/9] rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02]">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-brand-purple-500/4 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/5 to-transparent" />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center space-y-4">
-                    <span className="text-6xl animate-gentle-float inline-block text-brand-purple-400/20">✦</span>
+                    <span className="text-6xl animate-gentle-float inline-block text-brand-purple-400/25">✦</span>
                     <p className="text-sm text-gray-500 max-w-xs mx-auto">
                       Real artwork will appear here from the portfolio.
                     </p>

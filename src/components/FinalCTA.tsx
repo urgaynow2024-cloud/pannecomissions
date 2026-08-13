@@ -6,7 +6,7 @@ import { Sparkles, ArrowRight } from "lucide-react";
 export default function FinalCTA() {
   return (
     <section className="relative py-24 md:py-40 overflow-hidden">
-      <div className="absolute inset-0 -z-10 pointer-events-none">
+      <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] bg-brand-purple-500/10 rounded-full blur-[180px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
         <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] bg-brand-purple-600/8 rounded-full blur-[160px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
         <div className="absolute top-[40%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[700px] h-[400px] bg-brand-purple-500/6 rounded-full blur-[200px]" />

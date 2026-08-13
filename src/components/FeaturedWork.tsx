@@ -42,9 +42,10 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
 
   return (
     <section className="py-20 md:py-32 relative">
-      <div className="absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-        <div className="absolute top-[20%] left-[10%] w-[400px] h-[300px] bg-brand-purple-500/4 rounded-full blur-[100px]" style={{ animation: "pulseGlow 6s ease-in-out infinite" }} />
-        <div className="absolute bottom-[20%] right-[15%] w-[300px] h-[250px] bg-brand-purple-600/3 rounded-full blur-[80px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 3s" }} />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[5%] w-[600px] h-[500px] bg-brand-purple-500/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[500px] h-[400px] bg-brand-purple-600/8 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-purple-500/6 rounded-full blur-[180px]" />
       </div>
 
       <div className="mx-auto max-w-7xl px-6">
@@ -74,7 +75,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
             <ScrollReveal delay={0}>
               <button
                 onClick={() => openLightbox(0)}
-                className="group relative lg:col-span-7 aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 text-left w-full artwork-glow"
+                 className="group relative lg:col-span-7 aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
               >
                 <img
                   src={items[0].image_url}
@@ -101,7 +102,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                 <ScrollReveal key={item.id} delay={(i + 1) * 120}>
                   <button
                     onClick={() => openLightbox(i + 1)}
-                    className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 text-left w-full artwork-glow"
+                    className="group relative aspect-[16/9] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
                   >
                     <img
                       src={item.image_url}
@@ -134,7 +135,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                 <button
                   key={item.id}
                   onClick={() => openLightbox(i)}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 text-left w-full artwork-glow"
+                   className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/35 text-left w-full artwork-glow"
                 >
                   <img
                     src={item.image_url}

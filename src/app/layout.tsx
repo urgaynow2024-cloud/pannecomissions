@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
-      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased bg-brand-black text-white min-h-screen relative overflow-x-hidden`}>
+      <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased text-white min-h-screen relative overflow-x-hidden`}>
         <NoiseOverlay />
         {children}
       </body>

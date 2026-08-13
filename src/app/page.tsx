@@ -38,11 +38,7 @@ export default async function Home() {
   const { portfolio, services, pricing, reviews, featured, featuredWork } = await getData();
 
   return (
-    <main className="min-h-screen bg-brand-black text-white antialiased relative">
-      <div className="fixed inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-0 left-[20%] w-[500px] h-[500px] bg-brand-purple-500/4 rounded-full blur-[160px]" />
-        <div className="absolute bottom-0 right-[20%] w-[400px] h-[400px] bg-brand-purple-600/3 rounded-full blur-[140px]" />
-      </div>
+    <main className="min-h-screen text-white antialiased relative">
       <SparkleSystem />
       <NoiseOverlay />
       <Navbar />

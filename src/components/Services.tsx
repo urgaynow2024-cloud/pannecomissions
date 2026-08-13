@@ -27,7 +27,7 @@ const ASPECTS = ["aspect-[4/5]", "aspect-square", "aspect-[3/4]", "aspect-[4/3]"
 function ServiceImageFallback({ name, index }: { name: string; index: number }) {
   return (
     <div className={`relative w-full ${ASPECTS[index % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] group`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/12 via-brand-purple-500/6 to-transparent" />
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/6 to-transparent" />
       <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
         <span className="text-brand-purple-400/25 text-3xl animate-sparkle-float">✦</span>
         <p className="text-sm font-medium text-gray-500 text-center px-6 font-display tracking-wide">
@@ -49,9 +49,10 @@ export default function Services({ services }: ServicesProps) {
 
   return (
     <section className="py-24 md:py-40 relative">
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-[20%] left-[10%] w-[400px] h-[400px] bg-brand-purple-500/5 rounded-full blur-[120px]" style={{ animation: "ambient-pulse 8s ease-in-out infinite" }} />
-        <div className="absolute bottom-[20%] right-[10%] w-[350px] h-[350px] bg-brand-purple-600/4 rounded-full blur-[100px]" style={{ animation: "ambient-pulse 8s ease-in-out infinite 4s" }} />
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[5%] w-[700px] h-[600px] bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[500px] bg-brand-purple-600/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 4s" }} />
+        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-brand-purple-500/5 rounded-full blur-[200px]" />
       </div>
       <SectionGlow intensity="subtle" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
@@ -76,7 +77,7 @@ export default function Services({ services }: ServicesProps) {
               <ScrollReveal key={service.id} delay={i * 100}>
                 <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center ${!isEven ? "lg:[&>:first-child]:order-2 lg:[&>:last-child]:order-1" : ""}`}>
                   <div className={`lg:col-span-5 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 hover:shadow-[0_0_40px_rgba(168,85,247,0.08)] artwork-glow`}>
+                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 hover:shadow-[0_0_50px_rgba(168,85,247,0.1)] artwork-glow`}>
                       {service.image_url ? (
                         <>
                           <img
@@ -86,7 +87,7 @@ export default function Services({ services }: ServicesProps) {
                             loading="lazy"
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/8 to-transparent" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 to-transparent" />
                         </>
                       ) : (
                         <ServiceImageFallback name={service.name} index={i} />

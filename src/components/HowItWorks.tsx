@@ -34,6 +34,10 @@ const steps = [
 export default function HowItWorks() {
   return (
     <section className="py-24 md:py-40 relative">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[10%] w-[700px] h-[500px] bg-brand-purple-500/8 rounded-full blur-[160px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[10%] w-[600px] h-[400px] bg-brand-purple-600/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
+      </div>
       <SectionGlow intensity="subtle" />
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
@@ -57,12 +61,12 @@ export default function HowItWorks() {
             {steps.map((step, i) => (
               <ScrollReveal key={step.number} delay={i * 100}>
                 <div className="group flex items-start gap-6 md:gap-10">
-                  <div className="relative flex-shrink-0">
-                    <div className="w-14 h-14 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center group-hover:border-brand-purple-500/40 group-hover:bg-brand-purple-500/5 transition-all duration-500 relative z-10">
-                      <span className="text-sm font-bold text-brand-purple-400 font-display">
-                        {step.number}
-                      </span>
-                    </div>
+                   <div className="relative flex-shrink-0">
+                     <div className="w-14 h-14 rounded-full border border-white/10 bg-white/[0.02] flex items-center justify-center group-hover:border-brand-purple-500/50 group-hover:bg-brand-purple-500/10 group-hover:shadow-[0_0_30px_rgba(168,85,247,0.15)] transition-all duration-500 relative z-10">
+                       <span className="text-sm font-bold text-brand-purple-400 font-display">
+                         {step.number}
+                       </span>
+                     </div>
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center">
                       <Sparkle className="w-2.5 h-2.5 text-brand-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                     </div>

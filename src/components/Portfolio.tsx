@@ -34,11 +34,11 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
     return (
       <div className="text-center py-24 relative">
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <div className="w-[400px] h-[400px] bg-brand-purple-500/5 rounded-full blur-[100px]" />
+          <div className="w-[500px] h-[500px] bg-brand-purple-500/8 rounded-full blur-[120px]" />
         </div>
         <div className="space-y-5 relative z-10">
-          <span className="text-5xl text-brand-purple-400/25 animate-sparkle-float inline-block">✦</span>
-          <p className="text-lg font-semibold text-white/40 font-display tracking-wider uppercase">
+          <span className="text-5xl text-brand-purple-400/30 animate-sparkle-float inline-block">✦</span>
+          <p className="text-lg font-semibold text-white/50 font-display tracking-wider uppercase">
             Featured Work
           </p>
           <p className="text-sm text-gray-600 max-w-xs mx-auto leading-relaxed">
@@ -56,12 +56,16 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
 
   return (
     <div className="relative">
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[10%] left-[10%] w-[600px] h-[500px] bg-brand-purple-500/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[400px] bg-brand-purple-600/5 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
+      </div>
       <div className="columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6">
         {items.map((item, index) => (
           <button
             key={item.id}
             onClick={() => openLightbox(index)}
-            className="group relative w-full break-inside-avoid text-left overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-700 hover:border-brand-purple-500/30 hover:shadow-[0_0_40px_rgba(168,85,247,0.1)] mb-4 md:mb-6 artwork-glow"
+            className="group relative w-full break-inside-avoid text-left overflow-hidden rounded-2xl border border-white/5 bg-white/[0.02] transition-all duration-700 hover:border-brand-purple-500/35 hover:shadow-[0_0_50px_rgba(168,85,247,0.12)] mb-4 md:mb-6 artwork-glow"
           >
             <div className="relative overflow-hidden">
               <img
