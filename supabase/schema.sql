@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS portfolio_items (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
-  title TEXT,
+  display_title TEXT,
+  category TEXT,
   description TEXT,
   alt_text TEXT,
   image_url TEXT NOT NULL,
@@ -141,6 +142,20 @@ BEGIN
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'visible') THEN
     ALTER TABLE portfolio_items ADD COLUMN visible BOOLEAN NOT NULL DEFAULT true;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'display_title') THEN
+    ALTER TABLE portfolio_items ADD COLUMN display_title TEXT;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'category') THEN
+    ALTER TABLE portfolio_items ADD COLUMN category TEXT;
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'title') THEN
+    IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'portfolio_items' AND column_name = 'display_title') THEN
+      UPDATE portfolio_items SET display_title = COALESCE(display_title, title) WHERE display_title IS NULL;
+      ALTER TABLE portfolio_items DROP COLUMN title;
+    ELSE
+      ALTER TABLE portfolio_items RENAME COLUMN title TO display_title;
+    END IF;
   END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'reviews' AND column_name = 'rejection_reason') THEN
     ALTER TABLE reviews ADD COLUMN rejection_reason TEXT;

@@ -9,8 +9,8 @@ import SparkleField from "./SparkleField";
 
 interface PortfolioItem {
   id: string;
-  title: string;
-  description: string;
+  display_title: string | null;
+  description: string | null;
   image_url: string;
 }
 
@@ -43,9 +43,9 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
   return (
     <section className="py-20 md:py-32 relative">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-[5%] w-[600px] h-[500px] bg-brand-purple-500/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
-        <div className="absolute bottom-[10%] right-[5%] w-[500px] h-[400px] bg-brand-purple-600/8 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
-        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-purple-500/6 rounded-full blur-[180px]" />
+        <div className="absolute top-[10%] left-[5%] w-[600px] h-[500px] bg-brand-purple-500/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite, ambient-drift 25s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[5%] w-[500px] h-[400px] bg-brand-purple-600/8 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s, ambient-drift 30s ease-in-out infinite reverse" }} />
+        <div className="absolute top-[40%] left-[50%] -translate-x-1/2 w-[800px] h-[400px] bg-brand-purple-500/6 rounded-full blur-[180px]" style={{ animation: "ambient-drift 28s ease-in-out infinite" }} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6">
@@ -79,7 +79,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
               >
                 <img
                   src={items[0].image_url}
-                  alt={items[0].title}
+                  alt={items[0].display_title || "Featured artwork"}
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   loading="lazy"
                 />
@@ -92,7 +92,9 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                   <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1.5">
                     Featured
                   </p>
-                  <p className="text-lg md:text-xl font-semibold text-white font-display">{items[0].title}</p>
+                  {items[0].display_title && (
+                    <p className="text-lg md:text-xl font-semibold text-white font-display">{items[0].display_title}</p>
+                  )}
                 </div>
               </button>
             </ScrollReveal>
@@ -106,7 +108,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                   >
                     <img
                       src={item.image_url}
-                      alt={item.title}
+                      alt={item.display_title || "Featured artwork"}
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                       loading="lazy"
                     />
@@ -119,7 +121,9 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                       <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
                         Featured
                       </p>
-                      <p className="text-base font-semibold text-white font-display">{item.title}</p>
+                      {item.display_title && (
+                        <p className="text-base font-semibold text-white font-display">{item.display_title}</p>
+                      )}
                     </div>
                   </button>
                 </ScrollReveal>
@@ -139,7 +143,7 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                 >
                   <img
                     src={item.image_url}
-                    alt={item.title}
+                    alt={item.display_title || "Featured artwork"}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                   />
@@ -149,7 +153,9 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
                     <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1.5">
                       Featured
                     </p>
-                    <p className="text-lg font-semibold text-white font-display">{item.title}</p>
+                    {item.display_title && (
+                      <p className="text-lg md:text-xl font-semibold text-white font-display">{item.display_title}</p>
+                    )}
                   </div>
                 </button>
               ))}

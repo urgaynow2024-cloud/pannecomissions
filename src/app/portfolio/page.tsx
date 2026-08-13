@@ -13,9 +13,9 @@ async function getData() {
       orderBy: { sort_order: "asc" },
     });
 
-    return items.map((item: { id: string; title: string; description: string | null; image_url: string }) => ({
+    return items.map((item: { id: string; display_title: string | null; description: string | null; image_url: string }) => ({
       id: item.id,
-      title: item.title,
+      display_title: item.display_title,
       description: item.description || "",
       image_url: item.image_url,
     }));

@@ -28,8 +28,12 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
     return NextResponse.json(item);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Failed to fetch portfolio item:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Failed to load item." }, { status: 500 });
   }
 }
 
@@ -41,8 +45,9 @@ export async function PUT(
     await requireAdmin();
     const { id } = await params;
     const formData = await request.formData();
-    const title = formData.get("title") as string;
+    const displayTitle = formData.get("displayTitle") as string;
     const description = formData.get("description") as string;
+    const category = formData.get("category") as string;
     const altText = formData.get("altText") as string;
     const featured = formData.get("featured") === "true";
     const visible = formData.get("visible") === "true";
@@ -70,8 +75,9 @@ export async function PUT(
     const item = await prisma.PortfolioItem.update({
       where: { id },
       data: {
-        title: title || existing.title,
+        display_title: displayTitle !== "" ? displayTitle : existing.display_title,
         description: description !== "" ? description : existing.description,
+        category: category !== "" ? category : existing.category,
         alt_text: altText !== "" ? altText : existing.alt_text,
         image_url: imageUrl,
         featured,
@@ -88,6 +94,9 @@ export async function PUT(
     return NextResponse.json(item);
   } catch (error) {
     console.error("Failed to update portfolio item:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     return NextResponse.json({ error: "Failed to update portfolio item" }, { status: 500 });
   }
 }
@@ -107,7 +116,11 @@ export async function DELETE(
     }
     await prisma.PortfolioItem.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Failed to delete portfolio item:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Failed to delete portfolio item" }, { status: 500 });
   }
 }

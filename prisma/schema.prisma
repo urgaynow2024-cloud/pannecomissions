@@ -8,17 +8,18 @@ datasource db {
 }
 
 model PortfolioItem {
-  id          String    @id @default(cuid())
-  title       String?
-  description String?
-  alt_text    String?
-  image_url   String
-  sort_order  Int       @default(0)
-  featured    Boolean   @default(false)
-  nsfw        Boolean   @default(false)
-  visible     Boolean   @default(true)
-  created_at  DateTime  @default(now())
-  updated_at  DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  display_title  String?
+  category       String?
+  description    String?
+  alt_text       String?
+  image_url      String
+  sort_order     Int       @default(0)
+  featured       Boolean   @default(false)
+  nsfw           Boolean   @default(false)
+  visible        Boolean   @default(true)
+  created_at     DateTime  @default(now()) @map("created_at")
+  updated_at     DateTime  @updatedAt @map("updated_at")
 
   photos Photo[]
 
@@ -141,13 +142,13 @@ model Photo {
   created_at       DateTime  @default(now())
   updated_at       DateTime  @updatedAt
 
-  portfolioItemId  String?
+  portfolioItemId  String?   @map("portfolio_item_id")
   portfolioItem    PortfolioItem? @relation(fields: [portfolioItemId], references: [id], onDelete: Cascade)
 
-  serviceId        String?
+  serviceId        String?   @map("service_id")
   service          Service? @relation(fields: [serviceId], references: [id], onDelete: Cascade)
 
-  reviewId         String?
+  reviewId         String?   @map("review_id")
   review           Review? @relation(fields: [reviewId], references: [id], onDelete: Cascade)
 
   @@map("photos")

@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParallax } from "./ScrollReveal";
@@ -8,7 +9,7 @@ import SparkleField from "./SparkleField";
 
 interface PortfolioItem {
   id: string;
-  title: string;
+  display_title: string | null;
   image_url: string;
 }
 
@@ -19,26 +20,45 @@ interface HeroProps {
 export default function Hero({ featuredItem }: HeroProps) {
   const { ref: bgRef, transform: bgTransform } = useParallax(0.1);
   const { ref: imgRef, transform: imgTransform } = useParallax(0.05);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const isMobile = typeof window !== "undefined" && window.matchMedia("(max-width: 1024px)").matches;
+
+  useEffect(() => {
+    const handleMouse = (e: MouseEvent) => {
+      if (!heroRef.current) return;
+      const rect = heroRef.current.getBoundingClientRect();
+      const x = (e.clientX - rect.left - rect.width / 2) / rect.width;
+      const y = (e.clientY - rect.top - rect.height / 2) / rect.height;
+      setMousePos({ x, y });
+    };
+    window.addEventListener("mousemove", handleMouse, { passive: true });
+    return () => window.removeEventListener("mousemove", handleMouse);
+  }, []);
+
+  const bgParallax = isMobile ? bgTransform : `${bgTransform} translate3d(${mousePos.x * -4}px, ${mousePos.y * -3}px, 0)`;
+  const imgParallax = isMobile ? imgTransform : `${imgTransform} translate3d(${mousePos.x * 6}px, ${mousePos.y * 4}px, 0)`;
+  const artworkParallax = isMobile ? "" : `translate3d(${mousePos.x * 3}px, ${mousePos.y * 2}px, 0)`;
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12">
+    <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12">
       <div
         ref={bgRef}
         className="absolute inset-0 pointer-events-none"
-        style={{ transform: bgTransform }}
+        style={{ transform: bgParallax }}
       >
-        <div className="absolute top-[-10%] left-[10%] w-[900px] h-[700px] bg-brand-purple-500/15 rounded-full blur-[180px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
-        <div className="absolute bottom-[-5%] right-[5%] w-[800px] h-[600px] bg-brand-purple-600/12 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 3s" }} />
-        <div className="absolute top-[30%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] bg-brand-purple-500/10 rounded-full blur-[200px]" />
-        <div className="absolute top-[10%] right-[15%] w-[500px] h-[400px] bg-brand-purple-400/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 1.5s" }} />
-        <div className="absolute bottom-[20%] left-[5%] w-[600px] h-[500px] bg-brand-purple-700/8 rounded-full blur-[180px]" style={{ animation: "pulseGlow 10s ease-in-out infinite 2s" }} />
+        <div className="absolute top-[-10%] left-[10%] w-[900px] h-[700px] bg-brand-purple-500/15 rounded-full blur-[180px]" style={{ animation: "pulseGlow 8s ease-in-out infinite, ambient-drift 25s ease-in-out infinite" }} />
+        <div className="absolute bottom-[-5%] right-[5%] w-[800px] h-[600px] bg-brand-purple-600/12 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 3s, ambient-drift 30s ease-in-out infinite reverse" }} />
+        <div className="absolute top-[30%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] bg-brand-purple-500/10 rounded-full blur-[200px]" style={{ animation: "ambient-drift 28s ease-in-out infinite" }} />
+        <div className="absolute top-[10%] right-[15%] w-[500px] h-[400px] bg-brand-purple-400/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 1.5s, ambient-drift 22s ease-in-out infinite 2s" }} />
+        <div className="absolute bottom-[20%] left-[5%] w-[600px] h-[500px] bg-brand-purple-700/8 rounded-full blur-[180px]" style={{ animation: "pulseGlow 10s ease-in-out infinite 2s, ambient-drift 35s ease-in-out infinite 1s" }} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 w-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <div className="lg:col-span-6 space-y-8 relative z-10">
             <div className="relative">
-              <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.15} maxOpacity={0.4} className="-inset-8" glow />
+              <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.15} maxOpacity={0.4} className="-inset-8" glow layers="single" />
               <div className="relative z-10 space-y-1">
                 <h1 className="text-6xl md:text-7xl lg:text-[7rem] font-bold tracking-tighter text-white leading-[0.85] font-display relative heading-pop">
                   PANNE
@@ -78,19 +98,19 @@ export default function Hero({ featuredItem }: HeroProps) {
           <div
             ref={imgRef}
             className="lg:col-span-6 relative -mt-4 lg:-mt-12"
-            style={{ transform: imgTransform }}
+            style={{ transform: imgParallax }}
           >
-            <div className="relative lg:-mr-8 xl:-mr-16">
+            <div className="relative lg:-mr-8 xl:-mr-16" style={!isMobile ? { transform: artworkParallax } : undefined}>
               <div className="absolute -inset-12 bg-gradient-to-br from-brand-purple-500/20 via-brand-purple-500/10 to-transparent rounded-[3rem] blur-3xl" />
               <div className="absolute -inset-6 bg-gradient-to-t from-brand-purple-500/10 via-transparent to-transparent rounded-2xl blur-2xl" />
 
-              <SparkleField count={10} minSize={3} maxSize={12} minOpacity={0.2} maxOpacity={0.5} className="absolute inset-0 z-20 pointer-events-none" glow />
+              <SparkleField count={10} minSize={3} maxSize={12} minOpacity={0.2} maxOpacity={0.5} className="absolute inset-0 z-20 pointer-events-none" glow layers="single" />
 
               {featuredItem ? (
                 <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-brand-purple-500/15 shadow-2xl artwork-glow">
                   <Image
                     src={featuredItem.image_url}
-                    alt={featuredItem.title}
+                    alt={featuredItem.display_title || "Featured artwork"}
                     fill
                     className="object-cover transition-transform duration-700 hover:scale-[1.02]"
                     priority
@@ -105,12 +125,11 @@ export default function Hero({ featuredItem }: HeroProps) {
                   <div className="absolute top-4 left-4">
                     <span className="text-brand-purple-400/60 text-lg animate-sparkle-float" style={{ animationDelay: "-3s" }}>✧</span>
                   </div>
-                  <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
-                    <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-2">
-                      Featured Work
-                    </p>
-                    <p className="text-xl font-semibold text-white font-display">{featuredItem.title}</p>
-                  </div>
+                  {featuredItem.display_title && (
+                    <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                      <p className="text-xl font-semibold text-white font-display">{featuredItem.display_title}</p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] border border-brand-purple-500/15 bg-white/[0.02] flex items-center justify-center rounded-2xl overflow-hidden">

@@ -5,8 +5,8 @@ import Lightbox from "./Lightbox";
 
 interface PortfolioItem {
   id: string;
-  title: string;
-  description?: string;
+  display_title: string | null;
+  description?: string | null;
   image_url: string;
 }
 
@@ -55,12 +55,12 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
   };
 
   return (
-    <div className="relative">
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-[10%] w-[600px] h-[500px] bg-brand-purple-500/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite" }} />
-        <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[400px] bg-brand-purple-600/5 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s" }} />
-      </div>
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6">
+      <div className="relative">
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-[10%] left-[10%] w-[600px] h-[500px] bg-brand-purple-500/6 rounded-full blur-[140px]" style={{ animation: "pulseGlow 7s ease-in-out infinite, ambient-drift 25s ease-in-out infinite" }} />
+          <div className="absolute bottom-[10%] right-[10%] w-[500px] h-[400px] bg-brand-purple-600/5 rounded-full blur-[120px]" style={{ animation: "pulseGlow 7s ease-in-out infinite 3s, ambient-drift 30s ease-in-out infinite reverse" }} />
+        </div>
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6">
         {items.map((item, index) => (
           <button
             key={item.id}
@@ -70,7 +70,7 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
             <div className="relative overflow-hidden">
               <img
                 src={item.image_url}
-                alt={item.title}
+                alt={item.display_title || "Portfolio artwork"}
                 className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-[1.04]"
                 loading="lazy"
               />
@@ -81,7 +81,9 @@ export default function Portfolio({ items, isAdmin }: PortfolioProps) {
               </div>
             </div>
             <div className="absolute inset-0 flex flex-col justify-end p-5 md:p-6 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500 pointer-events-none">
-              <p className="text-base font-semibold text-white font-display">{item.title}</p>
+              {item.display_title && (
+                <p className="text-base font-semibold text-white font-display">{item.display_title}</p>
+              )}
               {item.description && (
                 <p className="mt-1.5 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}

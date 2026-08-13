@@ -4,10 +4,11 @@ import { useState, useRef, useCallback, useEffect } from "react";
 
 interface PortfolioItem {
   id: string;
-  title: string;
+  display_title: string | null;
   description: string | null;
   alt_text: string | null;
   image_url: string;
+  category: string | null;
   visible: boolean;
   sort_order: number;
 }
@@ -56,7 +57,7 @@ export default function NSFWPortfolioPage() {
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ title: "", description: "", visible: true });
+  const [formData, setFormData] = useState({ displayTitle: "", description: "", category: "", visible: true });
   const [saving, setSaving] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -72,7 +73,13 @@ export default function NSFWPortfolioPage() {
   async function fetchItems() {
     try {
       const res = await fetch("/api/admin/nsfw");
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) {
+        if (res.status === 401) {
+          throw new Error("Session expired. Please log in again.");
+        }
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error (${res.status})`);
+      }
       const data = await res.json();
       setItems(data);
     } catch (err) {
@@ -100,8 +107,9 @@ export default function NSFWPortfolioPage() {
       try {
         const fd = new FormData();
         fd.append("image", item.file);
-        fd.append("title", "");
+        fd.append("displayTitle", "");
         fd.append("description", "");
+        fd.append("category", "");
         fd.append("visible", "true");
 
         const xhr = new XMLHttpRequest();
@@ -150,8 +158,9 @@ export default function NSFWPortfolioPage() {
     e.preventDefault();
     setSaving(true);
     const fd = new FormData();
-    fd.append("title", formData.title);
+    fd.append("displayTitle", formData.displayTitle);
     fd.append("description", formData.description);
+    fd.append("category", formData.category);
     fd.append("visible", String(formData.visible));
 
     try {
@@ -181,7 +190,7 @@ export default function NSFWPortfolioPage() {
 
   function handleEdit(item: PortfolioItem) {
     setEditingId(item.id);
-    setFormData({ title: item.title, description: item.description || "", visible: item.visible });
+    setFormData({ displayTitle: item.display_title || "", description: item.description || "", category: item.category || "", visible: item.visible });
     setShowForm(true);
   }
 
@@ -216,7 +225,7 @@ export default function NSFWPortfolioPage() {
   function resetForm() {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ title: "", description: "", visible: true });
+    setFormData({ displayTitle: "", description: "", category: "", visible: true });
   }
 
   function removeFromQueue(id: string) {
@@ -339,8 +348,12 @@ export default function NSFWPortfolioPage() {
             </button>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Title</label>
-            <input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
+            <label className="block text-sm font-medium text-gray-300 mb-1">Display Title <span className="text-gray-500 text-xs">(optional)</span></label>
+            <input value={formData.displayTitle} onChange={(e) => setFormData({ ...formData, displayTitle: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="Leave empty to show artwork only" />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Category <span className="text-gray-500 text-xs">(optional)</span></label>
+            <input value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="e.g. Avatar, Outfit, Texture" />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
@@ -373,7 +386,7 @@ export default function NSFWPortfolioPage() {
               className={`group relative rounded-xl border bg-white/[0.02] overflow-hidden transition-all duration-200 ${dragOver ? "border-brand-purple-400/50 scale-[1.02]" : "border-white/5 hover:border-white/10"}`}
             >
               <div className="aspect-[4/3] bg-black relative overflow-hidden">
-                <img src={item.image_url} alt={item.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                <img src={item.image_url} alt={item.display_title || "NSFW artwork"} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 <div className="absolute top-2 left-2">
                   {!item.visible && (
@@ -400,8 +413,8 @@ export default function NSFWPortfolioPage() {
                 </div>
               </div>
               <div className="p-4 space-y-1">
-                <h3 className="font-semibold text-white truncate">{item.title}</h3>
-                <p className="text-xs text-gray-500 truncate">{item.alt_text || "No description"}</p>
+                {item.display_title && <h3 className="font-semibold text-white truncate">{item.display_title}</h3>}
+                <p className="text-xs text-gray-500 truncate">{item.alt_text || item.category || "No details"}</p>
               </div>
             </div>
           ))}

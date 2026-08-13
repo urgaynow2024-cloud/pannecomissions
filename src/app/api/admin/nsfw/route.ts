@@ -22,8 +22,12 @@ export async function GET() {
       },
     });
     return NextResponse.json(items);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Failed to fetch admin NSFW portfolio:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Failed to load NSFW portfolio." }, { status: 500 });
   }
 }
 
@@ -31,8 +35,9 @@ export async function POST(request: Request) {
   try {
     await requireAdmin();
     const formData = await request.formData();
-    let title = formData.get("title") as string;
+    let displayTitle = formData.get("displayTitle") as string;
     const description = formData.get("description") as string;
+    const category = formData.get("category") as string;
     const altText = formData.get("altText") as string;
     const file = formData.get("image") as File | null;
 
@@ -42,7 +47,7 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
       }
       if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json({ error: "File too large" }, { status: 400 });
+        return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
       }
       imageUrl = await uploadImage(file);
     } else {
@@ -51,8 +56,9 @@ export async function POST(request: Request) {
 
     const item = await prisma.PortfolioItem.create({
       data: {
-        title: title || null,
+        display_title: displayTitle || null,
         description: description || null,
+        category: category || null,
         alt_text: altText || null,
         image_url: imageUrl,
         nsfw: true,
@@ -71,5 +77,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create NSFW portfolio item" }, { status: 500 });
   }
 }
-
-

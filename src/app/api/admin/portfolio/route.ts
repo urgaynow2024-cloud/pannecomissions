@@ -14,7 +14,7 @@ async function requireAdmin() {
 export async function GET() {
   try {
     await requireAdmin();
-    const items = await prisma.portfolioItem.findMany({
+    const items = await prisma.PortfolioItem.findMany({
       where: { nsfw: false },
       orderBy: { sort_order: "asc" },
       include: {
@@ -24,8 +24,12 @@ export async function GET() {
       },
     });
     return NextResponse.json(items);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error("Failed to fetch admin portfolio:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Failed to load portfolio. Please try again." }, { status: 500 });
   }
 }
 
@@ -33,8 +37,9 @@ export async function POST(request: Request) {
   try {
     await requireAdmin();
     const formData = await request.formData();
-    let title = formData.get("title") as string;
+    let displayTitle = formData.get("displayTitle") as string;
     const description = formData.get("description") as string;
+    const category = formData.get("category") as string;
     const altText = formData.get("altText") as string;
     const featured = formData.get("featured") === "true";
     const file = formData.get("image") as File | null;
@@ -54,8 +59,9 @@ export async function POST(request: Request) {
 
     const item = await prisma.PortfolioItem.create({
       data: {
-        title: title || null,
+        display_title: displayTitle || null,
         description: description || null,
+        category: category || null,
         alt_text: altText || null,
         image_url: imageUrl,
         featured,
