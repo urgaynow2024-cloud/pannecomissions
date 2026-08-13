@@ -36,33 +36,53 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     await requireAdmin();
-    const formData = await request.formData();
-    let displayTitle = formData.get("displayTitle") as string;
-    const description = formData.get("description") as string;
-    const category = formData.get("category") as string;
-    const altText = formData.get("altText") as string;
-    const featured = formData.get("featured") === "true";
-    const file = formData.get("image") as File | null;
-
+    const contentType = request.headers.get("content-type") || "";
+    let displayTitle: string | null = null;
+    let description: string | null = null;
+    let category: string | null = null;
+    let altText: string | null = null;
+    let featured = false;
     let imageUrl = "";
-    if (file && file.size > 0) {
-      if (!file.type.startsWith("image/")) {
-        return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      displayTitle = body.displayTitle || null;
+      description = body.description || null;
+      category = body.category || null;
+      altText = body.altText || null;
+      featured = body.featured === true;
+      imageUrl = body.image_url || "";
+      if (!imageUrl) {
+        return NextResponse.json({ error: "image_url is required for direct uploads" }, { status: 400 });
       }
-      if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
-      }
-      imageUrl = await uploadImage(file);
     } else {
-      return NextResponse.json({ error: "Image is required" }, { status: 400 });
+      const formData = await request.formData();
+      displayTitle = (formData.get("displayTitle") as string) || null;
+      description = (formData.get("description") as string) || null;
+      category = (formData.get("category") as string) || null;
+      altText = (formData.get("altText") as string) || null;
+      featured = formData.get("featured") === "true";
+      const file = formData.get("image") as File | null;
+
+      if (file && file.size > 0) {
+        if (!file.type.startsWith("image/")) {
+          return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+        }
+        imageUrl = await uploadImage(file);
+      } else {
+        return NextResponse.json({ error: "Image is required" }, { status: 400 });
+      }
     }
 
     const item = await prisma.PortfolioItem.create({
       data: {
-        display_title: displayTitle || null,
-        description: description || null,
-        category: category || null,
-        alt_text: altText || null,
+        display_title: displayTitle,
+        description,
+        category,
+        alt_text: altText,
         image_url: imageUrl,
         featured,
         nsfw: false,

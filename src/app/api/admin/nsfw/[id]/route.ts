@@ -44,15 +44,7 @@ export async function PUT(
   try {
     await requireAdmin();
     const { id } = await params;
-    const formData = await request.formData();
-    const displayTitle = formData.get("displayTitle") as string;
-    const description = formData.get("description") as string;
-    const category = formData.get("category") as string;
-    const altText = formData.get("altText") as string;
-    const visible = formData.get("visible") === "true";
-    const sort_order = parseInt(formData.get("sortOrder") as string || "0", 10);
-    const file = formData.get("image") as File | null;
-
+    const contentType = request.headers.get("content-type") || "";
     const existing = await prisma.PortfolioItem.findUnique({
       where: { id },
     });
@@ -60,24 +52,58 @@ export async function PUT(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
+    let displayTitle = existing.display_title;
+    let description = existing.description;
+    let category = existing.category;
+    let altText = existing.alt_text;
+    let visible = existing.visible;
+    let sort_order = existing.sort_order;
     let imageUrl = existing.image_url;
-    if (file && file.size > 0) {
-      if (!file.type.startsWith("image/")) {
-        return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+
+    if (contentType.includes("application/json")) {
+      const body = await request.json();
+      if (body.displayTitle !== undefined) displayTitle = body.displayTitle || null;
+      if (body.description !== undefined) description = body.description || null;
+      if (body.category !== undefined) category = body.category || null;
+      if (body.altText !== undefined) altText = body.altText || null;
+      if (body.visible !== undefined) visible = body.visible === true;
+      if (body.sort_order !== undefined) sort_order = body.sort_order;
+      if (body.image_url) imageUrl = body.image_url;
+    } else {
+      const formData = await request.formData();
+      const formDisplayTitle = formData.get("displayTitle") as string;
+      const formDescription = formData.get("description") as string;
+      const formCategory = formData.get("category") as string;
+      const formAltText = formData.get("altText") as string;
+      const formVisible = formData.get("visible") === "true";
+      const formSortOrder = parseInt(formData.get("sortOrder") as string || "0", 10);
+      const file = formData.get("image") as File | null;
+
+      if (formDisplayTitle !== "") displayTitle = formDisplayTitle || null;
+      if (formDescription !== "") description = formDescription || null;
+      if (formCategory !== "") category = formCategory || null;
+      if (formAltText !== "") altText = formAltText || null;
+      visible = formVisible;
+      sort_order = formSortOrder;
+
+      if (file && file.size > 0) {
+        if (!file.type.startsWith("image/")) {
+          return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large" }, { status: 400 });
+        }
+        imageUrl = await uploadImage(file);
       }
-      if (file.size > 10 * 1024 * 1024) {
-        return NextResponse.json({ error: "File too large" }, { status: 400 });
-      }
-      imageUrl = await uploadImage(file);
     }
 
     const item = await prisma.PortfolioItem.update({
       where: { id },
       data: {
-        display_title: displayTitle !== "" ? displayTitle : existing.display_title,
-        description: description !== "" ? description : existing.description,
-        category: category !== "" ? category : existing.category,
-        alt_text: altText !== "" ? altText : existing.alt_text,
+        display_title: displayTitle,
+        description,
+        category,
+        alt_text: altText,
         image_url: imageUrl,
         visible,
         sort_order,

@@ -109,29 +109,26 @@ export default function PortfolioPage() {
 
     for (const item of queue) {
       try {
-        const fd = new FormData();
-        fd.append("image", item.file);
-        fd.append("displayTitle", "");
-        fd.append("description", "");
-        fd.append("category", "");
-        fd.append("featured", "false");
-        fd.append("visible", "true");
+        const uploadUrlRes = await fetch("/api/admin/portfolio/upload-url", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ filename: item.file.name, contentType: item.file.type }),
+        });
+        if (!uploadUrlRes.ok) {
+          const data = await uploadUrlRes.json().catch(() => ({}));
+          throw new Error(data.error || "Failed to get upload URL");
+        }
+        const { signedUrl, publicUrl } = await uploadUrlRes.json();
 
-        const xhr = new XMLHttpRequest();
         await new Promise<void>((resolve, reject) => {
-          xhr.open("POST", "/api/admin/portfolio");
-          xhr.onload = async () => {
+          const xhr = new XMLHttpRequest();
+          xhr.open("PUT", signedUrl);
+          xhr.setRequestHeader("Content-Type", item.file.type);
+          xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) return resolve();
-            let message = "Upload failed";
-            try {
-              const data = JSON.parse(xhr.responseText);
-              message = data.error || data.message || message;
-            } catch {
-              message = xhr.statusText || message;
-            }
-            reject(new Error(message));
+            reject(new Error(`Direct upload failed (${xhr.status})`));
           };
-          xhr.onerror = () => reject(new Error("Network error — check your connection"));
+          xhr.onerror = () => reject(new Error("Network error during direct upload"));
           xhr.upload.onprogress = (e) => {
             if (e.lengthComputable) {
               const pct = Math.round((e.loaded / e.total) * 100);
@@ -140,7 +137,20 @@ export default function PortfolioPage() {
               );
             }
           };
-          xhr.send(fd);
+          xhr.send(item.file);
+        });
+
+        await fetch("/api/admin/portfolio", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            displayTitle: "",
+            description: "",
+            category: "",
+            featured: false,
+            visible: true,
+            image_url: publicUrl,
+          }),
         });
 
         setUploadQueue((prev) =>
@@ -162,17 +172,20 @@ export default function PortfolioPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
-    const fd = new FormData();
-    fd.append("displayTitle", formData.displayTitle);
-    fd.append("description", formData.description);
-    fd.append("category", formData.category);
-    fd.append("featured", String(formData.featured));
-    fd.append("visible", String(formData.visible));
-
     try {
       const url = editingId ? `/api/admin/portfolio/${editingId}` : "/api/admin/portfolio";
       const method = editingId ? "PUT" : "POST";
-      const res = await fetch(url, { method, body: fd });
+      const res = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          displayTitle: formData.displayTitle,
+          description: formData.description,
+          category: formData.category,
+          featured: formData.featured,
+          visible: formData.visible,
+        }),
+      });
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.error || "Save failed");
