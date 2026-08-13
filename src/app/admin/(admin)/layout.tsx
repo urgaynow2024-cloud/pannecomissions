@@ -18,10 +18,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white antialiased flex">
+    <div className="min-h-screen bg-brand-dark text-white antialiased flex">
       <AdminSidebar />
       <main className="flex-1 min-h-screen">
-        <div className="p-4 md:p-8 max-w-7xl">
+        <div className="p-4 md:p-8 lg:p-10 max-w-7xl">
           {children}
         </div>
       </main>

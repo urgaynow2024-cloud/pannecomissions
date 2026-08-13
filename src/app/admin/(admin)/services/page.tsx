@@ -35,7 +35,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         </svg>
       </div>
       <p className="text-gray-400 mb-4 text-sm">No services yet.</p>
-      <button onClick={onAdd} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+      <button onClick={onAdd} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
         Add First Service
       </button>
     </div>
@@ -132,8 +132,8 @@ export default function ServicesPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Services</h1>
-          <p className="text-gray-400 mt-1">Manage service offerings.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Services</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage service offerings.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
@@ -149,10 +149,10 @@ export default function ServicesPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Services</h1>
-          <p className="text-gray-400 mt-1">Manage service offerings.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Services</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage service offerings.</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
           Add Service
         </button>
       </div>
@@ -160,7 +160,7 @@ export default function ServicesPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">{editingId ? "Edit Service" : "New Service"}</h3>
+            <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Service" : "New Service"}</h3>
             <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -169,30 +169,30 @@ export default function ServicesPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
-            <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" required />
+            <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" rows={3} />
+            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
-            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" placeholder="https://..." />
+            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="https://..." />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Order</label>
-              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" />
+              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" />
             </div>
             <div className="flex items-center">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0" />
+                <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
                 <span className="text-sm text-gray-300">Visible</span>
               </label>
             </div>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+            <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
               {saving ? "Saving..." : "Save"}
             </button>
             <button type="button" onClick={resetForm} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>

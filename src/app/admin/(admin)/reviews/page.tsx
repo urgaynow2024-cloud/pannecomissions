@@ -38,7 +38,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         </svg>
       </div>
       <p className="text-gray-400 mb-4 text-sm">No reviews found.</p>
-      <button onClick={onAdd} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+      <button onClick={onAdd} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
         Add First Review
       </button>
     </div>
@@ -158,8 +158,8 @@ export default function ReviewsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Reviews</h1>
-          <p className="text-gray-400 mt-1">Manage client reviews.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Reviews</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage client reviews.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
@@ -175,17 +175,17 @@ export default function ReviewsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Reviews</h1>
-          <p className="text-gray-400 mt-1">Manage client reviews.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Reviews</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage client reviews.</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
           Add Review
         </button>
       </div>
 
       <div className="flex gap-2">
         {["ALL", "PENDING", "APPROVED", "REJECTED"].map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === f ? "bg-purple-600 text-white" : "border border-white/10 text-gray-300 hover:text-white"}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === f ? "bg-brand-purple-600 text-white" : "border border-white/10 text-gray-300 hover:text-white"}`}>
             {f}
           </button>
         ))}
@@ -194,7 +194,7 @@ export default function ReviewsPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">{editingId ? "Edit Review" : "New Review"}</h3>
+            <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Review" : "New Review"}</h3>
             <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -204,41 +204,41 @@ export default function ReviewsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Name</label>
-              <input value={formData.display_name} onChange={(e) => setFormData({ ...formData, display_name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" required />
+              <input value={formData.display_name} onChange={(e) => setFormData({ ...formData, display_name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Rating</label>
-              <select value={formData.rating} onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors">
+              <select value={formData.rating} onChange={(e) => setFormData({ ...formData, rating: parseInt(e.target.value) })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors">
                 {[1, 2, 3, 4, 5].map((n) => <option key={n} value={n}>{n}</option>)}
               </select>
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Review Text</label>
-            <textarea value={formData.review_text} onChange={(e) => setFormData({ ...formData, review_text: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" rows={3} required />
+            <textarea value={formData.review_text} onChange={(e) => setFormData({ ...formData, review_text: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} required />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
-            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" placeholder="https://..." />
+            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="https://..." />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Status</label>
-            <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors">
+            <select value={formData.status} onChange={(e) => setFormData({ ...formData, status: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors">
               {["PENDING", "APPROVED", "REJECTED"].map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
           {formData.status === "REJECTED" && (
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Rejection Reason (internal)</label>
-              <textarea value={formData.rejection_reason} onChange={(e) => setFormData({ ...formData, rejection_reason: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" rows={2} />
+              <textarea value={formData.rejection_reason} onChange={(e) => setFormData({ ...formData, rejection_reason: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={2} />
             </div>
           )}
           <div className="flex items-center gap-2">
-            <input type="checkbox" checked={formData.hidden} onChange={(e) => setFormData({ ...formData, hidden: e.target.checked })} className="rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0" />
+            <input type="checkbox" checked={formData.hidden} onChange={(e) => setFormData({ ...formData, hidden: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
             <span className="text-sm text-gray-300">Hidden</span>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+            <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
               {saving ? "Saving..." : "Save"}
             </button>
             <button type="button" onClick={resetForm} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>
@@ -255,7 +255,7 @@ export default function ReviewsPage() {
               <div className="flex items-start justify-between gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="font-semibold text-white">{review.display_name}</h3>
+                    <h3 className="font-semibold text-white font-display">{review.display_name}</h3>
                     <div className="flex items-center gap-0.5">
                       {[1, 2, 3, 4, 5].map((star) => (
                         <svg key={star} className={`w-3.5 h-3.5 ${star <= review.rating ? "text-yellow-400" : "text-gray-600"}`} fill="currentColor" viewBox="0 0 20 20">

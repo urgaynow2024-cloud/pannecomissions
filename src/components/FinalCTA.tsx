@@ -2,27 +2,30 @@ import Link from "next/link";
 
 export default function FinalCTA() {
   return (
-    <section className="py-20 border-t border-white/5">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-8 md:p-16 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-4">
-            Want to get started?
-          </h2>
-          <p className="text-gray-400 max-w-xl mx-auto mb-8">
-            Send me a commission enquiry and I&apos;ll get back to you.
-          </p>
-          <Link
-            href="/commission"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-lg bg-purple-600 px-8 py-3.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-purple-500 hover:shadow-lg hover:shadow-purple-500/25"
-          >
-            <span className="relative z-10 flex items-center gap-2">
-              Commission Me
-              <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </span>
-          </Link>
-        </div>
+    <section className="py-20 md:py-32 relative overflow-hidden">
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-brand-purple-500/6 rounded-full blur-3xl animate-pulse-glow" />
+      </div>
+
+      <div className="mx-auto max-w-4xl px-6 text-center">
+        <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-4">
+          Ready?
+        </p>
+        <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display mb-6">
+          WANT SOMETHING<br />MADE?
+        </h2>
+        <p className="text-gray-400 max-w-lg mx-auto mb-10 text-lg">
+          Tell me what you&apos;re thinking. No pressure, just a conversation about your avatar.
+        </p>
+        <Link
+          href="/commission"
+          className="group relative inline-flex items-center gap-3 overflow-hidden rounded-full bg-brand-purple-500 px-10 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-xl hover:shadow-brand-purple-500/20 hover:-translate-y-0.5"
+        >
+          <span className="relative z-10 flex items-center gap-2">
+            Commission Me
+            <span className="text-brand-purple-200">✦</span>
+          </span>
+        </Link>
       </div>
     </section>
   );

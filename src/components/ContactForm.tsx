@@ -40,20 +40,22 @@ export default function ContactForm() {
 
   if (submitted) {
     return (
-      <div className="mx-auto max-w-2xl rounded-xl border border-purple-500/30 bg-purple-500/5 p-8 text-center">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-purple-500/10">
-          <svg className="h-6 w-6 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
+      <div className="mx-auto max-w-2xl">
+        <div className="rounded-2xl border border-brand-purple-500/30 bg-brand-purple-500/5 p-8 md:p-10 text-center">
+          <div className="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-full bg-brand-purple-500/10">
+            <svg className="h-6 w-6 text-brand-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <p className="text-lg font-medium text-white font-display mb-2">Message sent!</p>
+          <p className="text-sm text-gray-400">I&apos;ll get back to you soon.</p>
         </div>
-        <p className="text-lg font-medium text-white">Message sent!</p>
-        <p className="mt-2 text-sm text-gray-400">I&apos;ll get back to you soon.</p>
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-6">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-2xl space-y-8">
       {error && (
         <div className="rounded-xl border border-red-500/30 bg-red-500/5 p-4 text-center">
           <p className="text-sm text-red-400">{error}</p>
@@ -65,7 +67,7 @@ export default function ContactForm() {
           <input
             type="text"
             required
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none transition-all focus:border-purple-500/50 focus:bg-white/[0.07]"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-brand-purple-500/50 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)]"
             placeholder="Your name"
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -76,7 +78,7 @@ export default function ContactForm() {
           <input
             type="email"
             required
-            className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none transition-all focus:border-purple-500/50 focus:bg-white/[0.07]"
+            className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-brand-purple-500/50 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)]"
             placeholder="you@example.com"
             value={formData.email}
             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -88,7 +90,7 @@ export default function ContactForm() {
         <textarea
           required
           rows={6}
-          className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-gray-500 outline-none transition-all focus:border-purple-500/50 focus:bg-white/[0.07] resize-none"
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3.5 text-white placeholder-gray-500 outline-none transition-all duration-200 focus:border-brand-purple-500/50 focus:bg-white/[0.07] focus:shadow-[0_0_0_4px_rgba(168,85,247,0.05)] resize-none"
           placeholder="Your message..."
           value={formData.message}
           onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -97,9 +99,16 @@ export default function ContactForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-lg bg-purple-600 px-6 py-3.5 font-semibold text-white transition-all duration-200 hover:bg-purple-500 hover:shadow-lg hover:shadow-purple-500/25 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="group relative w-full rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-xl hover:shadow-brand-purple-500/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
       >
-        {loading ? "Sending..." : "Send Message"}
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {loading ? "Sending..." : "Send Message"}
+          {!loading && (
+            <svg className="h-4 w-4 transition-transform group-hover:translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          )}
+        </span>
       </button>
     </form>
   );

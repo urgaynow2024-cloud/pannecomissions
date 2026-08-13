@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Lightbox from "./Lightbox";
 
 interface PortfolioItem {
   id: string;
@@ -14,18 +15,19 @@ interface PortfolioProps {
 }
 
 export default function Portfolio({ items }: PortfolioProps) {
-  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
-      if (selectedIndex === null) return;
-      if (e.key === "Escape") setSelectedIndex(null);
-      if (e.key === "ArrowRight") setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
-      if (e.key === "ArrowLeft") setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
+      if (!lightboxOpen) return;
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowRight") setLightboxIndex((prev) => (prev + 1) % items.length);
+      if (e.key === "ArrowLeft") setLightboxIndex((prev) => (prev - 1 + items.length) % items.length);
     };
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
-  }, [selectedIndex, items.length]);
+  }, [lightboxOpen, items.length]);
 
   if (items.length === 0) {
     return (
@@ -35,98 +37,46 @@ export default function Portfolio({ items }: PortfolioProps) {
     );
   }
 
-  const selected = selectedIndex !== null ? items[selectedIndex] : null;
-
   return (
     <div>
-      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+      <div className="columns-1 md:columns-2 lg:columns-3 gap-4 md:gap-6 space-y-4 md:space-y-6">
         {items.map((item, index) => (
           <button
             key={item.id}
-            onClick={() => setSelectedIndex(index)}
-            className="group relative w-full overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-300 hover:border-purple-500/30 break-inside-avoid"
+            onClick={() => {
+              setLightboxIndex(index);
+              setLightboxOpen(true);
+            }}
+            className="group relative w-full overflow-hidden rounded-xl border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 break-inside-avoid text-left"
           >
             <img
               src={item.image_url}
               alt={item.title}
-              className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+              className="w-full h-auto object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
+                (e.target as HTMLImageElement).src =
+                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
               }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <div className="absolute bottom-0 left-0 right-0 p-5 translate-y-2 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
-              <p className="text-base font-semibold text-white">{item.title}</p>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6 translate-y-3 group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-500">
+              <p className="text-base font-semibold text-white font-display">{item.title}</p>
               {item.description && (
-                <p className="mt-1 text-sm text-gray-300 line-clamp-2">{item.description}</p>
+                <p className="mt-1.5 text-sm text-gray-300 line-clamp-2">{item.description}</p>
               )}
             </div>
           </button>
         ))}
       </div>
 
-      {selected && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-4 backdrop-blur-sm"
-          onClick={() => setSelectedIndex(null)}
-        >
-          <div
-            className="relative max-w-5xl w-full max-h-[90vh] overflow-auto rounded-2xl border border-white/10 bg-gray-900"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-center justify-between p-4">
-              <p className="text-sm font-medium text-white">{selected.title}</p>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedIndex((prev) => (prev !== null ? (prev - 1 + items.length) % items.length : prev));
-                  }}
-                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedIndex((prev) => (prev !== null ? (prev + 1) % items.length : prev));
-                  }}
-                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-                <button
-                  onClick={() => setSelectedIndex(null)}
-                  className="rounded-lg border border-white/10 bg-white/5 p-2 text-white hover:bg-white/10 transition-colors"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-            <div className="px-4 pb-4">
-              <img
-                src={selected.image_url}
-                alt={selected.title}
-                className="w-full h-auto max-h-[75vh] object-contain mx-auto"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E";
-                }}
-              />
-            </div>
-            {selected.description && (
-              <div className="p-6 border-t border-white/5">
-                <p className="text-sm text-gray-400">{selected.description}</p>
-              </div>
-            )}
-          </div>
-        </div>
+      {lightboxOpen && (
+        <Lightbox
+          items={items}
+          initialIndex={lightboxIndex}
+          onClose={() => setLightboxOpen(false)}
+        />
       )}
     </div>
   );

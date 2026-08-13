@@ -102,8 +102,8 @@ export default function ContentPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Site Content</h1>
-        <p className="text-gray-400 mt-1">Edit text shown on the public website.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white font-display">Site Content</h1>
+        <p className="text-gray-400 mt-1 text-sm">Edit text shown on the public website.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -119,13 +119,13 @@ export default function ContentPage() {
                     value={data[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
                     rows={4}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors resize-y"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors resize-y"
                   />
                 ) : (
                   <input
                     value={data[key] || ""}
                     onChange={(e) => handleChange(key, e.target.value)}
-                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors"
+                    className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
                   />
                 )}
               </div>
@@ -140,7 +140,7 @@ export default function ContentPage() {
         )}
 
         <div className="flex gap-3">
-          <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+          <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
             {saving ? "Saving..." : "Save Changes"}
           </button>
           {message && message.type === "success" && (

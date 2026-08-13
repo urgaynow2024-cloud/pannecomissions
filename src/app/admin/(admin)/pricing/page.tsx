@@ -36,7 +36,7 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
         </svg>
       </div>
       <p className="text-gray-400 mb-4 text-sm">No pricing items yet.</p>
-      <button onClick={onAdd} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+      <button onClick={onAdd} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
         Add First Pricing
       </button>
     </div>
@@ -147,8 +147,8 @@ export default function PricingPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Pricing</h1>
-          <p className="text-gray-400 mt-1">Manage pricing tiers.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Pricing</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage pricing tiers.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
@@ -164,10 +164,10 @@ export default function PricingPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Pricing</h1>
-          <p className="text-gray-400 mt-1">Manage pricing tiers.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Pricing</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage pricing tiers.</p>
         </div>
-        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">
+        <button onClick={() => { resetForm(); setShowForm(true); }} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
           Add Pricing
         </button>
       </div>
@@ -175,7 +175,7 @@ export default function PricingPage() {
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-white">{editingId ? "Edit Pricing" : "New Pricing"}</h3>
+            <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Pricing" : "New Pricing"}</h3>
             <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -184,41 +184,41 @@ export default function PricingPage() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Name</label>
-            <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" required />
+            <input value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" required />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Min Price</label>
-              <input value={formData.min_price} onChange={(e) => setFormData({ ...formData, min_price: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" placeholder="0.00" />
+              <input value={formData.min_price} onChange={(e) => setFormData({ ...formData, min_price: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="0.00" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Max Price</label>
-              <input value={formData.max_price} onChange={(e) => setFormData({ ...formData, max_price: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" placeholder="0.00" />
+              <input value={formData.max_price} onChange={(e) => setFormData({ ...formData, max_price: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="0.00" />
             </div>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
-            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" rows={3} />
+            <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Category</label>
-              <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors">
+              <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors">
                 <option value="sfw">SFW</option>
                 <option value="nsfw">NSFW</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Order</label>
-              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors" />
+              <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" />
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-purple-600 focus:ring-purple-500 focus:ring-offset-0" />
+            <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
             <span className="text-sm text-gray-300">Visible</span>
           </div>
           <div className="flex gap-3 pt-2">
-            <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+            <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
               {saving ? "Saving..." : "Save"}
             </button>
             <button type="button" onClick={resetForm} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>
@@ -234,8 +234,8 @@ export default function PricingPage() {
             <div key={item.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-white/10 transition-colors">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <div>
-                  <h3 className="font-semibold text-white">{item.name}</h3>
-                  <p className="text-xs text-purple-400 mt-0.5">{item.category.toUpperCase()}</p>
+                  <h3 className="font-semibold text-white font-display">{item.name}</h3>
+                  <p className="text-xs text-brand-purple-400 mt-0.5">{item.category.toUpperCase()}</p>
                 </div>
                 {item.visible ? (
                   <span className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-green-500/10 text-green-400 shrink-0">Visible</span>

@@ -36,8 +36,8 @@ export default async function AdminDashboard() {
       <AdminLayout>
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
-            <p className="text-gray-400 mt-1">Overview of Panne Commissions.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white font-display">Dashboard</h1>
+            <p className="text-gray-400 mt-1 text-sm">Overview of Panne Commissions.</p>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -62,11 +62,11 @@ export default async function AdminDashboard() {
       <AdminLayout>
         <div className="space-y-8">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight text-white">Dashboard</h1>
-            <p className="text-gray-400 mt-1">Overview of Panne Commissions.</p>
+            <h1 className="text-3xl font-bold tracking-tight text-white font-display">Dashboard</h1>
+            <p className="text-gray-400 mt-1 text-sm">Overview of Panne Commissions.</p>
           </div>
           <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
-            <h3 className="text-lg font-semibold text-red-400 mb-2">Database Connection Error</h3>
+            <h3 className="text-lg font-semibold text-red-400 mb-2 font-display">Database Connection Error</h3>
             <p className="text-sm text-gray-400 mb-4">
               Could not connect to the database. Please make sure:
             </p>
@@ -85,8 +85,8 @@ export default async function AdminDashboard() {
 
 function StatCard({ title, value, subtitle, href }: { title: string; value: string; subtitle: string; href: string }) {
   return (
-    <a href={href} className="group block rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-purple-500/30 transition-all duration-200">
-      <div className="h-1 w-8 rounded-full bg-purple-500/0 group-hover:bg-purple-500 transition-all duration-200 mb-3" />
+    <a href={href} className="group block rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-brand-purple-400/30 transition-all duration-200">
+      <div className="h-1 w-8 rounded-full bg-brand-purple-400/0 group-hover:bg-brand-purple-400 transition-all duration-200 mb-3" />
       <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{title}</p>
       <p className="text-2xl font-bold text-white mt-1">{value}</p>
       <p className="text-xs text-gray-500 mt-0.5">{subtitle}</p>
@@ -108,8 +108,8 @@ function RecentTable({
   return (
     <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-        <h3 className="text-sm font-semibold text-white">{title}</h3>
-        <a href={href} className="text-xs text-purple-400 hover:text-purple-300 transition-colors">View all</a>
+        <h3 className="text-sm font-semibold text-white font-display">{title}</h3>
+        <a href={href} className="text-xs text-brand-purple-400 hover:text-brand-purple-300 transition-colors">View all</a>
       </div>
       <div className="divide-y divide-white/5">
         {items.length === 0 ? (

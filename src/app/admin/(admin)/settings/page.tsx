@@ -75,8 +75,8 @@ export default function SettingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Settings</h1>
-        <p className="text-gray-400 mt-1">Read-only environment settings. To update, edit your environment variables and redeploy.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white font-display">Settings</h1>
+        <p className="text-gray-400 mt-1 text-sm">Read-only environment settings. To update, edit your environment variables and redeploy.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6 max-w-2xl">
@@ -99,7 +99,7 @@ export default function SettingsPage() {
               <input
                 value={data[key] || ""}
                 onChange={(e) => handleChange(key, e.target.value)}
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-purple-500/50 focus:outline-none transition-colors"
+                className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
                 readOnly
               />
             </div>
@@ -112,7 +112,7 @@ export default function SettingsPage() {
           </div>
         )}
 
-        <button type="submit" disabled={saving} className="rounded-lg bg-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-purple-500 disabled:opacity-50 transition-colors">
+        <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-6 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">
           {saving ? "Saving..." : "Save Changes"}
         </button>
       </form>

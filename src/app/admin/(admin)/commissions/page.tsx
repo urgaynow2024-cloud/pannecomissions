@@ -116,8 +116,8 @@ export default function CommissionsPage() {
     return (
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-white">Commissions</h1>
-          <p className="text-gray-400 mt-1">Manage commission enquiries.</p>
+          <h1 className="text-3xl font-bold tracking-tight text-white font-display">Commissions</h1>
+          <p className="text-gray-400 mt-1 text-sm">Manage commission enquiries.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
@@ -132,13 +132,13 @@ export default function CommissionsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">Commissions</h1>
-        <p className="text-gray-400 mt-1">Manage commission enquiries.</p>
+        <h1 className="text-3xl font-bold tracking-tight text-white font-display">Commissions</h1>
+        <p className="text-gray-400 mt-1 text-sm">Manage commission enquiries.</p>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2">
         {["ALL", "PENDING", "REVIEWING", "ACCEPTED", "IN_PROGRESS", "WAITING", "COMPLETED", "DECLINED"].map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === f ? "bg-purple-600 text-white" : "border border-white/10 text-gray-300 hover:text-white"}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${filter === f ? "bg-brand-purple-600 text-white" : "border border-white/10 text-gray-300 hover:text-white"}`}>
             {f.replace("_", " ")}
           </button>
         ))}
@@ -150,11 +150,11 @@ export default function CommissionsPage() {
             <EmptyState />
           ) : (
             filtered.map((c) => (
-              <div key={c.id} onClick={() => { setSelectedId(c.id); setStatusUpdate(c.status); }} className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${selectedId === c.id ? "border-purple-500/50 bg-purple-500/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
+              <div key={c.id} onClick={() => { setSelectedId(c.id); setStatusUpdate(c.status); }} className={`cursor-pointer rounded-xl border p-4 transition-all duration-200 ${selectedId === c.id ? "border-brand-purple-400/50 bg-brand-purple-400/5" : "border-white/5 bg-white/[0.02] hover:border-white/10"}`}>
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold text-white">{c.client_name}</h3>
+                      <h3 className="font-semibold text-white font-display">{c.client_name}</h3>
                       {c.nsfw && <span className="text-[10px] font-medium bg-red-500/10 text-red-400 px-2 py-0.5 rounded-full">18+ NSFW</span>}
                     </div>
                     <p className="text-sm text-gray-400">{c.service}</p>
@@ -170,7 +170,7 @@ export default function CommissionsPage() {
         {selected && (
           <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4 h-fit lg:sticky lg:top-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-white">Commission #{selected.id.slice(0, 8)}</h3>
+              <h3 className="text-sm font-semibold text-white font-display">Commission #{selected.id.slice(0, 8)}</h3>
               <button onClick={() => { setSelectedId(null); setStatusUpdate(""); }} className="text-gray-400 hover:text-white transition-colors">
                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -198,12 +198,12 @@ export default function CommissionsPage() {
             </div>
             <div className="space-y-2">
               <label className="block text-xs font-medium text-gray-400">Change Status</label>
-              <select value={statusUpdate} onChange={(e) => setStatusUpdate(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white text-sm focus:border-purple-500/50 focus:outline-none transition-colors">
+              <select value={statusUpdate} onChange={(e) => setStatusUpdate(e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white text-sm focus:border-brand-purple-400/50 focus:outline-none transition-colors">
                 {["PENDING", "REVIEWING", "ACCEPTED", "IN_PROGRESS", "WAITING", "COMPLETED", "DECLINED"].map((s) => <option key={s} value={s}>{s.replace("_", " ")}</option>)}
               </select>
             </div>
             <div className="flex gap-2">
-              <button onClick={() => updateStatus(selected.id, statusUpdate)} className="flex-1 rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-purple-500 transition-colors">Update Status</button>
+              <button onClick={() => updateStatus(selected.id, statusUpdate)} className="flex-1 rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">Update Status</button>
               <button onClick={() => deleteCommission(selected.id)} className="rounded-lg border border-red-500/30 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/5 transition-colors">Delete</button>
             </div>
             <a href={`mailto:${selected.email}`} className="block text-center rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors">Email Client</a>

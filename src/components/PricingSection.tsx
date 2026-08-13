@@ -1,3 +1,5 @@
+import ScrollReveal from "./ScrollReveal";
+
 interface PricingItem {
   id: string;
   name: string;
@@ -20,41 +22,67 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
   const displayItems = pricing.length > 0 ? pricing : DEFAULT_PRICING;
 
   return (
-    <section className="py-20 border-t border-white/5">
+    <section className="py-20 md:py-32 relative">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="max-w-2xl mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white mb-3">Pricing</h2>
-          <p className="text-gray-400">Starting ranges. Final price depends on the work involved.</p>
+        <div className="mb-16 md:mb-20">
+          <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-3">
+            Rates
+          </p>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display">
+            Pricing
+          </h2>
+          <p className="text-gray-400 mt-4 max-w-xl text-lg">
+            Starting ranges. Final price depends on the work involved.
+          </p>
         </div>
 
         {displayItems.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">No pricing information available.</div>
+          <div className="text-center py-20">
+            <p className="text-gray-500">No pricing information available.</p>
+          </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
-              {displayItems.map((item) => (
-                <div key={item.id} className="rounded-xl border border-white/5 bg-white/[0.02] p-6">
-                  <p className="text-sm font-medium text-purple-400 mb-1">{item.name}</p>
-                  <p className="text-3xl font-bold text-white mb-1">
-                    {item.min_price !== null && item.max_price !== null ? `$${item.min_price}–$${item.max_price}` : "Custom"}
-                  </p>
-                  <p className="text-sm text-gray-400">{item.description || "depending on complexity."}</p>
+            <ScrollReveal>
+              <div className="space-y-0 mb-12 md:mb-16">
+              {displayItems.map((item, i) => (
+                <div
+                  key={item.id}
+                  className="group relative flex flex-col md:flex-row md:items-center justify-between py-8 md:py-10 border-b border-white/5 hover:border-brand-purple-500/20 transition-colors duration-300"
+                >
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-brand-purple-400 uppercase tracking-wider mb-2">
+                      {item.name}
+                    </p>
+                    <p className="text-gray-400 text-sm max-w-md">
+                      {item.description || "depending on complexity."}
+                    </p>
+                  </div>
+                  <div className="mt-3 md:mt-0 md:text-right">
+                    <p className="text-3xl md:text-4xl font-bold text-white font-display">
+                      {item.min_price !== null && item.max_price !== null
+                        ? `$${item.min_price}–$${item.max_price}`
+                        : "Custom"}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
+            </ScrollReveal>
 
-            <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 md:p-8 max-w-3xl">
+            <div className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 md:p-10 max-w-3xl space-y-6">
               <div className="space-y-4 text-sm text-gray-400 leading-relaxed">
                 <p>
-                  Please note that these prices do <strong className="text-white">NOT</strong> include the prices of the assets I have to buy. Those, per terms, will have to be added onto the total. Like everyone does.
+                  Please note that these prices do <strong className="text-white">NOT</strong> include the prices of the assets I have to buy. Those, per terms, will have to be added onto the total.
                 </p>
-                <div className="pt-4 border-t border-white/5">
-                  <p className="text-white font-medium mb-2">Payment</p>
-                  <p className="mb-3">Cash App is preferred. PayPal is also available. Payment details are agreed before work starts.</p>
-                  <p className="text-white font-medium mb-2">Trades</p>
-                  <p>
-                    Art trades may be considered on a case-by-case basis. Other trades may also be considered, including FBT equipment or other useful VRChat-related items. Trades are not guaranteed to be accepted.
-                  </p>
+                <div className="pt-6 border-t border-white/5 space-y-4">
+                  <div>
+                    <p className="text-white font-medium mb-1.5">Payment</p>
+                    <p>Cash App is preferred. PayPal is also available. Payment details are agreed before work starts.</p>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium mb-1.5">Trades</p>
+                    <p>Art trades may be considered on a case-by-case basis. Other trades may also be considered, including FBT equipment or other useful VRChat-related items.</p>
+                  </div>
                 </div>
               </div>
             </div>

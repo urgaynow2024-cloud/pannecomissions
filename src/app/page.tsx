@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import SparkleSystem from "@/components/SparkleSystem";
 import Hero from "@/components/Hero";
 import FeaturedWork from "@/components/FeaturedWork";
 import Services from "@/components/Services";
@@ -34,7 +35,8 @@ export default async function Home() {
   const { portfolio, services, pricing, reviews, featured, featuredWork } = await getData();
 
   return (
-    <main className="min-h-screen bg-black text-white antialiased">
+    <main className="min-h-screen bg-brand-black text-white antialiased relative">
+      <SparkleSystem />
       <Navbar />
       <Hero featuredItem={featured} />
       <FeaturedWork items={featuredWork} />
