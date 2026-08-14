@@ -42,6 +42,7 @@ export async function POST(request: Request) {
     let category: string | null = null;
     let altText: string | null = null;
     let featured = false;
+    let visible = true;
     let imageUrl = "";
 
     if (contentType.includes("application/json")) {
@@ -51,6 +52,7 @@ export async function POST(request: Request) {
       category = body.category || null;
       altText = body.altText || null;
       featured = body.featured === true;
+      visible = body.visible !== false;
       imageUrl = body.image_url || "";
       if (!imageUrl) {
         return NextResponse.json({ error: "image_url is required for direct uploads" }, { status: 400 });
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
       category = (formData.get("category") as string) || null;
       altText = (formData.get("altText") as string) || null;
       featured = formData.get("featured") === "true";
+      visible = formData.get("visible") !== "false";
       const file = formData.get("image") as File | null;
 
       if (file && file.size > 0) {
@@ -85,6 +88,7 @@ export async function POST(request: Request) {
         alt_text: altText,
         image_url: imageUrl,
         featured,
+        visible,
         nsfw: false,
       },
     });
@@ -101,5 +105,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create portfolio item" }, { status: 500 });
   }
 }
-
-
