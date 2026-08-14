@@ -52,6 +52,8 @@ export default function Hero({ featuredItem }: HeroProps) {
         <div className="absolute top-[30%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] bg-brand-purple-500/10 rounded-full blur-[200px]" style={{ animation: "ambient-drift 28s ease-in-out infinite" }} />
         <div className="absolute top-[10%] right-[15%] w-[500px] h-[400px] bg-brand-purple-400/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 6s ease-in-out infinite 1.5s, ambient-drift 22s ease-in-out infinite 2s" }} />
         <div className="absolute bottom-[20%] left-[5%] w-[600px] h-[500px] bg-brand-purple-700/8 rounded-full blur-[180px]" style={{ animation: "pulseGlow 10s ease-in-out infinite 2s, ambient-drift 35s ease-in-out infinite 1s" }} />
+        <div className="absolute top-[50%] left-[20%] w-[600px] h-[500px] bg-indigo-900/12 rounded-full blur-[180px]" style={{ animation: "ambient-drift 30s ease-in-out infinite" }} />
+        <div className="absolute top-[20%] right-[30%] w-[400px] h-[300px] bg-brand-purple-900/10 rounded-full blur-[140px]" style={{ animation: "pulseGlow 12s ease-in-out infinite 4s" }} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 w-full">

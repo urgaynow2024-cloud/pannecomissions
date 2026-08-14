@@ -3,7 +3,7 @@
 import { useEffect, useRef, useCallback } from "react";
 
 const SPARKLE_CHARS = ["✦", "✧", "⋆", "·", "•", "∘"];
-const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce", "#ffffff", "#e9d5ff", "#f3e8ff", "#e0e7ff"];
+const TINTS = ["#a855f7", "#c084fc", "#d8b4fe", "#7e22ce", "#ffffff", "#e9d5ff", "#f3e8ff", "#e0e7ff", "#c7d2fe", "#a5b4fc", "#ffffff"];
 const GLOW_COLORS = [
   "rgba(168, 85, 247, 0.4)",
   "rgba(192, 132, 252, 0.35)",
@@ -11,6 +11,8 @@ const GLOW_COLORS = [
   "rgba(126, 34, 206, 0.35)",
   "rgba(255, 255, 255, 0.2)",
   "rgba(233, 213, 255, 0.3)",
+  "rgba(199, 210, 254, 0.25)",
+  "rgba(165, 180, 252, 0.2)",
 ];
 
 const ANIMATIONS = [
