@@ -67,7 +67,7 @@ export default function SupportForm() {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
             Contact
           </p>
-          <h3 className="text-xl font-semibold text-white font-display">Your Details</h3>
+          <h3 className="text-xl font-semibold text-white font-display heading-pop">Your Details</h3>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
@@ -100,7 +100,7 @@ export default function SupportForm() {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
             What&apos;s Up?
           </p>
-          <h3 className="text-xl font-semibold text-white font-display">Your Message</h3>
+          <h3 className="text-xl font-semibold text-white font-display heading-pop">Your Message</h3>
         </div>
         <label className="mb-2 block text-sm font-medium text-gray-300">Describe your issue</label>
         <textarea
@@ -116,7 +116,7 @@ export default function SupportForm() {
       <button
         type="submit"
         disabled={loading}
-        className="group relative w-full rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-xl hover:shadow-brand-purple-500/20 hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
+        className="group relative w-full rounded-full bg-brand-purple-500 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_50px_rgba(147,51,234,0.3)] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 btn-glow"
       >
         <span className="relative z-10 flex items-center justify-center gap-2">
           {loading ? "Submitting..." : "Submit Support Request"}

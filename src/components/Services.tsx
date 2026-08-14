@@ -98,7 +98,7 @@ export default function Services({ services }: ServicesProps) {
                     <p className="text-7xl md:text-8xl lg:text-[9rem] font-bold text-white/[0.03] font-display leading-none select-none mb-2">
                       0{i + 1}
                     </p>
-                    <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-display tracking-tight">
+                    <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-display tracking-tight heading-pop">
                       {service.name}
                     </h3>
                     <p className="text-gray-400 leading-relaxed max-w-lg text-base md:text-lg mt-4">

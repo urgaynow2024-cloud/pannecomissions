@@ -73,7 +73,7 @@ export default function Navbar() {
             </Link>
             <Link
               href="/commission"
-              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_25px_rgba(147,51,234,0.2)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-5 py-2.5 text-[13px] font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_50px_rgba(147,51,234,0.3)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
             >
               <span className="relative z-10 flex items-center gap-2">
                 Commission Me
@@ -137,7 +137,7 @@ export default function Navbar() {
               <Link
                 href="/commission"
                 onClick={() => setMobileOpen(false)}
-                className="block w-full text-center rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-500/15 hover:border-brand-purple-400 transition-all active:scale-[0.97]"
+                className="block w-full text-center rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-3.5 text-sm font-semibold text-white hover:bg-brand-purple-500/15 hover:border-brand-purple-400 hover:shadow-[0_0_40px_rgba(147,51,234,0.25)] transition-all active:scale-[0.97] btn-glow"
               >
                 Commission Me
               </Link>

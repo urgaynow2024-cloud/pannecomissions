@@ -32,7 +32,7 @@ export default function AgeVerifier() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-white font-display mb-3">
+          <h2 className="text-2xl font-bold text-white font-display mb-3 heading-pop">
             Age Verification
           </h2>
           <p className="text-gray-400 mb-8 text-[15px]">
@@ -41,7 +41,7 @@ export default function AgeVerifier() {
           <div className="flex flex-col gap-3">
             <button
               onClick={handleConfirm}
-              className="w-full rounded-full bg-brand-purple-500 px-6 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/25"
+              className="w-full rounded-full bg-brand-purple-500 px-6 py-3.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-brand-purple-400 hover:shadow-[0_0_40px_rgba(147,51,234,0.3)] btn-glow"
             >
               I am 18 or older
             </button>

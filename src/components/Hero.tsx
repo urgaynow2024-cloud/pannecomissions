@@ -69,16 +69,15 @@ export default function Hero({ featuredItem }: HeroProps) {
                   <span className="text-brand-purple-400">COMMISSIONS</span>
                 </h2>
               </div>
-            </div>
 
-            <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed relative z-10">
-              Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.
-            </p>
+              <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed relative z-10 text-pop">
+                Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.
+              </p>
 
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 href="/commission"
-                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_40px_rgba(147,51,234,0.25)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
+                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_60px_rgba(147,51,234,0.35)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
               >
                 <span className="relative z-10 flex items-center gap-2">
                   Commission Me
@@ -87,12 +86,13 @@ export default function Hero({ featuredItem }: HeroProps) {
               </Link>
               <Link
                 href="/portfolio"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full border border-white/10 bg-white/[0.02] px-8 py-4 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-brand-purple-500/40 hover:bg-white/5 hover:text-white hover:-translate-y-0.5 active:scale-[0.97] active:translate-y-0"
+                className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-white/10 bg-white/[0.02] px-8 py-4 text-sm font-semibold text-gray-300 transition-all duration-300 hover:border-brand-purple-500/40 hover:bg-white/5 hover:text-white hover:shadow-[0_0_30px_rgba(147,51,234,0.15)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
               >
                 View Portfolio
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
             </div>
+          </div>
           </div>
 
           <div

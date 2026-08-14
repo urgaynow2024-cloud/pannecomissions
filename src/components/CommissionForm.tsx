@@ -170,7 +170,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
           <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-widest mb-1">
             Step {String(currentStep + 1).padStart(2, "0")}
           </p>
-          <h3 className="text-xl md:text-2xl font-semibold text-white font-display mb-1">
+          <h3 className="text-xl md:text-2xl font-semibold text-white font-display mb-1 heading-pop">
             {STEPS[currentStep].label}
           </h3>
           <p className="text-sm text-gray-400">{STEPS[currentStep].hint}</p>
@@ -324,7 +324,7 @@ export default function CommissionForm({ services }: CommissionFormProps) {
           <button
             type="button"
             onClick={nextStep}
-            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-lg hover:shadow-brand-purple-500/20 hover:-translate-y-0.5 btn-glow"
+            className="group relative inline-flex items-center gap-2 rounded-full bg-brand-purple-500 px-7 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-brand-purple-400 hover:shadow-[0_0_50px_rgba(147,51,234,0.3)] hover:-translate-y-0.5 btn-glow"
           >
             <span className="relative z-10 flex items-center gap-2">
               Next

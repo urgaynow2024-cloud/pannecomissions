@@ -76,7 +76,7 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
           </p>
           <Link
             href="/commission"
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_25px_rgba(147,51,234,0.2)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full border border-brand-purple-500/40 bg-brand-purple-500/10 px-6 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:border-brand-purple-400 hover:bg-brand-purple-500/15 hover:shadow-[0_0_50px_rgba(147,51,234,0.3)] hover:-translate-y-0.5 btn-glow active:scale-[0.97] active:translate-y-0"
           >
             <span className="relative z-10 flex items-center gap-2">
               Commission Me

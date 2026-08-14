@@ -72,7 +72,7 @@ export default function HowItWorks() {
                     </div>
                   </div>
                   <div className="flex-1 pt-3">
-                    <h3 className="text-lg md:text-xl font-semibold text-white mb-2 group-hover:text-brand-purple-300 transition-colors duration-300 font-display">
+                    <h3 className="text-lg md:text-xl font-semibold text-white mb-2 group-hover:text-brand-purple-300 transition-colors duration-300 font-display heading-pop">
                       {step.title}
                     </h3>
                     <p className="text-sm md:text-base text-gray-400 leading-relaxed max-w-lg">
