@@ -124,6 +124,7 @@ model Service {
   name        String
   description String?
   image_url   String?
+  features    String?   @db.Text
   spare_parts Boolean   @default(false)
   sort_order  Int       @default(0)
   visible     Boolean   @default(true)

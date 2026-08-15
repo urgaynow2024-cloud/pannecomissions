@@ -8,6 +8,7 @@ interface Service {
   name: string;
   description: string | null;
   image_url: string | null;
+  features?: string | null;
 }
 
 interface ServicesProps {
@@ -57,10 +58,18 @@ function getServiceImage(service: Service): string | null {
   return service.image_url;
 }
 
-function getServiceFeatures(name: string): string[] {
+function getServiceFeatures(service: Service): string[] {
+  if (service.features) {
+    const parsed = service.features
+      .split("\n")
+      .map((f) => f.trim())
+      .filter(Boolean);
+    if (parsed.length > 0) return parsed;
+  }
+
   return (
-    SERVICE_FEATURES[name] ||
-    SERVICE_FEATURES[name.replace(/^Custom /, "").replace(/^Complete /, "")] || [
+    SERVICE_FEATURES[service.name] ||
+    SERVICE_FEATURES[service.name.replace(/^Custom /, "").replace(/^Complete /, "")] || [
       "Custom work",
       "Quality assured",
       "Fast turnaround",
@@ -103,7 +112,7 @@ export default function Services({ services }: ServicesProps) {
           {displayServices.map((service, i) => {
             const isEven = i % 2 === 0;
             const imageSrc = getServiceImage(service);
-            const features = getServiceFeatures(service.name);
+            const features = getServiceFeatures(service);
 
             return (
               <ScrollReveal key={service.id} delay={i * 100}>

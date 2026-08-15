@@ -7,9 +7,10 @@ interface Service {
   name: string;
   description: string | null;
   image_url: string | null;
-  spare_parts: boolean;
+  features: string | null;
   sort_order: number;
   visible: boolean;
+  spare_parts: boolean;
   photos?: { id: string; url: string; alt_text: string | null; sort_order: number }[];
 }
 
@@ -54,7 +55,7 @@ export default function ServicesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", image_url: "", sort_order: 0, visible: true, spare_parts: false });
+  const [formData, setFormData] = useState({ name: "", description: "", image_url: "", features: "", sort_order: 0, visible: true, spare_parts: false });
   const [saving, setSaving] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [coverUploading, setCoverUploading] = useState(false);
@@ -146,12 +147,12 @@ export default function ServicesPage() {
     }
   }
 
-function handleEdit(item: Service) {
+  function handleEdit(item: Service) {
     setEditingId(item.id);
-    setFormData({ name: item.name, description: item.description || "", image_url: item.image_url || "", sort_order: item.sort_order, visible: item.visible, spare_parts: item.spare_parts || false });
+    setFormData({ name: item.name, description: item.description || "", image_url: item.image_url || "", features: item.features || "", sort_order: item.sort_order, visible: item.visible, spare_parts: item.spare_parts || false });
     setShowForm(true);
     setServicePhotos(item.photos || []);
-}
+  }
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -218,12 +219,12 @@ function handleEdit(item: Service) {
     }
   }
 
-function resetForm() {
+  function resetForm() {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ name: "", description: "", image_url: "", sort_order: 0, visible: true, spare_parts: false });
+    setFormData({ name: "", description: "", image_url: "", features: "", sort_order: 0, visible: true, spare_parts: false });
     setServicePhotos([]);
-}
+  }
 
   if (loading) {
     return (
@@ -285,6 +286,11 @@ function resetForm() {
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
             <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Features</label>
+            <textarea value={formData.features} onChange={(e) => setFormData({ ...formData, features: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} placeholder="One feature per line" />
+            <p className="text-xs text-gray-500 mt-1">One feature per line. These appear as checkmarks on the homepage.</p>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">Cover Image</label>

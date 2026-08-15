@@ -91,6 +91,9 @@ CREATE TABLE IF NOT EXISTS services (
   name TEXT NOT NULL,
   description TEXT,
   image_url TEXT,
+  image_fit TEXT NOT NULL DEFAULT 'cover',
+  image_position TEXT NOT NULL DEFAULT 'center',
+  features TEXT,
   spare_parts BOOLEAN NOT NULL DEFAULT false,
   sort_order INTEGER NOT NULL DEFAULT 0,
   visible BOOLEAN NOT NULL DEFAULT true,
@@ -102,6 +105,12 @@ DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'spare_parts') THEN
     ALTER TABLE services ADD COLUMN spare_parts BOOLEAN NOT NULL DEFAULT false;
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'image_fit') THEN
+    ALTER TABLE services ADD COLUMN image_fit TEXT NOT NULL DEFAULT 'cover';
+  END IF;
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'image_position') THEN
+    ALTER TABLE services ADD COLUMN image_position TEXT NOT NULL DEFAULT 'center';
   END IF;
 END $$;
 
