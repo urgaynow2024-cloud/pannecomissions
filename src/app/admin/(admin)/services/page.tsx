@@ -57,9 +57,11 @@ export default function ServicesPage() {
   const [formData, setFormData] = useState({ name: "", description: "", image_url: "", sort_order: 0, visible: true, spare_parts: false });
   const [saving, setSaving] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [coverUploading, setCoverUploading] = useState(false);
   const [servicePhotos, setServicePhotos] = useState<{ id: string; url: string; alt_text: string | null }[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
   const photoInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchItems();
@@ -181,6 +183,34 @@ function handleEdit(item: Service) {
     e.target.value = "";
   }
 
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !editingId) return;
+
+    setCoverUploading(true);
+    const fd = new FormData();
+    fd.append("image", file);
+    fd.append("altText", "");
+    fd.append("serviceId", editingId);
+
+    try {
+      const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Upload failed (${res.status})`);
+      }
+      const photo = await res.json();
+      setFormData({ ...formData, image_url: photo.url });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Cover upload failed";
+      console.error("Cover upload error:", message);
+      alert(message);
+    } finally {
+      setCoverUploading(false);
+      e.target.value = "";
+    }
+  }
+
   async function handlePhotoDelete(photoId: string) {
     const res = await fetch(`/api/admin/photos/${photoId}`, { method: "DELETE" });
     if (res.ok && editingId) {
@@ -257,14 +287,27 @@ function resetForm() {
             <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Cover Image URL</label>
-            <input
-              value={formData.image_url}
-              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
-              placeholder="https://..."
-            />
-            <p className="text-xs text-gray-500 mt-1">Paste a URL or select from portfolio below.</p>
+            <label className="block text-sm font-medium text-gray-300 mb-1">Cover Image</label>
+            <div className="flex gap-2">
+              <input
+                value={formData.image_url}
+                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                className="flex-1 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
+                placeholder="https://..."
+              />
+              <label className="cursor-pointer rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors shrink-0">
+                {coverUploading ? "..." : "Upload"}
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp"
+                  className="hidden"
+                  onChange={handleCoverUpload}
+                  disabled={coverUploading}
+                />
+              </label>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Paste a URL or upload a file. You can also select from portfolio below.</p>
           </div>
 
           {portfolioItems.length > 0 && (
