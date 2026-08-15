@@ -159,40 +159,6 @@ export default function Services({ services }: ServicesProps) {
           </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-24 md:mb-32">
-          {displayServices.map((service) => {
-            const imageSrc = getServiceImage(service);
-
-            return (
-              <ScrollReveal key={`category-${service.id}`}>
-                <div className="group relative rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[3/4] hover:border-brand-purple-400/30 transition-all duration-200">
-                  {imageSrc ? (
-                    <img
-                      src={imageSrc}
-                      alt={service.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-transparent to-transparent" />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  <div className="absolute inset-0 flex items-end p-4">
-                    <div>
-                      <p className="text-xs font-semibold text-brand-purple-300 uppercase tracking-wider mb-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        Service
-                      </p>
-                      <h3 className="text-sm md:text-base font-bold text-white font-display leading-tight">
-                        {service.name}
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
-
         <div className="space-y-24 md:space-y-32 lg:space-y-40">
           {displayServices.map((service, i) => {
             const isEven = i % 2 === 0;
