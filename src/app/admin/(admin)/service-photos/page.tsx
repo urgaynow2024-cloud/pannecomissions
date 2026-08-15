@@ -66,25 +66,24 @@ export default function ServicePhotosPage() {
   }
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    if (!files || !selectedServiceId) return;
+    const file = e.target.files?.[0];
+    if (!file || !selectedServiceId) return;
 
     setUploading(true);
     try {
-      for (const file of Array.from(files)) {
-        if (!file.type.startsWith("image/")) continue;
-        const fd = new FormData();
-        fd.append("image", file);
-        fd.append("altText", "");
-        fd.append("serviceId", selectedServiceId);
+      const fd = new FormData();
+      fd.append("image", file);
+      fd.append("altText", "");
+      fd.append("serviceId", selectedServiceId);
 
-        const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
-        if (!res.ok) {
-          const data = await res.json().catch(() => ({}));
-          throw new Error(data.error || `Upload failed (${res.status})`);
-        }
+      const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Upload failed (${res.status})`);
       }
-      await fetchPhotos(selectedServiceId);
+
+      const newPhoto = await res.json();
+      setPhotos([newPhoto]);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Upload failed");
     } finally {
@@ -93,22 +92,24 @@ export default function ServicePhotosPage() {
     }
   }
 
-  async function handleDelete(photoId: string) {
+  async function handleDelete() {
+    if (!photos.length || !selectedServiceId) return;
     if (!confirm("Delete this photo?")) return;
-    const res = await fetch(`/api/admin/photos/${photoId}`, { method: "DELETE" });
-    if (res.ok && selectedServiceId) {
-      setPhotos((prev) => prev.filter((p) => p.id !== photoId));
+
+    const res = await fetch(`/api/admin/photos/${photos[0].id}`, { method: "DELETE" });
+    if (res.ok) {
+      setPhotos([]);
     }
   }
 
-  async function handleSetCover(photoUrl: string) {
-    if (!selectedServiceId) return;
+  async function handleSetCover() {
+    if (!photos.length || !selectedServiceId) return;
     setSaving(true);
     try {
       const res = await fetch(`/api/admin/services/${selectedServiceId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image_url: photoUrl }),
+        body: JSON.stringify({ image_url: photos[0].url }),
       });
       if (!res.ok) throw new Error("Failed to update cover");
       await fetchServices();
@@ -142,7 +143,7 @@ export default function ServicePhotosPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Service Photos</h1>
-        <p className="text-gray-400 mt-1 text-sm">Upload and manage photos for each service.</p>
+        <p className="text-gray-400 mt-1 text-sm">Upload one photo per service category.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -161,14 +162,13 @@ export default function ServicePhotosPage() {
           </select>
         </div>
 
-        <div className="flex items-end">
+        <div className="flex items-end gap-2">
           <label className="cursor-pointer rounded-lg border border-dashed border-white/10 px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-white/20 transition-colors">
-            {uploading ? "Uploading..." : "Upload Photos"}
+            {uploading ? "Uploading..." : photos.length ? "Replace Photo" : "Upload Photo"}
             <input
               ref={fileInputRef}
               type="file"
               accept=".png,.jpg,.jpeg,.webp"
-              multiple
               className="hidden"
               onChange={handleUpload}
               disabled={uploading}
@@ -183,37 +183,39 @@ export default function ServicePhotosPage() {
             <div>
               <h3 className="text-sm font-semibold text-white font-display">{selectedService.name}</h3>
               <p className="text-xs text-gray-500 mt-0.5">
-                {photos.length} photo{photos.length !== 1 ? "s" : ""}
-                {selectedService.image_url && " • 1 cover set"}
+                {photos.length ? "1 photo uploaded" : "No photo uploaded"}
+                {selectedService.image_url && " • Cover set"}
               </p>
             </div>
+            {photos.length > 0 && (
+              <div className="flex gap-2">
+                <button
+                  onClick={handleSetCover}
+                  disabled={saving}
+                  className="rounded-lg bg-brand-purple-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors"
+                >
+                  {saving ? "Saving..." : "Set as Cover"}
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="rounded-lg bg-red-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-red-500 transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
           </div>
 
           {photos.length === 0 ? (
             <div className="text-center py-16 rounded-lg border border-dashed border-white/10">
-              <p className="text-sm text-gray-500">No photos yet.</p>
-              <p className="text-xs text-gray-600 mt-1">Upload images using the button above.</p>
+              <p className="text-sm text-gray-500">No photo uploaded yet.</p>
+              <p className="text-xs text-gray-600 mt-1">Upload one image for this service.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
               {photos.map((photo) => (
-                <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/[0.02] group">
+                <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/5 bg-white/[0.02]">
                   <img src={photo.url} alt="" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                    <button
-                      onClick={() => handleSetCover(photo.url)}
-                      disabled={saving}
-                      className="rounded-lg bg-brand-purple-600 px-2 py-1 text-xs font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors"
-                    >
-                      Set Cover
-                    </button>
-                    <button
-                      onClick={() => handleDelete(photo.id)}
-                      className="rounded-lg bg-red-600 px-2 py-1 text-xs font-semibold text-white hover:bg-red-500 transition-colors"
-                    >
-                      Delete
-                    </button>
-                  </div>
                 </div>
               ))}
             </div>
