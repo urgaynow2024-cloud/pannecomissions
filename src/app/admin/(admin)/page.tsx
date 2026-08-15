@@ -1,6 +1,6 @@
 import AdminLayout from "@/app/admin/(admin)/layout";
 import prisma from "@/lib/prisma";
-import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, AlertTriangle, CheckCircle } from "lucide-react";
+import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, AlertTriangle, CheckCircle, FolderOpen, HardDrive } from "lucide-react";
 
 async function safeCount(promise: Promise<any>): Promise<number> {
   try { const v = await promise; return typeof v === "number" ? v : 0; } catch { return 0; }
@@ -32,53 +32,52 @@ export default async function AdminDashboard() {
 
   const hasSchemaIssue = health?.missing?.length > 0;
 
-  let stats = [
-    { label: "Portfolio", value: 0, subtitle: "SFW published", href: "/admin/portfolio", icon: Image },
-    { label: "NSFW", value: 0, subtitle: "Adult published", href: "/admin/nsfw", icon: Shield },
-    { label: "Reviews", value: 0, subtitle: "Pending approval", href: "/admin/reviews", icon: Star },
-    { label: "Commissions", value: 0, subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList },
-    { label: "Support", value: 0, subtitle: "Open requests", href: "/admin/support", icon: HelpCircle },
-  ];
-
+  let portfolioStats = { total: 0, published: 0, hidden: 0, featured: 0, deleted: 0 };
+  let storageEstimate = "Unknown";
   let recentCommissions: any[] = [];
   let recentReviews: any[] = [];
   let recentSupport: any[] = [];
 
   try {
     const closedFilter = { status: { not: "CLOSED" } } as const;
-    const [
-      portfolioCount,
-      nsfwCount,
-      pendingReviews,
-      pendingCommissions,
-      openSupport,
-      rc,
-      rr,
-      rs,
-    ] = await Promise.all([
-      safeCount(prisma.PortfolioItem.count({ where: { nsfw: false } })),
-      safeCount(prisma.PortfolioItem.count({ where: { nsfw: true } })),
-      safeCount(prisma.Review.count({ where: { status: "PENDING" } })),
-      safeCount(prisma.CommissionSubmission.count({ where: { status: "PENDING" } })),
+    const results = await Promise.all([
+      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null } })),
+      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, visible: true } })),
+      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, visible: false } })),
+      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, featured: true } })),
+      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: { not: null } } })),
+      safeCount(prisma.Service.count()),
+      safeCount(prisma.Pricing.count()),
+      safeCount(prisma.Review.count()),
+      safeCount(prisma.CommissionSubmission.count()),
       safeCount(prisma.SupportRequest.count({ where: closedFilter })),
       safeFindMany(prisma.CommissionSubmission.findMany({ take: 5, orderBy: { created_at: "desc" } })),
       safeFindMany(prisma.Review.findMany({ take: 5, orderBy: { created_at: "desc" } })),
       safeFindMany(prisma.SupportRequest.findMany({ take: 5, orderBy: { created_at: "desc" } })),
     ]);
 
-    stats = [
-      { label: "Portfolio", value: portfolioCount, subtitle: "SFW published", href: "/admin/portfolio", icon: Image },
-      { label: "NSFW", value: nsfwCount, subtitle: "Adult published", href: "/admin/nsfw", icon: Shield },
-      { label: "Reviews", value: pendingReviews, subtitle: "Pending approval", href: "/admin/reviews", icon: Star },
-      { label: "Commissions", value: pendingCommissions, subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList },
-      { label: "Support", value: openSupport, subtitle: "Open requests", href: "/admin/support", icon: HelpCircle },
-    ];
-    recentCommissions = rc;
-    recentReviews = rr;
-    recentSupport = rs;
+    portfolioStats = { total: results[0], published: results[1], hidden: results[2], featured: results[3], deleted: results[4] };
+
+    const totalPhotos = await safeCount(prisma.Photo.count());
+    if (totalPhotos > 0) {
+      const avgSize = await prisma.Photo.aggregate({ _avg: { file_size: true } });
+      storageEstimate = `~${(totalPhotos * (avgSize._avg.file_size || 0) / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    recentCommissions = results[10];
+    recentReviews = results[11];
+    recentSupport = results[12];
   } catch {
     // stats remain zeros
   }
+
+  const stats = [
+    { label: "Portfolio", value: portfolioStats.total, subtitle: `Published: ${portfolioStats.published}`, href: "/admin/portfolio", icon: Image },
+    { label: "NSFW", value: await safeCount(prisma.PortfolioItem.count({ where: { nsfw: true } })), subtitle: "Adult published", href: "/admin/nsfw", icon: Shield },
+    { label: "Reviews", value: await safeCount(prisma.Review.count({ where: { status: "PENDING" } })), subtitle: "Pending approval", href: "/admin/reviews", icon: Star },
+    { label: "Commissions", value: await safeCount(prisma.CommissionSubmission.count({ where: { status: "PENDING" } })), subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList },
+    { label: "Support", value: await safeCount(prisma.SupportRequest.count()), subtitle: "Open requests", href: "/admin/support", icon: HelpCircle },
+  ];
 
   const quickActions = [
     { label: "Upload Portfolio Work", href: "/admin/portfolio", icon: Upload },
@@ -159,6 +158,46 @@ export default async function AdminDashboard() {
               <p className="text-xs text-gray-500 mt-1.5">{stat.subtitle}</p>
             </a>
           ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <Image className="h-4 w-4 text-brand-purple-400" />
+              <h3 className="text-sm font-semibold text-white font-display">Portfolio Breakdown</h3>
+            </div>
+            <div className="space-y-2 text-xs text-gray-400">
+              <div className="flex justify-between"><span>Total</span><span className="text-white tabular-nums">{portfolioStats.total}</span></div>
+              <div className="flex justify-between"><span>Published</span><span className="text-green-400 tabular-nums">{portfolioStats.published}</span></div>
+              <div className="flex justify-between"><span>Hidden</span><span className="text-yellow-400 tabular-nums">{portfolioStats.hidden}</span></div>
+              <div className="flex justify-between"><span>Featured</span><span className="text-brand-purple-400 tabular-nums">{portfolioStats.featured}</span></div>
+              <div className="flex justify-between"><span>Deleted</span><span className="text-red-400 tabular-nums">{portfolioStats.deleted}</span></div>
+            </div>
+          </div>
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <HardDrive className="h-4 w-4 text-brand-purple-400" />
+              <h3 className="text-sm font-semibold text-white font-display">Storage</h3>
+            </div>
+            <p className="text-2xl font-bold text-white font-display">{storageEstimate}</p>
+            <p className="text-xs text-gray-500 mt-1">Estimated media usage</p>
+          </div>
+          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+            <div className="flex items-center gap-2 mb-4">
+              <CheckCircle className="h-4 w-4 text-brand-purple-400" />
+              <h3 className="text-sm font-semibold text-white font-display">System Status</h3>
+            </div>
+            <div className="space-y-2 text-xs text-gray-400">
+              <div className="flex justify-between items-center">
+                <span>Database</span>
+                {health?.checks?.database ? <span className="text-green-400">Connected</span> : <span className="text-red-400">Error</span>}
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Storage</span>
+                {health?.checks?.storage ? <span className="text-green-400">Connected</span> : <span className="text-red-400">Error</span>}
+              </div>
+            </div>
+          </div>
         </div>
 
         <div>

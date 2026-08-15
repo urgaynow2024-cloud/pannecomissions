@@ -14,6 +14,10 @@ import {
   ExternalLink,
   LogOut,
   Settings,
+  FolderOpen,
+  Trash2,
+  Activity,
+  Eye,
 } from "lucide-react";
 
 const navItems = [
@@ -24,6 +28,9 @@ const navItems = [
   { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
   { href: "/admin/commissions", label: "Commissions", icon: ClipboardList },
   { href: "/admin/support", label: "Support", icon: HelpCircle },
+  { href: "/admin/media", label: "Media Library", icon: FolderOpen },
+  { href: "/admin/trash", label: "Trash", icon: Trash2 },
+  { href: "/admin/system", label: "System Status", icon: Activity },
 ];
 
 export default function AdminSidebar() {

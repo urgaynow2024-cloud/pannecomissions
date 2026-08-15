@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import ImageEditor from "@/components/admin/ImageEditor";
+import HomepagePreview from "@/components/admin/HomepagePreview";
 
 interface PortfolioItem {
   id: string;
@@ -45,9 +47,7 @@ function EmptyState({ onUpload }: { onUpload: () => void }) {
         </svg>
       </div>
       <p className="text-gray-400 mb-4 text-sm">No portfolio work yet.</p>
-      <button onClick={onUpload} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">
-        Upload Work
-      </button>
+      <button onClick={onUpload} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 transition-colors">Upload Work</button>
     </div>
   );
 }
@@ -63,8 +63,10 @@ export default function PortfolioPage() {
   const [saving, setSaving] = useState(false);
   const [dragId, setDragId] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [photoUploading, setPhotoUploading] = useState(false);
+  const [editingImageId, setEditingImageId] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const dropInputRef = useRef<HTMLInputElement>(null);
@@ -78,9 +80,7 @@ export default function PortfolioPage() {
     try {
       const res = await fetch("/api/admin/portfolio");
       if (!res.ok) {
-        if (res.status === 401) {
-          throw new Error("Session expired. Please log in again.");
-        }
+        if (res.status === 401) throw new Error("Session expired. Please log in again.");
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || `Server error (${res.status})`);
       }
@@ -199,11 +199,51 @@ export default function PortfolioPage() {
     }
   }
 
+  async function handleBulkAction(action: string) {
+    if (selectedIds.size === 0) return;
+    try {
+      const res = await fetch("/api/admin/portfolio/bulk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selectedIds), action }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Bulk action failed");
+      }
+      setSelectedIds(new Set());
+      await fetchItems();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Bulk action failed");
+    }
+  }
+
+  function toggleSelect(id: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (selectedIds.size === items.length) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(items.map((i) => i.id)));
+    }
+  }
+
   async function handleDelete(id: string) {
     const res = await fetch(`/api/admin/portfolio/${id}`, { method: "DELETE" });
     if (res.ok) {
       setItems(items.filter((i) => i.id !== id));
-      setDeleteId(null);
+      setSelectedIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
     }
   }
 
@@ -276,7 +316,6 @@ export default function PortfolioPage() {
     const newItems = [...items];
     const [moved] = newItems.splice(fromIndex, 1);
     newItems.splice(toIndex, 0, moved);
-    setItems(newItems);
 
     await Promise.all(
       newItems.map((item, idx) =>
@@ -287,6 +326,8 @@ export default function PortfolioPage() {
         })
       )
     );
+
+    setItems(newItems);
   }
 
   function resetForm() {
@@ -336,9 +377,7 @@ export default function PortfolioPage() {
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
-          <button onClick={fetchItems} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-            Retry
-          </button>
+          <button onClick={fetchItems} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Retry</button>
         </div>
       </div>
     );
@@ -351,7 +390,31 @@ export default function PortfolioPage() {
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Portfolio</h1>
           <p className="text-gray-400 mt-1 text-sm">Manage your portfolio work.</p>
         </div>
+        <div className="flex gap-2">
+          <button onClick={() => setShowPreview(!showPreview)} className="rounded-lg border border-white/10 px-4 py-2 text-xs font-medium text-gray-300 hover:text-white transition-colors">
+            {showPreview ? "Hide Preview" : "Homepage Preview"}
+          </button>
+          <button onClick={() => { setShowForm(true); setEditingId(null); resetForm(); }} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-xs font-semibold text-white hover:bg-brand-purple-500 transition-colors">+ Add Work</button>
+        </div>
       </div>
+
+      {showPreview && (
+        <div className="rounded-xl border border-brand-purple-500/20 bg-brand-purple-500/5 p-6">
+          <HomepagePreview items={items} />
+        </div>
+      )}
+
+      {selectedIds.size > 0 && (
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4 flex flex-wrap items-center gap-3">
+          <span className="text-xs text-gray-400">{selectedIds.size} selected</span>
+          <button onClick={() => handleBulkAction("publish")} className="rounded-lg border border-green-500/30 px-3 py-1.5 text-xs font-medium text-green-400 hover:bg-green-500/5 transition-colors">Publish</button>
+          <button onClick={() => handleBulkAction("hide")} className="rounded-lg border border-yellow-500/30 px-3 py-1.5 text-xs font-medium text-yellow-400 hover:bg-yellow-500/5 transition-colors">Hide</button>
+          <button onClick={() => handleBulkAction("feature")} className="rounded-lg border border-brand-purple-500/30 px-3 py-1.5 text-xs font-medium text-brand-purple-400 hover:bg-brand-purple-500/5 transition-colors">Feature</button>
+          <button onClick={() => handleBulkAction("unfeature")} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors">Unfeature</button>
+          <button onClick={() => { if (confirm(`Move ${selectedIds.size} items to trash?`)) handleBulkAction("delete"); }} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/5 transition-colors">Trash</button>
+          <button onClick={() => setSelectedIds(new Set())} className="rounded-lg border border-white/10 px-3 py-1.5 text-xs font-medium text-gray-300 hover:text-white transition-colors ml-auto">Clear</button>
+        </div>
+      )}
 
       <div
         className={`relative rounded-xl border-2 border-dashed p-8 text-center transition-colors cursor-pointer ${dragOver ? "border-brand-purple-400 bg-brand-purple-500/5" : "border-white/10 hover:border-white/20 bg-white/[0.02]"}`}
@@ -409,7 +472,7 @@ export default function PortfolioPage() {
       )}
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="rounded-xl border border-brand-purple-500/20 bg-white/[0.02] p-6 space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-white font-display">{editingId ? "Edit Work" : "Add New Work"}</h3>
             <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors">
@@ -487,67 +550,97 @@ export default function PortfolioPage() {
       )}
 
       {items.length === 0 ? (
-        <EmptyState onUpload={() => setShowForm(true)} />
+        <EmptyState onUpload={() => { setShowForm(true); setEditingId(null); resetForm(); }} />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {items.map((item, idx) => (
-            <div
-              key={item.id}
-              draggable
-              onDragOver={(e) => { e.preventDefault(); }}
-              onDragStart={() => setDragId(item.id)}
-              onDrop={(e) => { e.preventDefault(); if (dragId) handleReorder(items.findIndex((i) => i.id === dragId), idx); setDragId(null); }}
-              className={`group relative rounded-xl border bg-white/[0.02] overflow-hidden transition-all duration-200 ${dragOver ? "border-brand-purple-400/50 scale-[1.02]" : "border-white/5 hover:border-white/10"}`}
-            >
-              <div className="aspect-[4/3] bg-black relative overflow-hidden">
-                <img src={item.image_url} alt={item.display_title || "Portfolio artwork"} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
-                <div className="absolute top-2 left-2 flex gap-2">
-                  {item.featured && <span className="bg-brand-purple-600 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">Featured</span>}
-                  {!item.visible && <span className="bg-black/60 text-gray-300 text-[10px] font-medium px-2 py-0.5 rounded-full">Hidden</span>}
+        <>
+          <div className="flex items-center gap-3">
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input type="checkbox" checked={selectedIds.size === items.length} onChange={toggleSelectAll} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
+              <span className="text-xs text-gray-400">Select All</span>
+            </label>
+            <span className="text-xs text-gray-500">{items.length} items</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {items.map((item, idx) => (
+              <div
+                key={item.id}
+                draggable
+                onDragOver={(e) => { e.preventDefault(); }}
+                onDragStart={() => setDragId(item.id)}
+                onDrop={(e) => { e.preventDefault(); if (dragId) handleReorder(items.findIndex((i) => i.id === dragId), idx); setDragId(null); }}
+                className={`group relative rounded-xl border bg-white/[0.02] overflow-hidden transition-all duration-200 ${dragOver ? "border-brand-purple-400/50 scale-[1.02]" : "border-white/5 hover:border-white/10"}`}
+              >
+                <div className="aspect-[4/3] bg-black relative overflow-hidden">
+                  <img
+                    src={item.image_url}
+                    alt={item.display_title || "Portfolio artwork"}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 cursor-pointer"
+                    loading="lazy"
+                    onClick={() => setEditingImageId(item.image_url)}
+                    onError={(e) => { (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='300' fill='%23111'%3E%3Crect width='400' height='300'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23333'%3EImage unavailable%3C/text%3E%3C/svg%3E"; }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+                  <div className="absolute top-2 left-2 flex gap-2">
+                    {item.featured && <span className="bg-brand-purple-600 text-white text-[10px] font-medium px-2 py-0.5 rounded-full">Featured</span>}
+                    {!item.visible && <span className="bg-black/60 text-gray-300 text-[10px] font-medium px-2 py-0.5 rounded-full">Hidden</span>}
+                    {item.category && <span className="bg-black/60 text-gray-300 text-[10px] font-medium px-2 py-0.5 rounded-full">{item.category}</span>}
+                  </div>
+                  <div className="absolute top-2 left-2 mt-6">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(item.id)}
+                      onChange={() => toggleSelect(item.id)}
+                      className="rounded border-white/20 bg-black/40 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button
+                      onMouseDown={(e) => { e.preventDefault(); }}
+                      onDragStart={(e) => { e.preventDefault(); setDragId(item.id); }}
+                      className="p-1.5 rounded-lg bg-black/40 text-gray-300 hover:text-white hover:bg-black/60 transition-colors cursor-grab active:cursor-grabbing"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <button onClick={() => handleEdit(item)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">Edit</button>
+                    <button onClick={() => handleToggleVisibility(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
+                      {item.visible ? "Hide" : "Show"}
+                    </button>
+                    <button onClick={() => handleToggleFeatured(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
+                      {item.featured ? "Unfeature" : "Feature"}
+                    </button>
+                    <button onClick={() => { setDragId(item.id); handleDelete(item.id); }} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-red-300 hover:text-red-100 hover:bg-black/60 backdrop-blur-sm transition-colors">Delete</button>
+                  </div>
                 </div>
-                <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button
-                    onMouseDown={(e) => { e.preventDefault(); }}
-                    onDragStart={(e) => { e.preventDefault(); setDragId(item.id); }}
-                    className="p-1.5 rounded-lg bg-black/40 text-gray-300 hover:text-white hover:bg-black/60 transition-colors cursor-grab active:cursor-grabbing"
-                  >
-                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8h16M4 16h16" />
-                    </svg>
-                  </button>
-                </div>
-                <div className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <button onClick={() => handleEdit(item)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">Edit</button>
-                  <button onClick={() => handleToggleVisibility(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
-                    {item.visible ? "Hide" : "Show"}
-                  </button>
-                  <button onClick={() => handleToggleFeatured(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-gray-200 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors">
-                    {item.featured ? "Unfeature" : "Feature"}
-                  </button>
-                  <button onClick={() => setDeleteId(item.id)} className="px-3 py-1.5 rounded-lg bg-black/40 text-xs font-medium text-red-300 hover:text-red-100 hover:bg-black/60 backdrop-blur-sm transition-colors">Delete</button>
+                <div className="p-4 space-y-1">
+                  {item.display_title && <h3 className="font-semibold text-white truncate">{item.display_title}</h3>}
+                  <p className="text-xs text-gray-500 truncate">{item.alt_text || item.category || "No details"}</p>
                 </div>
               </div>
-              <div className="p-4 space-y-1">
-                {item.display_title && <h3 className="font-semibold text-white truncate">{item.display_title}</h3>}
-                <p className="text-xs text-gray-500 truncate">{item.alt_text || item.category || "No details"}</p>
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </>
       )}
 
-      {deleteId && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="rounded-xl border border-white/10 bg-[#0a0a0a] p-6 max-w-sm w-full mx-4 shadow-2xl">
-            <h3 className="text-lg font-semibold text-white font-display text-center mb-2">DELETE THIS WORK?</h3>
-            <p className="text-sm text-gray-400 text-center mb-6">This action cannot be undone.</p>
-            <div className="flex gap-3">
-              <button onClick={() => setDeleteId(null)} className="flex-1 rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Cancel</button>
-              <button onClick={() => handleDelete(deleteId)} className="flex-1 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition-colors">Delete</button>
-            </div>
-          </div>
-        </div>
+      {editingImageId && (
+        <ImageEditor
+          src={editingImageId}
+          onSave={(url) => {
+            if (editingId) {
+              fetch(`/api/admin/portfolio/${editingId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ image_url: url }),
+              }).then(() => fetchItems());
+            }
+            setEditingImageId(null);
+          }}
+          onCancel={() => setEditingImageId(null)}
+        />
       )}
     </div>
   );

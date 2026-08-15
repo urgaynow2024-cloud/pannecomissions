@@ -9,6 +9,10 @@ async function requireAdmin() {
   return admin;
 }
 
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -25,15 +29,17 @@ export async function GET(
       },
     });
     if (!item || !item.nsfw) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
     }
     return NextResponse.json(item);
   } catch (error) {
     console.error("Failed to fetch NSFW portfolio item:", error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
     }
-    return NextResponse.json({ error: "Failed to load item." }, { status: 500 });
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: "Failed to load item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -49,7 +55,7 @@ export async function PUT(
       where: { id },
     });
     if (!existing || !existing.nsfw) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
     }
 
     let displayTitle = existing.display_title;
@@ -88,10 +94,10 @@ export async function PUT(
 
       if (file && file.size > 0) {
         if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
         }
         if (file.size > 10 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large" }, { status: 400 });
+          return NextResponse.json({ error: "File too large", code: "VALIDATION_ERROR" }, { status: 400 });
         }
         imageUrl = await uploadImage(file);
       }
@@ -119,9 +125,11 @@ export async function PUT(
   } catch (error) {
     console.error("Failed to update NSFW portfolio item:", error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
     }
-    return NextResponse.json({ error: "Failed to update NSFW portfolio item" }, { status: 500 });
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: "Failed to update NSFW portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -136,15 +144,20 @@ export async function DELETE(
       where: { id },
     });
     if (!existing || !existing.nsfw) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
     }
-    await prisma.PortfolioItem.delete({ where: { id } });
+    await prisma.PortfolioItem.update({
+      where: { id },
+      data: { deleted_at: new Date() },
+    });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Failed to delete NSFW portfolio item:", error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
     }
-    return NextResponse.json({ error: "Failed to delete portfolio item" }, { status: 500 });
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: "Failed to delete portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

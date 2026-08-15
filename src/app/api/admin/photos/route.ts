@@ -9,6 +9,10 @@ async function requireAdmin() {
   return admin;
 }
 
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export async function POST(request: Request) {
   try {
     await requireAdmin();
@@ -20,15 +24,15 @@ export async function POST(request: Request) {
     const reviewId = formData.get("reviewId") as string | null;
 
     if (!file || file.size === 0) {
-      return NextResponse.json({ error: "Image is required" }, { status: 400 });
+      return NextResponse.json({ error: "Image is required", code: "VALIDATION_ERROR" }, { status: 400 });
     }
 
     if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+      return NextResponse.json({ error: "File too large (max 10MB)", code: "VALIDATION_ERROR" }, { status: 400 });
     }
 
     const url = await uploadImage(file);
@@ -48,9 +52,14 @@ export async function POST(request: Request) {
     return NextResponse.json(photo, { status: 201 });
   } catch (error) {
     console.error("Failed to upload photo:", error);
-    if (error instanceof Error && error.message.includes("does not exist")) {
-      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor." }, { status: 500 });
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to upload photo" }, { status: 500 });
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING" }, { status: 500 });
+    }
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to upload photo", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

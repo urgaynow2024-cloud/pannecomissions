@@ -23,18 +23,17 @@ async function getData() {
       prisma.Review.findMany({ where: { status: "APPROVED", hidden: false }, orderBy: { created_at: "desc" }, take: 3 }),
     ]);
 
-    const featured = portfolio.find((p: { featured: boolean }) => p.featured) || portfolio[0] || null;
-    const featuredForSection = portfolio.filter((p: { featured: boolean }) => p.featured).slice(0, 3);
-    const featuredWork = featuredForSection.length > 0 ? featuredForSection : portfolio.slice(0, 3);
+    const featuredWork = portfolio.slice(0, 6);
 
-    return { portfolio, services, pricing, reviews, featured, featuredWork };
+    return { portfolio, services, pricing, reviews, featuredWork };
   } catch {
-    return { portfolio: [], services: [], pricing: [], reviews: [], featured: null, featuredWork: [] };
+    return { portfolio: [], services: [], pricing: [], reviews: [], featuredWork: [] };
   }
 }
 
 export default async function Home() {
-  const { portfolio, services, pricing, reviews, featured, featuredWork } = await getData();
+  const { portfolio, services, pricing, reviews, featuredWork } = await getData();
+  const featured = featuredWork[0] || null;
 
   return (
     <main className="min-h-screen text-white antialiased relative">

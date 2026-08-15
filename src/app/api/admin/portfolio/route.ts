@@ -5,17 +5,19 @@ import { uploadImage } from "@/lib/blob";
 
 async function requireAdmin() {
   const admin = await verifySession();
-  if (!admin) {
-    throw new Error("Unauthorized");
-  }
+  if (!admin) throw new Error("Unauthorized");
   return admin;
+}
+
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
 }
 
 export async function GET() {
   try {
     await requireAdmin();
     const items = await prisma.PortfolioItem.findMany({
-      where: { nsfw: false },
+      where: { nsfw: false, deleted_at: null },
       orderBy: { sort_order: "asc" },
       include: {
         photos: {
@@ -27,9 +29,11 @@ export async function GET() {
   } catch (error) {
     console.error("Failed to fetch admin portfolio:", error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
     }
-    return NextResponse.json({ error: "Failed to load portfolio. Please try again." }, { status: 500 });
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load portfolio", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
       visible = body.visible !== false;
       imageUrl = body.image_url || "";
       if (!imageUrl) {
-        return NextResponse.json({ error: "image_url is required for direct uploads" }, { status: 400 });
+        return NextResponse.json({ error: "image_url is required for direct uploads", code: "VALIDATION_ERROR" }, { status: 400 });
       }
     } else {
       const formData = await request.formData();
@@ -69,14 +73,14 @@ export async function POST(request: Request) {
 
       if (file && file.size > 0) {
         if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
         }
         if (file.size > 10 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large (max 10MB)" }, { status: 400 });
+          return NextResponse.json({ error: "File too large (max 10MB)", code: "VALIDATION_ERROR" }, { status: 400 });
         }
         imageUrl = await uploadImage(file);
       } else {
-        return NextResponse.json({ error: "Image is required" }, { status: 400 });
+        return NextResponse.json({ error: "Image is required", code: "VALIDATION_ERROR" }, { status: 400 });
       }
     }
 
@@ -96,12 +100,17 @@ export async function POST(request: Request) {
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
     console.error("Failed to create portfolio item:", error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+    }
     if (error instanceof Error && error.message.includes("does not exist")) {
-      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor." }, { status: 500 });
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING" }, { status: 500 });
     }
     if (error instanceof Error && error.message.includes("Storage")) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message, code: "STORAGE_ERROR" }, { status: 500 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create portfolio item" }, { status: 500 });
+    const diagnosticId = generateDiagnosticId();
+    console.error(`[${diagnosticId}]`, error);
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

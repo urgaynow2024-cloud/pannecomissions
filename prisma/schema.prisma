@@ -8,18 +8,22 @@ datasource db {
 }
 
 model PortfolioItem {
-  id             String    @id @default(cuid())
-  display_title  String?
-  category       String?
-  description    String?
-  alt_text       String?
-  image_url      String
-  sort_order     Int       @default(0)
-  featured       Boolean   @default(false)
-  nsfw           Boolean   @default(false)
-  visible        Boolean   @default(true)
-  created_at     DateTime  @default(now()) @map("created_at")
-  updated_at     DateTime  @updatedAt @map("updated_at")
+  id              String    @id @default(cuid())
+  display_title   String?
+  category        String?
+  description     String?
+  alt_text        String?
+  image_url       String
+  sort_order      Int       @default(0)
+  featured        Boolean   @default(false)
+  nsfw            Boolean   @default(false)
+  visible         Boolean   @default(true)
+  homepage_visible Boolean  @default(true)
+  focal_point_x   Float?    @default(0.5)
+  focal_point_y   Float?    @default(0.5)
+  deleted_at      DateTime?
+  created_at      DateTime  @default(now()) @map("created_at")
+  updated_at      DateTime  @updatedAt @map("updated_at")
 
   photos Photo[]
 
@@ -72,11 +76,11 @@ model SupportRequest {
 }
 
 model SiteSetting {
-  id         String    @id @default(cuid())
-  key        String    @unique
-  value      String
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  id               String    @id @default(cuid())
+  key              String    @unique
+  value            String
+  created_at       DateTime  @default(now())
+  updated_at       DateTime  @updatedAt
 
   @@map("site_settings")
 }
