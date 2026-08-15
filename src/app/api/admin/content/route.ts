@@ -20,6 +20,7 @@ const CONTENT_KEYS = [
   "commission_status_text",
   "about_text",
   "cta_text",
+  "about_image_url",
 ];
 
 export async function GET() {

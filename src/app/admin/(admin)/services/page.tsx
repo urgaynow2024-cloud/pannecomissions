@@ -7,6 +7,7 @@ interface Service {
   name: string;
   description: string | null;
   image_url: string | null;
+  spare_parts: boolean;
   sort_order: number;
   visible: boolean;
   photos?: { id: string; url: string; alt_text: string | null; sort_order: number }[];
@@ -53,7 +54,7 @@ export default function ServicesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "", image_url: "", sort_order: 0, visible: true });
+  const [formData, setFormData] = useState({ name: "", description: "", image_url: "", sort_order: 0, visible: true, spare_parts: false });
   const [saving, setSaving] = useState(false);
   const [photoUploading, setPhotoUploading] = useState(false);
   const [servicePhotos, setServicePhotos] = useState<{ id: string; url: string; alt_text: string | null }[]>([]);
@@ -143,12 +144,12 @@ export default function ServicesPage() {
     }
   }
 
-  function handleEdit(item: Service) {
+function handleEdit(item: Service) {
     setEditingId(item.id);
-    setFormData({ name: item.name, description: item.description || "", image_url: item.image_url || "", sort_order: item.sort_order, visible: item.visible });
+    setFormData({ name: item.name, description: item.description || "", image_url: item.image_url || "", sort_order: item.sort_order, visible: item.visible, spare_parts: item.spare_parts || false });
     setShowForm(true);
     setServicePhotos(item.photos || []);
-  }
+}
 
   async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const files = e.target.files;
@@ -187,12 +188,12 @@ export default function ServicesPage() {
     }
   }
 
-  function resetForm() {
+function resetForm() {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ name: "", description: "", image_url: "", sort_order: 0, visible: true });
+    setFormData({ name: "", description: "", image_url: "", sort_order: 0, visible: true, spare_parts: false });
     setServicePhotos([]);
-  }
+}
 
   if (loading) {
     return (
@@ -335,10 +336,14 @@ export default function ServicesPage() {
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Order</label>
               <input type="number" value={formData.sort_order} onChange={(e) => setFormData({ ...formData, sort_order: parseInt(e.target.value) || 0 })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" />
             </div>
-            <div className="flex items-center">
-              <label className="flex items-center gap-2 cursor-pointer">
+            <div className="flex flex-col justify-center">
+              <label className="flex items-center gap-2 cursor-pointer mb-2">
                 <input type="checkbox" checked={formData.visible} onChange={(e) => setFormData({ ...formData, visible: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
                 <span className="text-sm text-gray-300">Visible</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={formData.spare_parts} onChange={(e) => setFormData({ ...formData, spare_parts: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
+                <span className="text-sm text-gray-300">Spare parts available</span>
               </label>
             </div>
           </div>

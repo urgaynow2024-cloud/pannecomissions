@@ -45,6 +45,7 @@ export async function POST(request: Request) {
         name: body.name,
         description: body.description || null,
         image_url: body.image_url || null,
+        spare_parts: body.spare_parts ?? false,
         sort_order: body.sort_order || 0,
         visible: body.visible ?? true,
       },

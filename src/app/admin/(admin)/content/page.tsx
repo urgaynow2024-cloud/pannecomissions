@@ -10,16 +10,27 @@ interface ContentData {
   commission_status_text: string;
   about_text: string;
   cta_text: string;
+  about_image_url: string;
+}
+
+interface PortfolioItem {
+  id: string;
+  display_title: string | null;
+  description: string | null;
+  image_url: string;
+  category: string | null;
 }
 
 export default function ContentPage() {
   const [data, setData] = useState<ContentData | null>(null);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     fetchContent();
+    fetchPortfolio();
   }, []);
 
   async function fetchContent() {
@@ -38,11 +49,24 @@ export default function ContentPage() {
         commission_status_text: json.commission_status_text || "",
         about_text: json.about_text || "",
         cta_text: json.cta_text || "",
+        about_image_url: json.about_image_url || "",
       });
     } catch (err) {
       setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to load content" });
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function fetchPortfolio() {
+    try {
+      const res = await fetch("/api/admin/portfolio");
+      if (res.ok) {
+        const data = await res.json();
+        setPortfolioItems(data);
+      }
+    } catch {
+      // silent
     }
   }
 
@@ -99,7 +123,7 @@ export default function ContentPage() {
       <div className="space-y-6">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-white font-display">Content</h1>
-          <p className="text-gray-400 mt-1 text-sm">Manage homepage content.</p>
+          <p className="text-gray-400 mt-1 text-sm">Manage homepage text and commission availability.</p>
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{message?.text || "Failed to load content"}</p>
@@ -158,6 +182,50 @@ export default function ContentPage() {
             <label className="block text-sm font-medium text-gray-300 mb-1">About Text</label>
             <textarea value={data.about_text} onChange={(e) => handleChange("about_text", e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} placeholder="About section text" />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">About Image URL</label>
+            <input
+              value={data.about_image_url}
+              onChange={(e) => handleChange("about_image_url", e.target.value)}
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
+              placeholder="https://..."
+            />
+            <p className="text-xs text-gray-500 mt-1">Paste a URL or choose from portfolio below.</p>
+          </div>
+
+          {data.about_image_url && (
+            <div className="rounded-lg overflow-hidden border border-white/5 bg-white/[0.02]">
+              <img src={data.about_image_url} alt="About preview" className="w-full h-48 object-cover" />
+            </div>
+          )}
+
+          {portfolioItems.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Choose from Portfolio</label>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                {portfolioItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleChange("about_image_url", item.image_url)}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      data.about_image_url === item.image_url
+                        ? "border-brand-purple-400 ring-2 ring-brand-purple-400/30"
+                        : "border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    <img src={item.image_url} alt={item.display_title || "Portfolio"} className="w-full h-full object-cover" />
+                    {item.category && (
+                      <span className="absolute bottom-1 left-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-black/70 text-gray-200 truncate max-w-[calc(100%-0.5rem)]">
+                        {item.category}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">CTA Text</label>
             <input value={data.cta_text} onChange={(e) => handleChange("cta_text", e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="Final call-to-action text" />
