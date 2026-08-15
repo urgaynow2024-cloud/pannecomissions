@@ -100,9 +100,9 @@ function ServiceImage({ src, alt, index }: { src: string; alt: string; index: nu
   const [error, setError] = useState(false);
 
   if (error) {
-    return (
-      <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] flex items-center justify-center">
-        <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-transparent to-transparent" />
+  return (
+    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 flex items-center justify-center">
+      <div className="absolute inset-0 bg-linear-to-br from-brand-purple-500/10 via-transparent to-transparent" />
         <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
           {alt}
         </p>
@@ -111,23 +111,23 @@ function ServiceImage({ src, alt, index }: { src: string; alt: string; index: nu
   }
 
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] lg:aspect-[4/3]">
-      <img
-        src={src}
-        alt={alt}
-        className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
-        loading="lazy"
-        onError={() => setError(true)}
-      />
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-    </div>
+        <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 lg:aspect-4/3">
+          <img
+            src={src}
+            alt={alt}
+            className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+            loading="lazy"
+            onError={() => setError(true)}
+          />
+          <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
+        </div>
   );
 }
 
 function ServiceImageFallback({ name }: { name: string }) {
   return (
-    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] flex items-center justify-center">
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-transparent to-transparent" />
+    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 flex items-center justify-center">
+      <div className="absolute inset-0 bg-linear-to-br from-brand-purple-500/10 via-transparent to-transparent" />
       <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
         {name}
       </p>
@@ -143,8 +143,8 @@ export default function Services({ services }: ServicesProps) {
   return (
     <section className="py-24 md:py-32 lg:py-40 relative">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-[10%] left-[5%] w-[700px] h-[600px] bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
-        <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[500px] bg-brand-purple-600/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 4s" }} />
+        <div className="absolute top-[10%] left-[5%] w-175 h-150 bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
+        <div className="absolute bottom-[10%] right-[5%] w-150 h-125 bg-brand-purple-600/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 4s" }} />
       </div>
 
       <div className="mx-auto max-w-7xl px-6 relative z-10">
