@@ -4,9 +4,10 @@ import ScrollReveal from "./ScrollReveal";
 
 interface AboutSectionProps {
   aboutText?: string;
+  aboutImageUrl?: string | null;
 }
 
-export default function AboutSection({ aboutText }: AboutSectionProps) {
+export default function AboutSection({ aboutText, aboutImageUrl }: AboutSectionProps) {
   return (
     <section className="py-24 md:py-40 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -34,15 +35,17 @@ export default function AboutSection({ aboutText }: AboutSectionProps) {
 
             <div className="lg:col-span-7 relative">
               <div className="relative aspect-[4/3] md:aspect-[16/9] rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02]">
-                <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/5 to-transparent" />
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center space-y-4">
-                    <span className="text-6xl animate-gentle-float inline-block text-brand-purple-400/25">✦</span>
-                    <p className="text-sm text-gray-500 max-w-xs mx-auto">
-                      Real artwork will appear here from the portfolio.
-                    </p>
-                  </div>
-                </div>
+                {aboutImageUrl ? (
+                  <img
+                    src={aboutImageUrl}
+                    alt="About Panne"
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/5 to-transparent" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
                 <div className="absolute top-6 right-6">
                   <span className="text-brand-purple-400/30 text-2xl animate-sparkle-float">✦</span>
                 </div>

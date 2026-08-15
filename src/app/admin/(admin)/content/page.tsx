@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import ImageManager from "@/components/admin/ImageManager";
 
 interface ContentData {
   hero_title: string;
@@ -13,24 +14,14 @@ interface ContentData {
   about_image_url: string;
 }
 
-interface PortfolioItem {
-  id: string;
-  display_title: string | null;
-  description: string | null;
-  image_url: string;
-  category: string | null;
-}
-
 export default function ContentPage() {
   const [data, setData] = useState<ContentData | null>(null);
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   useEffect(() => {
     fetchContent();
-    fetchPortfolio();
   }, []);
 
   async function fetchContent() {
@@ -55,18 +46,6 @@ export default function ContentPage() {
       setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to load content" });
     } finally {
       setLoading(false);
-    }
-  }
-
-  async function fetchPortfolio() {
-    try {
-      const res = await fetch("/api/admin/portfolio");
-      if (res.ok) {
-        const data = await res.json();
-        setPortfolioItems(data);
-      }
-    } catch {
-      // silent
     }
   }
 
@@ -177,58 +156,13 @@ export default function ContentPage() {
         </div>
 
         <div className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-5">
-          <h3 className="text-sm font-semibold text-white font-display uppercase tracking-wider">About & CTA</h3>
+          <h3 className="text-sm font-semibold text-white font-display uppercase tracking-wider">About & Image</h3>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-1">About Text</label>
             <textarea value={data.about_text} onChange={(e) => handleChange("about_text", e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} placeholder="About section text" />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">About Image URL</label>
-            <input
-              value={data.about_image_url}
-              onChange={(e) => handleChange("about_image_url", e.target.value)}
-              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
-              placeholder="https://..."
-            />
-            <p className="text-xs text-gray-500 mt-1">Paste a URL or choose from portfolio below.</p>
-          </div>
-
-          {data.about_image_url && (
-            <div className="rounded-lg overflow-hidden border border-white/5 bg-white/[0.02]">
-              <img src={data.about_image_url} alt="About preview" className="w-full h-48 object-cover" />
-            </div>
-          )}
-
-          {portfolioItems.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Choose from Portfolio</label>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
-                {portfolioItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleChange("about_image_url", item.image_url)}
-                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
-                      data.about_image_url === item.image_url
-                        ? "border-brand-purple-400 ring-2 ring-brand-purple-400/30"
-                        : "border-white/10 hover:border-white/20"
-                    }`}
-                  >
-                    <img src={item.image_url} alt={item.display_title || "Portfolio"} className="w-full h-full object-cover" />
-                    {item.category && (
-                      <span className="absolute bottom-1 left-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-black/70 text-gray-200 truncate max-w-[calc(100%-0.5rem)]">
-                        {item.category}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">CTA Text</label>
-            <input value={data.cta_text} onChange={(e) => handleChange("cta_text", e.target.value)} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="Final call-to-action text" />
+          <div className="flex flex-col gap-4">
+            <ImageManager initialSettings={{ about_image_url: data.about_image_url }} />
           </div>
         </div>
 

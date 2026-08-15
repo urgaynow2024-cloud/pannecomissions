@@ -33,6 +33,7 @@ async function getData() {
     const commissionStatusText = process.env.COMMISSION_STATUS_TEXT || settingsMap.commission_status_text || "";
     const aboutText = process.env.ABOUT_TEXT || settingsMap.about_text || "I make VRChat avatars, outfits, textures and other projects people ask me to build.";
     const ctaText = process.env.CTA_TEXT || settingsMap.cta_text || "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.";
+    const aboutImageUrl = settingsMap.about_image_url || null;
 
     const featuredWork = portfolio.slice(0, 6);
 
@@ -49,6 +50,7 @@ async function getData() {
       commissionStatusText,
       aboutText,
       ctaText,
+      aboutImageUrl,
     };
   } catch {
     return {
