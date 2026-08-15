@@ -98,6 +98,13 @@ CREATE TABLE IF NOT EXISTS services (
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'services' AND column_name = 'spare_parts') THEN
+    ALTER TABLE services ADD COLUMN spare_parts BOOLEAN NOT NULL DEFAULT false;
+  END IF;
+END $$;
+
 INSERT INTO services (name, description, sort_order, visible, spare_parts)
 VALUES
   ('Clothing Add-ons', 'Custom clothing, accessories and outfit additions for existing avatars.', 0, true, false),
