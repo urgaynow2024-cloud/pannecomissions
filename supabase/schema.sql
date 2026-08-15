@@ -91,11 +91,21 @@ CREATE TABLE IF NOT EXISTS services (
   name TEXT NOT NULL,
   description TEXT,
   image_url TEXT,
+  spare_parts BOOLEAN NOT NULL DEFAULT false,
   sort_order INTEGER NOT NULL DEFAULT 0,
   visible BOOLEAN NOT NULL DEFAULT true,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
+
+INSERT INTO services (name, description, sort_order, visible, spare_parts)
+VALUES
+  ('Clothing Add-ons', 'Custom clothing, accessories and outfit additions for existing avatars.', 0, true, false),
+  ('Complete Avatars', 'Full avatar assemblies from premade assets, tailored to your needs.', 1, true, false),
+  ('Toggles', 'Avatar toggles and options for switching between different looks or states.', 2, true, true),
+  ('Custom Textures', 'Custom texture work for your avatar, from subtle tweaks to full repaints.', 3, true, false),
+  ('Models', '3D modelling work for avatars, accessories, and custom parts.', 4, true, true)
+ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS pricing (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
