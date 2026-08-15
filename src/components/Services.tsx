@@ -22,7 +22,6 @@ interface PortfolioItem {
 
 interface ServicesProps {
   services: Service[];
-  portfolioItems?: PortfolioItem[];
 }
 
 const SERVICE_FEATURES: Record<string, string[]> = {
@@ -64,16 +63,11 @@ const SERVICE_FEATURES: Record<string, string[]> = {
   ],
 };
 
-function getServiceImage(service: Service, portfolioItems: PortfolioItem[]): string | null {
+function getServiceImage(service: Service): string | null {
   if (service.photos && service.photos.length > 0) {
     return service.photos[0].url;
   }
-  if (service.image_url) return service.image_url;
-  const match = portfolioItems.find(
-    (p) => p.category && p.category.toLowerCase() === service.name.toLowerCase()
-  );
-  if (match) return match.image_url;
-  return null;
+  return service.image_url;
 }
 
 function getServiceFeatures(name: string): string[] {
@@ -141,7 +135,7 @@ function ServiceImageFallback({ name }: { name: string }) {
   );
 }
 
-export default function Services({ services, portfolioItems = [] }: ServicesProps) {
+export default function Services({ services }: ServicesProps) {
   const displayServices = services.length > 0 ? services : [];
 
   if (displayServices.length === 0) return null;
@@ -167,7 +161,7 @@ export default function Services({ services, portfolioItems = [] }: ServicesProp
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 mb-24 md:mb-32">
           {displayServices.map((service) => {
-            const imageSrc = getServiceImage(service, portfolioItems);
+            const imageSrc = getServiceImage(service);
 
             return (
               <ScrollReveal key={`category-${service.id}`}>
@@ -202,7 +196,7 @@ export default function Services({ services, portfolioItems = [] }: ServicesProp
         <div className="space-y-24 md:space-y-32 lg:space-y-40">
           {displayServices.map((service, i) => {
             const isEven = i % 2 === 0;
-            const imageSrc = getServiceImage(service, portfolioItems);
+            const imageSrc = getServiceImage(service);
             const features = getServiceFeatures(service.name);
 
             return (

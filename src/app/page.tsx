@@ -81,7 +81,7 @@ export default async function Home() {
       <Hero featuredItem={featured} heroTitle={data.heroTitle} heroSubtitle={data.heroSubtitle} />
       <HorizontalStrip marqueeText={data.marqueeText} />
       <FeaturedWork items={data.featuredWork} />
-      <Services services={data.services} portfolioItems={data.portfolio} />
+      <Services services={data.services} />
       <AboutSection aboutText={data.aboutText} />
       <HowItWorks />
       <PricingSection pricing={data.pricing} commissionAvailable={data.commissionAvailable} commissionStatusText={data.commissionStatusText} />
