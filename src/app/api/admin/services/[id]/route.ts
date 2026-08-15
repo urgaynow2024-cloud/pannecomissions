@@ -22,7 +22,7 @@ export async function GET(
     const { id } = await params;
     const item = await prisma.Service.findUnique({
       where: { id },
-      include: { photos: true },
+      include: { photos: { orderBy: { sort_order: "asc" } } },
     });
     if (!item) {
       return NextResponse.json({ error: "Service not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });

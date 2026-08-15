@@ -17,7 +17,9 @@ export async function GET() {
   try {
     await requireAdmin();
     const services = await prisma.Service.findMany({
+      where: { visible: true },
       orderBy: { sort_order: "asc" },
+      include: { photos: { orderBy: { sort_order: "asc" } } },
     });
     return NextResponse.json(services);
   } catch (error) {

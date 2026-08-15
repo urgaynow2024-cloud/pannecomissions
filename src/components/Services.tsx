@@ -1,124 +1,229 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
-import SectionGlow from "./SectionGlow";
-import SparkleField from "./SparkleField";
 
 interface Service {
   id: string;
   name: string;
   description: string | null;
   image_url: string | null;
+  photos?: { id: string; url: string; alt_text: string | null; sort_order: number }[];
+}
+
+interface PortfolioItem {
+  id: string;
+  display_title: string | null;
+  description: string | null;
+  image_url: string;
+  category: string | null;
 }
 
 interface ServicesProps {
   services: Service[];
+  portfolioItems?: PortfolioItem[];
 }
 
-const DEFAULT_SERVICES: Service[] = [
-  { id: "clothing", name: "Clothing Add-ons", description: "Adding clothing pieces, accessories, and outfit options to existing avatars.", image_url: null },
-  { id: "complete-avatars", name: "Entire Avatars", description: "Full avatar assemblies from premade assets, tailored to your needs.", image_url: null },
-  { id: "toggles", name: "Toggles", description: "Avatar toggles and options for switching between different looks or states.", image_url: null },
-  { id: "custom-textures", name: "Custom Textures", description: "Custom texture work for your avatar, from subtle tweaks to full repaints.", image_url: null },
-  { id: "models", name: "Models", description: "3D modelling work for avatars, accessories, and custom parts.", image_url: null },
-];
+const SERVICE_FEATURES: Record<string, string[]> = {
+  "Clothing Add-ons": [
+    "Clothing fitting",
+    "Accessory additions",
+    "Custom adjustments",
+    "Avatar integration",
+  ],
+  "Complete Avatars": [
+    "Full avatar setup",
+    "Materials and textures",
+    "PhysBones configuration",
+    "Expressions and toggles",
+  ],
+  "Entire Avatars": [
+    "Full avatar setup",
+    "Materials and textures",
+    "PhysBones configuration",
+    "Expressions and toggles",
+  ],
+  Toggles: [
+    "Avatar toggles",
+    "Visibility switching",
+    "State management",
+    "Performance optimized",
+  ],
+  "Custom Textures": [
+    "Custom texture creation",
+    "Material tweaks",
+    "Full repaints",
+    "PBR ready",
+  ],
+  Models: [
+    "3D modelling",
+    "Custom parts",
+    "Avatar accessories",
+    "Game-ready assets",
+  ],
+};
 
-const ASPECTS = ["aspect-[4/5]", "aspect-square", "aspect-[3/4]", "aspect-[4/3]", "aspect-[5/4]"];
+function getServiceImage(service: Service, portfolioItems: PortfolioItem[]): string | null {
+  if (service.photos && service.photos.length > 0) {
+    return service.photos[0].url;
+  }
+  if (service.image_url) return service.image_url;
+  const match = portfolioItems.find(
+    (p) => p.category && p.category.toLowerCase() === service.name.toLowerCase()
+  );
+  if (match) return match.image_url;
+  return null;
+}
 
-function ServiceImageFallback({ name, index }: { name: string; index: number }) {
+function getServiceFeatures(name: string): string[] {
   return (
-    <div className={`relative w-full ${ASPECTS[index % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] group`}>
-      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/15 via-brand-purple-500/6 to-transparent" />
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
-        <span className="text-brand-purple-400/25 text-3xl animate-sparkle-float">✦</span>
-        <p className="text-sm font-medium text-gray-500 text-center px-6 font-display tracking-wide">
-          {name}
+    SERVICE_FEATURES[name] ||
+    SERVICE_FEATURES[name.replace(/^Custom /, "").replace(/^Complete /, "")] || [
+      "Custom work",
+      "Quality assured",
+      "Fast turnaround",
+      "Direct communication",
+    ]
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg
+      className="h-5 w-5 shrink-0 text-brand-purple-400"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={2.5}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+    </svg>
+  );
+}
+
+function ServiceImage({ src, alt, index }: { src: string; alt: string; index: number }) {
+  const [error, setError] = useState(false);
+
+  if (error) {
+    return (
+      <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-transparent to-transparent" />
+        <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
+          {alt}
         </p>
       </div>
-      <div className="absolute top-4 right-4">
-        <span className="text-brand-purple-400/20 text-xl animate-sparkle-float" style={{ animationDelay: "-2s" }}>✧</span>
-      </div>
-      <div className="absolute bottom-4 left-4">
-        <span className="text-brand-purple-400/15 text-lg animate-sparkle-float" style={{ animationDelay: "-4s" }}>✦</span>
-      </div>
+    );
+  }
+
+  return (
+    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] lg:aspect-[4/3]">
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+        loading="lazy"
+        onError={() => setError(true)}
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
     </div>
   );
 }
 
-export default function Services({ services }: ServicesProps) {
-  const displayServices = services.length > 0 ? services : DEFAULT_SERVICES;
+function ServiceImageFallback({ name }: { name: string }) {
+  return (
+    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] flex items-center justify-center">
+      <div className="absolute inset-0 bg-gradient-to-br from-brand-purple-500/10 via-transparent to-transparent" />
+      <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
+        {name}
+      </p>
+    </div>
+  );
+}
+
+export default function Services({ services, portfolioItems = [] }: ServicesProps) {
+  const displayServices = services.length > 0 ? services : [];
+
+  if (displayServices.length === 0) return null;
 
   return (
-    <section className="py-24 md:py-40 relative">
+    <section className="py-24 md:py-32 lg:py-40 relative">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[10%] left-[5%] w-[700px] h-[600px] bg-brand-purple-500/10 rounded-full blur-[160px]" style={{ animation: "pulseGlow 8s ease-in-out infinite" }} />
         <div className="absolute bottom-[10%] right-[5%] w-[600px] h-[500px] bg-brand-purple-600/8 rounded-full blur-[140px]" style={{ animation: "pulseGlow 8s ease-in-out infinite 4s" }} />
-        <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-brand-purple-500/5 rounded-full blur-[200px]" />
       </div>
-      <SectionGlow intensity="subtle" />
+
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
           <div className="mb-20 md:mb-28 relative">
-            <SparkleField count={8} minSize={4} maxSize={14} minOpacity={0.25} maxOpacity={0.6} className="-inset-6" glow />
-            <div className="relative z-10">
-              <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
-                What I Do
-              </p>
-              <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
-                Services <span className="text-brand-purple-400">✦</span>
-              </h2>
-            </div>
+            <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
+              What I Do
+            </p>
+            <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
+              Services <span className="text-brand-purple-400">✦</span>
+            </h2>
           </div>
         </ScrollReveal>
 
-        <div className="space-y-24 md:space-y-40">
+        <div className="space-y-24 md:space-y-32 lg:space-y-40">
           {displayServices.map((service, i) => {
             const isEven = i % 2 === 0;
+            const imageSrc = getServiceImage(service, portfolioItems);
+            const features = getServiceFeatures(service.name);
+
             return (
               <ScrollReveal key={service.id} delay={i * 100}>
-                <div className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-16 items-center ${!isEven ? "lg:[&>:first-child]:order-2 lg:[&>:last-child]:order-1" : ""}`}>
-                  <div className={`lg:col-span-5 ${isEven ? "lg:order-1" : "lg:order-2"}`}>
-                    <div className={`relative ${ASPECTS[i % ASPECTS.length]} rounded-2xl overflow-hidden border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-brand-purple-500/30 hover:shadow-[0_0_50px_rgba(168,85,247,0.1)] artwork-glow`}>
-                      {service.image_url ? (
-                        <>
-                          <img
-                            src={service.image_url}
-                            alt={service.name}
-                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                            loading="lazy"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
-                          <div className="absolute inset-0 bg-gradient-to-r from-brand-purple-500/10 to-transparent" />
-                        </>
-                      ) : (
-                        <ServiceImageFallback name={service.name} index={i} />
-                      )}
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-16 items-center">
+                  <div
+                    className={`lg:col-span-7 ${isEven ? "lg:order-1" : "lg:order-2"}`}
+                  >
+                    {imageSrc ? (
+                      <ServiceImage src={imageSrc} alt={service.name} index={i} />
+                    ) : (
+                      <ServiceImageFallback name={service.name} />
+                    )}
                   </div>
-                  <div className={`lg:col-span-7 ${isEven ? "lg:order-2" : "lg:order-1"} ${!isEven ? "lg:text-right" : ""}`}>
-                    <p className="text-7xl md:text-8xl lg:text-[9rem] font-bold text-white/[0.03] font-display leading-none select-none mb-2">
-                      0{i + 1}
-                    </p>
-                    <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white font-display tracking-tight heading-pop">
-                      {service.name}
-                    </h3>
-                    <p className="text-gray-400 leading-relaxed max-w-lg text-base md:text-lg mt-4">
-                      {service.description || ""}
-                    </p>
-                    <Link
-                      href="/commission"
-                      className={`group inline-flex items-center gap-3 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors mt-6 ${!isEven ? "lg:flex-row-reverse" : ""}`}
-                    >
-                      Ask about this
-                      <svg
-                        className="h-4 w-4 transition-transform group-hover:translate-x-1"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
+                  <div
+                    className={`lg:col-span-5 ${isEven ? "lg:order-2" : "lg:order-1"}`}
+                  >
+                    <div className="flex flex-col justify-center">
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white font-display tracking-tight heading-pop">
+                        {service.name}
+                      </h3>
+                      <p className="text-gray-400 leading-relaxed text-base md:text-lg mt-4 max-w-lg">
+                        {service.description || ""}
+                      </p>
+                      <ul className="mt-6 space-y-3">
+                        {features.map((feature) => (
+                          <li
+                            key={feature}
+                            className="flex items-center gap-3 text-gray-300 text-sm md:text-base"
+                          >
+                            <CheckIcon />
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                      <Link
+                        href="/commission"
+                        className="group inline-flex items-center gap-2 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors mt-8"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                      </svg>
-                    </Link>
+                        Ask about this
+                        <svg
+                          className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M17 8l4 4m0 0l-4 4m4-4H3"
+                          />
+                        </svg>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </ScrollReveal>

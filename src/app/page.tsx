@@ -18,7 +18,7 @@ async function getData() {
   try {
     const [portfolio, services, pricing, reviews, settings] = await Promise.all([
       prisma.PortfolioItem.findMany({ where: { nsfw: false, visible: true, homepage_visible: true }, orderBy: { sort_order: "asc" } }),
-      prisma.Service.findMany({ where: { visible: true }, orderBy: { sort_order: "asc" } }),
+      prisma.Service.findMany({ where: { visible: true }, orderBy: { sort_order: "asc" }, include: { photos: { orderBy: { sort_order: "asc" } } } }),
       prisma.Pricing.findMany({ where: { visible: true, category: "sfw" }, orderBy: { sort_order: "asc" } }),
       prisma.Review.findMany({ where: { status: "APPROVED", hidden: false }, orderBy: { created_at: "desc" }, take: 3 }),
       prisma.SiteSetting.findMany(),
@@ -79,7 +79,7 @@ export default async function Home() {
       <Hero featuredItem={featured} heroTitle={data.heroTitle} heroSubtitle={data.heroSubtitle} />
       <HorizontalStrip marqueeText={data.marqueeText} />
       <FeaturedWork items={data.featuredWork} />
-      <Services services={data.services} />
+      <Services services={data.services} portfolioItems={data.portfolio} />
       <AboutSection aboutText={data.aboutText} />
       <HowItWorks />
       <PricingSection pricing={data.pricing} commissionAvailable={data.commissionAvailable} commissionStatusText={data.commissionStatusText} />

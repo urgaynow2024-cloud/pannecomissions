@@ -13,6 +13,34 @@ function generateDiagnosticId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+export async function GET(request: Request) {
+  const diagnosticId = generateDiagnosticId();
+  try {
+    await requireAdmin();
+    const { searchParams } = new URL(request.url);
+    const serviceId = searchParams.get("serviceId");
+    const portfolioItemId = searchParams.get("portfolioItemId");
+    const reviewId = searchParams.get("reviewId");
+
+    const where: any = {};
+    if (serviceId) where.serviceId = serviceId;
+    if (portfolioItemId) where.portfolioItemId = portfolioItemId;
+    if (reviewId) where.reviewId = reviewId;
+
+    const photos = await prisma.photo.findMany({
+      where,
+      orderBy: { sort_order: "asc" },
+    });
+    return NextResponse.json(photos);
+  } catch (error) {
+    console.error(`[${diagnosticId}] Failed to fetch photos:`, error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Failed to fetch photos", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   const diagnosticId = generateDiagnosticId();
   try {

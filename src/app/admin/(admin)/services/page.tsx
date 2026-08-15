@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface Service {
   id: string;
@@ -9,6 +9,15 @@ interface Service {
   image_url: string | null;
   sort_order: number;
   visible: boolean;
+  photos?: { id: string; url: string; alt_text: string | null; sort_order: number }[];
+}
+
+interface PortfolioItem {
+  id: string;
+  display_title: string | null;
+  description: string | null;
+  image_url: string;
+  category: string | null;
 }
 
 function SkeletonCard() {
@@ -39,15 +48,21 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 
 export default function ServicesPage() {
   const [items, setItems] = useState<Service[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: "", description: "", image_url: "", sort_order: 0, visible: true });
   const [saving, setSaving] = useState(false);
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const [servicePhotos, setServicePhotos] = useState<{ id: string; url: string; alt_text: string | null }[]>([]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchItems();
+    fetchPortfolio();
   }, []);
 
   async function fetchItems() {
@@ -66,6 +81,33 @@ export default function ServicesPage() {
     }
   }
 
+  async function fetchPortfolio() {
+    try {
+      const res = await fetch("/api/admin/portfolio");
+      if (res.ok) {
+        const data = await res.json();
+        setPortfolioItems(data);
+      }
+    } catch {
+      // silent
+    }
+  }
+
+  async function fetchServicePhotos(serviceId: string) {
+    setLoadingPhotos(true);
+    try {
+      const res = await fetch(`/api/admin/photos?serviceId=${serviceId}`);
+      if (res.ok) {
+        const data = await res.json();
+        setServicePhotos(data);
+      }
+    } catch {
+      // silent
+    } finally {
+      setLoadingPhotos(false);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -81,8 +123,10 @@ export default function ServicesPage() {
         const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Save failed");
       }
+      const saved = await res.json();
       await fetchItems();
-      resetForm();
+      setEditingId(saved.id);
+      await fetchServicePhotos(saved.id);
     } catch (err) {
       alert(err instanceof Error ? err.message : "Save failed");
     } finally {
@@ -93,19 +137,61 @@ export default function ServicesPage() {
   async function handleDelete(id: string) {
     if (!confirm("Delete this service?")) return;
     const res = await fetch(`/api/admin/services/${id}`, { method: "DELETE" });
-    if (res.ok) setItems(items.filter((i) => i.id !== id));
+    if (res.ok) {
+      setItems(items.filter((i) => i.id !== id));
+      if (editingId === id) resetForm();
+    }
   }
 
   function handleEdit(item: Service) {
     setEditingId(item.id);
     setFormData({ name: item.name, description: item.description || "", image_url: item.image_url || "", sort_order: item.sort_order, visible: item.visible });
     setShowForm(true);
+    setServicePhotos(item.photos || []);
+  }
+
+  async function handlePhotoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    if (!files || !editingId) return;
+
+    setPhotoUploading(true);
+    for (const file of Array.from(files)) {
+      if (!file.type.startsWith("image/")) continue;
+      const fd = new FormData();
+      fd.append("image", file);
+      fd.append("altText", "");
+      fd.append("serviceId", editingId);
+
+      try {
+        const res = await fetch("/api/admin/photos", { method: "POST", body: fd });
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
+          throw new Error(data.error || `Upload failed (${res.status})`);
+        }
+      } catch (err) {
+        const message = err instanceof Error ? err.message : "Photo upload failed";
+        console.error("Photo upload error:", message);
+        alert(message);
+      }
+    }
+
+    await fetchServicePhotos(editingId);
+    setPhotoUploading(false);
+    e.target.value = "";
+  }
+
+  async function handlePhotoDelete(photoId: string) {
+    const res = await fetch(`/api/admin/photos/${photoId}`, { method: "DELETE" });
+    if (res.ok && editingId) {
+      setServicePhotos((prev) => prev.filter((p) => p.id !== photoId));
+    }
   }
 
   function resetForm() {
     setShowForm(false);
     setEditingId(null);
     setFormData({ name: "", description: "", image_url: "", sort_order: 0, visible: true });
+    setServicePhotos([]);
   }
 
   if (loading) {
@@ -170,9 +256,80 @@ export default function ServicesPage() {
             <textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={3} />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">Image URL</label>
-            <input value={formData.image_url} onChange={(e) => setFormData({ ...formData, image_url: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" placeholder="https://..." />
+            <label className="block text-sm font-medium text-gray-300 mb-1">Cover Image URL</label>
+            <input
+              value={formData.image_url}
+              onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors"
+              placeholder="https://..."
+            />
+            <p className="text-xs text-gray-500 mt-1">Paste a URL or select from portfolio below.</p>
           </div>
+
+          {portfolioItems.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Choose Cover from Portfolio</label>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2">
+                {portfolioItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setFormData({ ...formData, image_url: item.image_url })}
+                    className={`relative aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 ${
+                      formData.image_url === item.image_url
+                        ? "border-brand-purple-400 ring-2 ring-brand-purple-400/30"
+                        : "border-white/10 hover:border-white/20"
+                    }`}
+                  >
+                    <img src={item.image_url} alt={item.display_title || "Portfolio"} className="w-full h-full object-cover" />
+                    {item.category && (
+                      <span className="absolute bottom-1 left-1 text-[9px] font-medium px-1.5 py-0.5 rounded bg-black/70 text-gray-200 truncate max-w-[calc(100%-0.5rem)]">
+                        {item.category}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {editingId && (
+            <div className="pt-4 border-t border-white/5">
+              <p className="text-sm font-medium text-gray-300 mb-3">Service Photos</p>
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 mb-3">
+                {servicePhotos.map((photo) => (
+                  <div key={photo.id} className="relative aspect-square rounded-lg overflow-hidden border border-white/5 group">
+                    <img src={photo.url} alt="" className="w-full h-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => handlePhotoDelete(photo.id)}
+                      className="absolute top-1 right-1 p-1 rounded bg-black/60 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <label className="inline-flex items-center gap-2 cursor-pointer rounded-lg border border-dashed border-white/10 px-4 py-2 text-sm text-gray-400 hover:text-white hover:border-white/20 transition-colors">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+                </svg>
+                {photoUploading ? "Uploading..." : "Add Photos"}
+                <input
+                  ref={photoInputRef}
+                  type="file"
+                  accept=".png,.jpg,.jpeg,.webp"
+                  multiple
+                  className="hidden"
+                  onChange={handlePhotoUpload}
+                  disabled={photoUploading}
+                />
+              </label>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">Display Order</label>
@@ -222,6 +379,18 @@ export default function ServicesPage() {
                 )}
               </div>
               <p className="text-sm text-gray-500 mb-4 line-clamp-2">{item.description || "No description"}</p>
+              {item.photos && item.photos.length > 0 && (
+                <div className="flex gap-1.5 mb-4 overflow-x-auto pb-1">
+                  {item.photos.slice(0, 4).map((photo) => (
+                    <img key={photo.id} src={photo.url} alt="" className="h-10 w-10 rounded object-cover border border-white/5 shrink-0" />
+                  ))}
+                  {item.photos.length > 4 && (
+                    <div className="h-10 w-10 rounded bg-white/5 border border-white/5 flex items-center justify-center text-[10px] text-gray-400 shrink-0">
+                      +{item.photos.length - 4}
+                    </div>
+                  )}
+                </div>
+              )}
               <div className="flex items-center justify-between pt-3 border-t border-white/5">
                 <span className="text-xs text-gray-500">Order: {item.sort_order}</span>
                 <div className="flex gap-2">

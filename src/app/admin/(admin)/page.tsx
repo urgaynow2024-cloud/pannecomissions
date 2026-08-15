@@ -1,273 +1,478 @@
-import AdminLayout from "@/app/admin/(admin)/layout";
-import prisma from "@/lib/prisma";
-import { Image, Shield, Star, DollarSign, ClipboardList, HelpCircle, Upload, EyeOff, CheckSquare, AlertTriangle, CheckCircle, FolderOpen, HardDrive } from "lucide-react";
+"use client";
 
-async function safeCount(promise: Promise<any>): Promise<number> {
-  try { const v = await promise; return typeof v === "number" ? v : 0; } catch { return 0; }
+import { useState, useEffect } from "react";
+import {
+  Image,
+  Shield,
+  Star,
+  DollarSign,
+  ClipboardList,
+  HelpCircle,
+  Upload,
+  EyeOff,
+  CheckSquare,
+  HardDrive,
+  Database,
+  Activity,
+  ArrowUpRight,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
+  XCircle,
+  ChevronRight,
+  Clock,
+} from "lucide-react";
+
+interface DashboardStats {
+  portfolioStats: { total: number; published: number; hidden: number; featured: number; deleted: number };
+  nsfw: number;
+  pendingReviews: number;
+  pendingCommissions: number;
+  openSupport: number;
+  totalServices: number;
+  totalPricing: number;
+  storageEstimate: string;
+  recentCommissions: any[];
+  recentReviews: any[];
+  recentSupport: any[];
 }
 
-async function safeFindMany(promise: Promise<any[]>): Promise<any[]> {
-  try { return await promise; } catch { return []; }
+interface HealthData {
+  ok: boolean;
+  checks: Record<string, boolean>;
+  missing: string[];
+  details: Record<string, string>;
+  fix: string | null;
+  diagnosticId?: string;
 }
 
-async function getHealth() {
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/admin/health`, {
-      cache: "no-store",
-    });
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+function SkeletonCard() {
+  return (
+    <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5 space-y-3">
+      <div className="h-4 bg-white/5 rounded animate-pulse w-1/2" />
+      <div className="h-8 bg-white/5 rounded animate-pulse w-1/3" />
+    </div>
+  );
 }
 
-export default async function AdminDashboard() {
-  let health: any = null;
-  try {
-    health = await getHealth();
-  } catch {
-    health = null;
-  }
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-4 p-4">
+      <div className="flex-1 space-y-2">
+        <div className="h-3 bg-white/5 rounded animate-pulse w-32" />
+        <div className="h-3 bg-white/5 rounded animate-pulse w-48" />
+      </div>
+      <div className="h-5 bg-white/5 rounded animate-pulse w-16" />
+    </div>
+  );
+}
 
-  const hasSchemaIssue = health?.missing?.length > 0;
+export default function AdminDashboard() {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [health, setHealth] = useState<HealthData | null>(null);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [retrying, setRetrying] = useState(false);
 
-  let portfolioStats = { total: 0, published: 0, hidden: 0, featured: 0, deleted: 0 };
-  let storageEstimate = "Unknown";
-  let recentCommissions: any[] = [];
-  let recentReviews: any[] = [];
-  let recentSupport: any[] = [];
+  async function loadData() {
+    setLoading(true);
+    setError(null);
+    setRetrying(false);
 
-  try {
-    const closedFilter = { status: { not: "CLOSED" } } as const;
-    const results = await Promise.all([
-      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null } })),
-      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, visible: true } })),
-      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, visible: false } })),
-      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: null, featured: true } })),
-      safeCount(prisma.PortfolioItem.count({ where: { deleted_at: { not: null } } })),
-      safeCount(prisma.Service.count()),
-      safeCount(prisma.Pricing.count()),
-      safeCount(prisma.Review.count()),
-      safeCount(prisma.CommissionSubmission.count()),
-      safeCount(prisma.SupportRequest.count({ where: closedFilter })),
-      safeFindMany(prisma.CommissionSubmission.findMany({ take: 5, orderBy: { created_at: "desc" } })),
-      safeFindMany(prisma.Review.findMany({ take: 5, orderBy: { created_at: "desc" } })),
-      safeFindMany(prisma.SupportRequest.findMany({ take: 5, orderBy: { created_at: "desc" } })),
-    ]);
+    try {
+      const [healthRes, statsRes] = await Promise.all([
+        fetch("/api/admin/health", { cache: "no-store" }),
+        fetch("/api/admin/dashboard-stats", { cache: "no-store" }),
+      ]);
 
-    portfolioStats = { total: results[0], published: results[1], hidden: results[2], featured: results[3], deleted: results[4] };
+      if (healthRes.ok) {
+        setHealth(await healthRes.json());
+      } else {
+        const err = await healthRes.json().catch(() => ({ error: "Health check failed" }));
+        setHealth({
+          ok: false,
+          checks: {},
+          missing: [],
+          details: { _error: err.error || "Health endpoint returned an error" },
+          fix: "Check the system status page for details",
+        });
+      }
 
-    const totalPhotos = await safeCount(prisma.Photo.count());
-    if (totalPhotos > 0) {
-      const avgSize = await prisma.Photo.aggregate({ _avg: { file_size: true } });
-      storageEstimate = `~${(totalPhotos * (avgSize._avg.file_size || 0) / (1024 * 1024)).toFixed(1)} MB`;
+      if (statsRes.ok) {
+        setStats(await statsRes.json());
+      } else {
+        const err = await statsRes.json().catch(() => ({ error: "Failed to load dashboard stats" }));
+        setError(err.error || "Failed to load dashboard data");
+      }
+    } catch {
+      setError("Something went wrong. Please refresh the page.");
+    } finally {
+      setLoading(false);
     }
-
-    recentCommissions = results[10];
-    recentReviews = results[11];
-    recentSupport = results[12];
-  } catch {
-    // stats remain zeros
   }
 
-  const stats = [
-    { label: "Portfolio", value: portfolioStats.total, subtitle: `Published: ${portfolioStats.published}`, href: "/admin/portfolio", icon: Image },
-    { label: "NSFW", value: await safeCount(prisma.PortfolioItem.count({ where: { nsfw: true } })), subtitle: "Adult published", href: "/admin/nsfw", icon: Shield },
-    { label: "Reviews", value: await safeCount(prisma.Review.count({ where: { status: "PENDING" } })), subtitle: "Pending approval", href: "/admin/reviews", icon: Star },
-    { label: "Commissions", value: await safeCount(prisma.CommissionSubmission.count({ where: { status: "PENDING" } })), subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList },
-    { label: "Support", value: await safeCount(prisma.SupportRequest.count()), subtitle: "Open requests", href: "/admin/support", icon: HelpCircle },
+  async function handleRetry() {
+    setRetrying(true);
+    await loadData();
+  }
+
+  const systemChecks = [
+    { key: "database", label: "Database", check: health?.checks.database },
+    { key: "storage", label: "Storage", check: health?.checks.storage },
+    { key: "api", label: "API", check: health?.checks.database && health?.checks.storage },
   ];
+
+  const systemOk = health?.checks.database && health?.checks.storage;
+
+  const statCards = stats
+    ? [
+        { label: "Portfolio", value: stats.portfolioStats?.total || 0, subtitle: "Published works", href: "/admin/portfolio", icon: Image, color: "text-blue-400" },
+        { label: "NSFW", value: stats.nsfw || 0, subtitle: "Adult published", href: "/admin/nsfw", icon: Shield, color: "text-pink-400" },
+        { label: "Reviews", value: stats.pendingReviews || 0, subtitle: "Pending approval", href: "/admin/reviews", icon: Star, color: "text-yellow-400" },
+        { label: "Commissions", value: stats.pendingCommissions || 0, subtitle: "Awaiting response", href: "/admin/commissions", icon: ClipboardList, color: "text-purple-400" },
+        { label: "Support", value: stats.openSupport || 0, subtitle: "Open requests", href: "/admin/support", icon: HelpCircle, color: "text-green-400" },
+      ]
+    : [];
 
   const quickActions = [
-    { label: "Upload Portfolio Work", href: "/admin/portfolio", icon: Upload },
-    { label: "Add NSFW Work", href: "/admin/nsfw", icon: EyeOff },
-    { label: "Review Submissions", href: "/admin/reviews", icon: CheckSquare },
-    { label: "Edit Pricing", href: "/admin/pricing", icon: DollarSign },
+    { label: "Upload Portfolio Work", description: "Add new artwork to your portfolio", href: "/admin/portfolio", icon: Upload },
+    { label: "Add NSFW Work", description: "Upload adult content portfolio items", href: "/admin/nsfw", icon: EyeOff },
+    { label: "Review Submissions", description: "Approve or reject pending reviews", href: "/admin/reviews", icon: CheckSquare },
+    { label: "Edit Pricing", description: "Update commission pricing tiers", href: "/admin/pricing", icon: DollarSign },
   ];
 
+  const pendingActions: { label: string; count: number; href: string }[] = [];
+  if (stats?.pendingCommissions) pendingActions.push({ label: "Commissions awaiting response", count: stats.pendingCommissions, href: "/admin/commissions" });
+  if (stats?.pendingReviews) pendingActions.push({ label: "Reviews awaiting approval", count: stats.pendingReviews, href: "/admin/reviews" });
+  if (stats?.openSupport) pendingActions.push({ label: "Open support requests", count: stats.openSupport, href: "/admin/support" });
+
   return (
-    <AdminLayout>
-      <div className="space-y-10 animate-fade-in">
-        {hasSchemaIssue && (
-          <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-6">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                <AlertTriangle className="h-5 w-5 text-yellow-400" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-white mb-1 font-display">Setup required before uploads work</h3>
-                <p className="text-sm text-gray-400 mb-4">
-                  Your Supabase database/storage is missing required items. Follow these exact steps:
-                </p>
-                <div className="space-y-3">
-                  {health.missing.map((item: string, i: number) => (
-                    <div key={i} className="flex items-start gap-3 text-sm">
-                      <span className="text-brand-purple-400 font-mono text-xs mt-0.5">{i + 1}.</span>
-                      <span className="text-gray-300">{item}</span>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-4 rounded-lg border border-white/5 bg-white/[0.02] p-4">
-                  <p className="text-xs font-medium text-gray-300 mb-2 uppercase tracking-wider">How to fix:</p>
-                  <ol className="text-sm text-gray-400 space-y-1 list-decimal list-inside">
-                    <li>Open Supabase → <strong>SQL Editor</strong></li>
-                    <li>Paste the entire contents of <code className="text-brand-purple-300 bg-white/5 px-1.5 py-0.5 rounded text-xs">supabase/schema.sql</code></li>
-                    <li>Run it</li>
-                    <li>Go to Supabase → <strong>Storage</strong> → create bucket named <code className="text-brand-purple-300 bg-white/5 px-1.5 py-0.5 rounded text-xs">pannecomissions</code> (Public)</li>
-                    <li>Redeploy on Vercel</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
+    <div className="space-y-8 animate-fade-in">
+      {error && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-5 flex items-start gap-4">
+          <AlertCircle className="h-5 w-5 text-red-400 shrink-0 mt-0.5" />
+          <div className="flex-1">
+            <p className="text-sm text-red-300 font-medium">Dashboard data unavailable</p>
+            <p className="text-xs text-red-400/80 mt-1">{error}</p>
           </div>
-        )}
+          <button onClick={handleRetry} disabled={retrying} className="rounded-lg border border-red-500/30 px-3 py-1.5 text-xs font-medium text-red-300 hover:text-white hover:border-red-400/50 transition-colors shrink-0 disabled:opacity-50">
+            {retrying ? "Retrying..." : "Retry"}
+          </button>
+        </div>
+      )}
 
-        {health && !hasSchemaIssue && (
-          <div className="rounded-xl border border-green-500/20 bg-green-500/5 p-4 flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-green-400 shrink-0" />
-            <p className="text-sm text-green-300">All systems ready — uploads should work.</p>
-          </div>
-        )}
-
-        {!health && !hasSchemaIssue && (
-          <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 flex items-center gap-3">
-            <AlertTriangle className="h-5 w-5 text-yellow-400 shrink-0" />
-            <p className="text-sm text-yellow-300">Unable to reach health check. Database and storage may be unreachable.</p>
-          </div>
-        )}
-
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight text-white font-display">
-            Welcome back to{" "}
-            <span className="bg-gradient-to-r from-brand-purple-300 to-brand-purple-500 bg-clip-text text-transparent">
-              Panne.
-            </span>
+          <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-2">Admin</p>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-display heading-pop">
+            Dashboard
           </h1>
-          <p className="text-gray-400 mt-2 text-sm">Here&apos;s what&apos;s happening with your studio.</p>
+          <p className="text-gray-400 mt-1.5 text-sm">Studio overview and system health.</p>
         </div>
+        <button
+          onClick={handleRetry}
+          disabled={retrying || loading}
+          className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.02] px-4 py-2 text-xs font-medium text-gray-300 hover:text-white hover:border-white/20 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${retrying ? "animate-spin" : ""}`} />
+          Refresh
+        </button>
+      </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-          {stats.map((stat) => (
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="lg:col-span-2 rounded-xl border border-white/5 bg-white/[0.02] p-5">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center gap-3">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${systemOk ? "bg-green-500/10" : "bg-red-500/10"}`}>
+                <Activity className={`h-5 w-5 ${systemOk ? "text-green-400" : "text-red-400"}`} />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-white font-display">System Status</h3>
+                <p className="text-xs text-gray-500">
+                  {systemOk ? "All systems operational" : "Issues detected"}
+                </p>
+              </div>
+            </div>
             <a
-              key={stat.label}
-              href={stat.href}
-              className="group relative flex flex-col rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-brand-purple-400/30 transition-all duration-200 overflow-hidden"
+              href="/admin/system"
+              className="text-xs text-brand-purple-400 hover:text-brand-purple-300 transition-colors font-medium flex items-center gap-1"
             >
-              <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-purple-500/0 via-brand-purple-500 to-brand-purple-500/0 opacity-60 group-hover:opacity-100 transition-opacity" />
-              <div className="flex items-center gap-2 mb-3">
-                <stat.icon className="h-4 w-4 text-gray-500 group-hover:text-brand-purple-400 transition-colors" />
-                <p className="text-xs font-medium text-gray-400 uppercase tracking-wider">{stat.label}</p>
-              </div>
-              <p className="text-4xl font-bold text-white font-display tracking-tight">
-                {stat.value.toLocaleString()}
-              </p>
-              <p className="text-xs text-gray-500 mt-1.5">{stat.subtitle}</p>
+              Details
+              <ChevronRight className="h-3 w-3" />
             </a>
-          ))}
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {systemChecks.map((item) => (
+              <div key={item.key} className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5">
+                <span className="text-xs font-medium text-gray-400">{item.label}</span>
+                {item.check === true ? (
+                  <span className="flex items-center gap-1.5 text-xs text-green-400">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Connected
+                  </span>
+                ) : item.check === false ? (
+                  <span className="flex items-center gap-1.5 text-xs text-red-400">
+                    <XCircle className="h-3.5 w-3.5" />
+                    Error
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1.5 text-xs text-gray-500">
+                    <Clock className="h-3.5 w-3.5" />
+                    Unknown
+                  </span>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {health?.details && Object.keys(health.details).length > 0 && (
+            <details className="mt-4">
+              <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-300 transition-colors select-none">
+                Technical details
+              </summary>
+              <div className="mt-3 rounded-lg border border-white/5 bg-white/[0.02] p-4 space-y-2">
+                {Object.entries(health.details).map(([key, value]) => (
+                  <div key={key} className="flex items-start justify-between gap-4">
+                    <span className="text-xs text-gray-500 font-mono shrink-0">{key}</span>
+                    <span className="text-xs text-red-400/90 break-all text-right">{String(value)}</span>
+                  </div>
+                ))}
+              </div>
+            </details>
+          )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Image className="h-4 w-4 text-brand-purple-400" />
-              <h3 className="text-sm font-semibold text-white font-display">Portfolio Breakdown</h3>
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="w-10 h-10 rounded-xl bg-brand-purple-500/10 flex items-center justify-center">
+              <HardDrive className="h-5 w-5 text-brand-purple-400" />
             </div>
-            <div className="space-y-2 text-xs text-gray-400">
-              <div className="flex justify-between"><span>Total</span><span className="text-white tabular-nums">{portfolioStats.total}</span></div>
-              <div className="flex justify-between"><span>Published</span><span className="text-green-400 tabular-nums">{portfolioStats.published}</span></div>
-              <div className="flex justify-between"><span>Hidden</span><span className="text-yellow-400 tabular-nums">{portfolioStats.hidden}</span></div>
-              <div className="flex justify-between"><span>Featured</span><span className="text-brand-purple-400 tabular-nums">{portfolioStats.featured}</span></div>
-              <div className="flex justify-between"><span>Deleted</span><span className="text-red-400 tabular-nums">{portfolioStats.deleted}</span></div>
-            </div>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <HardDrive className="h-4 w-4 text-brand-purple-400" />
+            <div>
               <h3 className="text-sm font-semibold text-white font-display">Storage</h3>
-            </div>
-            <p className="text-2xl font-bold text-white font-display">{storageEstimate}</p>
-            <p className="text-xs text-gray-500 mt-1">Estimated media usage</p>
-          </div>
-          <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle className="h-4 w-4 text-brand-purple-400" />
-              <h3 className="text-sm font-semibold text-white font-display">System Status</h3>
-            </div>
-            <div className="space-y-2 text-xs text-gray-400">
-              <div className="flex justify-between items-center">
-                <span>Database</span>
-                {health?.checks?.database ? <span className="text-green-400">Connected</span> : <span className="text-red-400">Error</span>}
-              </div>
-              <div className="flex justify-between items-center">
-                <span>Storage</span>
-                {health?.checks?.storage ? <span className="text-green-400">Connected</span> : <span className="text-red-400">Error</span>}
-              </div>
+              <p className="text-xs text-gray-500">Media usage</p>
             </div>
           </div>
+          {loading ? (
+            <div className="space-y-2">
+              <div className="h-6 bg-white/5 rounded animate-pulse w-1/2" />
+              <div className="h-3 bg-white/5 rounded animate-pulse w-1/3" />
+            </div>
+          ) : (
+            <>
+              <p className="text-2xl font-bold text-white font-display tracking-tight">
+                {stats?.storageEstimate || "Unknown"}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">Estimated media usage</p>
+              {(!stats?.storageEstimate || stats.storageEstimate === "Unknown") && (
+                <p className="text-xs text-gray-600 mt-2">Upload photos to see storage estimates.</p>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-display">Overview</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {loading
+            ? Array.from({ length: 5 }).map((_, i) => <SkeletonCard key={i} />)
+            : statCards.map((stat) => {
+                const Icon = stat.icon;
+                return (
+                  <a
+                    key={stat.label}
+                    href={stat.href}
+                    className="group relative flex flex-col rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-brand-purple-400/30 hover:bg-brand-purple-500/5 transition-all duration-200 overflow-hidden"
+                  >
+                    <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-brand-purple-500/0 via-brand-purple-500 to-brand-purple-500/0 opacity-0 group-hover:opacity-60 transition-opacity" />
+                    <div className="flex items-center gap-2 mb-3">
+                      <Icon className={`h-4 w-4 ${stat.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
+                      <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wider">{stat.label}</p>
+                    </div>
+                    <p className="text-3xl font-bold text-white font-display tracking-tight">
+                      {stat.value.toLocaleString()}
+                    </p>
+                    <p className="text-[11px] text-gray-500 mt-1.5">{stat.subtitle}</p>
+                  </a>
+                );
+              })}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Image className="h-4 w-4 text-brand-purple-400" />
+            <h3 className="text-xs font-semibold text-white font-display uppercase tracking-wider">Portfolio Breakdown</h3>
+          </div>
+          {loading ? (
+            <div className="space-y-2.5">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <div key={i} className="h-3 bg-white/5 rounded animate-pulse w-full" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2.5 text-xs">
+              {[
+                { label: "Total", value: stats?.portfolioStats?.total || 0, href: "/admin/portfolio", color: "text-gray-300" },
+                { label: "Published", value: stats?.portfolioStats?.published || 0, href: "/admin/portfolio", color: "text-green-400" },
+                { label: "Hidden", value: stats?.portfolioStats?.hidden || 0, href: "/admin/portfolio", color: "text-yellow-400" },
+                { label: "Featured", value: stats?.portfolioStats?.featured || 0, href: "/admin/portfolio", color: "text-brand-purple-400" },
+                { label: "Deleted", value: stats?.portfolioStats?.deleted || 0, href: "/admin/trash", color: "text-red-400" },
+              ].map((item) => (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0 hover:bg-white/[0.02] -mx-2 px-2 rounded transition-colors group"
+                >
+                  <span className="text-gray-400 group-hover:text-gray-300 transition-colors">{item.label}</span>
+                  <span className={`font-mono text-sm tabular-nums ${item.color}`}>{item.value}</span>
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
-        <div>
-          <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 font-display">Quick Actions</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-            {quickActions.map((action) => (
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <Database className="h-4 w-4 text-brand-purple-400" />
+            <h3 className="text-xs font-semibold text-white font-display uppercase tracking-wider">Database</h3>
+          </div>
+          {loading ? (
+            <div className="space-y-2.5">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="h-3 bg-white/5 rounded animate-pulse w-full" />
+              ))}
+            </div>
+          ) : (
+            <div className="space-y-2.5 text-xs">
+              {[
+                { label: "Portfolio", value: stats?.portfolioStats?.total || 0 },
+                { label: "Services", value: stats?.totalServices || 0 },
+                { label: "Pricing", value: stats?.totalPricing || 0 },
+                { label: "Photos", value: stats?.totalPricing || 0 },
+              ].map((item) => (
+                <div key={item.label} className="flex items-center justify-between py-1.5 border-b border-white/5 last:border-0">
+                  <span className="text-gray-400">{item.label}</span>
+                  <span className="font-mono text-sm tabular-nums text-gray-300">{item.value}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
+          <div className="flex items-center gap-2 mb-4">
+            <ClipboardList className="h-4 w-4 text-brand-purple-400" />
+            <h3 className="text-xs font-semibold text-white font-display uppercase tracking-wider">Pending Actions</h3>
+          </div>
+          {loading ? (
+            <div className="space-y-2.5">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="h-3 bg-white/5 rounded animate-pulse w-full" />
+              ))}
+            </div>
+          ) : pendingActions.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <CheckCircle2 className="h-6 w-6 text-green-400/50 mb-2" />
+              <p className="text-xs text-gray-500">All caught up</p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {pendingActions.map((action) => (
+                <a
+                  key={action.label}
+                  href={action.href}
+                  className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:border-brand-purple-400/30 hover:bg-brand-purple-500/5 transition-all group"
+                >
+                  <span className="text-xs text-gray-400 group-hover:text-gray-300 transition-colors">{action.label}</span>
+                  <span className="text-xs font-mono font-semibold text-brand-purple-400">{action.count}</span>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div>
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-display">Quick Actions</h2>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {quickActions.map((action) => {
+            const Icon = action.icon;
+            return (
               <a
                 key={action.label}
                 href={action.href}
-                className="flex items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] p-4 hover:border-brand-purple-400/30 hover:bg-brand-purple-500/5 transition-all duration-200 group"
+                className="group flex flex-col rounded-xl border border-white/5 bg-white/[0.02] p-5 hover:border-brand-purple-400/30 hover:bg-brand-purple-500/5 transition-all duration-200"
               >
-                <div className="w-10 h-10 rounded-lg bg-brand-purple-500/10 flex items-center justify-center text-brand-purple-400 group-hover:bg-brand-purple-500 group-hover:text-white transition-all duration-200 shrink-0">
-                  <action.icon className="h-5 w-5" />
+                <div className="w-10 h-10 rounded-xl bg-brand-purple-500/10 flex items-center justify-center text-brand-purple-400 group-hover:bg-brand-purple-500 group-hover:text-white transition-all duration-200 mb-3">
+                  <Icon className="h-5 w-5" />
                 </div>
-                <span className="text-sm font-medium text-gray-300 group-hover:text-white transition-colors truncate">{action.label}</span>
+                <p className="text-sm font-semibold text-white group-hover:text-brand-purple-300 transition-colors">{action.label}</p>
+                <p className="text-xs text-gray-500 mt-1 group-hover:text-gray-400 transition-colors">{action.description}</p>
+                <div className="mt-3 flex items-center gap-1 text-xs text-brand-purple-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                  Go
+                  <ArrowUpRight className="h-3 w-3" />
+                </div>
               </a>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <h2 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 font-display">Recent Activity</h2>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <ActivityTable
-              title="Recent Commissions"
-              items={recentCommissions}
-              fields={[
-                { key: "client_name", label: "Client" },
-                { key: "service", label: "Service" },
-                { key: "status", label: "Status", isStatus: true },
-                { key: "created_at", label: "Date", isDate: true },
-              ]}
-              href="/admin/commissions"
-              emptyMessage="No commissions yet."
-            />
-            <ActivityTable
-              title="Recent Reviews"
-              items={recentReviews}
-              fields={[
-                { key: "display_name", label: "Reviewer" },
-                { key: "rating", label: "Rating" },
-                { key: "status", label: "Status", isStatus: true },
-                { key: "created_at", label: "Date", isDate: true },
-              ]}
-              href="/admin/reviews"
-              emptyMessage="No reviews yet."
-            />
-            <ActivityTable
-              title="Recent Support"
-              items={recentSupport}
-              fields={[
-                { key: "client_name", label: "Client" },
-                { key: "subject", label: "Subject" },
-                { key: "status", label: "Status", isStatus: true },
-                { key: "created_at", label: "Date", isDate: true },
-              ]}
-              href="/admin/support"
-              emptyMessage="No support requests yet."
-            />
-          </div>
+            );
+          })}
         </div>
       </div>
-    </AdminLayout>
+
+      <div>
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 font-display">Recent Activity</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {loading ? (
+            <>
+              <SkeletonRow />
+              <SkeletonRow />
+              <SkeletonRow />
+            </>
+          ) : (
+            <>
+              <ActivityTable
+                title="Recent Commissions"
+                items={stats?.recentCommissions || []}
+                fields={[
+                  { key: "client_name", label: "Client" },
+                  { key: "service", label: "Service" },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/commissions"
+                emptyMessage="No commissions yet."
+              />
+              <ActivityTable
+                title="Recent Reviews"
+                items={stats?.recentReviews || []}
+                fields={[
+                  { key: "display_name", label: "Reviewer" },
+                  { key: "rating", label: "Rating", isRating: true },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/reviews"
+                emptyMessage="No reviews yet."
+              />
+              <ActivityTable
+                title="Recent Support"
+                items={stats?.recentSupport || []}
+                fields={[
+                  { key: "client_name", label: "Client" },
+                  { key: "subject", label: "Subject" },
+                  { key: "status", label: "Status", isStatus: true },
+                  { key: "created_at", label: "Date", isDate: true },
+                ]}
+                href="/admin/support"
+                emptyMessage="No support requests yet."
+              />
+            </>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -280,34 +485,41 @@ function ActivityTable({
 }: {
   title: string;
   items: any[];
-  fields: { key: string; label: string; isStatus?: boolean; isDate?: boolean }[];
+  fields: { key: string; label: string; isStatus?: boolean; isDate?: boolean; isRating?: boolean }[];
   href: string;
   emptyMessage: string;
 }) {
   return (
     <div className="rounded-xl border border-white/5 bg-white/[0.02] overflow-hidden flex flex-col">
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/5">
-        <h3 className="text-sm font-semibold text-white font-display">{title}</h3>
-        <a href={href} className="text-xs text-brand-purple-400 hover:text-brand-purple-300 transition-colors font-medium">
+        <h3 className="text-xs font-semibold text-white font-display uppercase tracking-wider">{title}</h3>
+        <a href={href} className="text-[11px] text-brand-purple-400 hover:text-brand-purple-300 transition-colors font-medium flex items-center gap-0.5">
           View all
+          <ChevronRight className="h-3 w-3" />
         </a>
       </div>
       <div className="divide-y divide-white/5 flex-1">
         {items.length === 0 ? (
           <div className="px-5 py-10 text-center">
-            <p className="text-3xl font-bold text-white/5 font-display mb-1">0</p>
-            <p className="text-xs text-gray-500">{emptyMessage}</p>
+            <p className="text-2xl font-bold text-white/5 font-display mb-1">0</p>
+            <p className="text-[11px] text-gray-500">{emptyMessage}</p>
           </div>
         ) : (
           items.map((item) => (
             <div key={item.id} className="flex items-center justify-between px-5 py-3 hover:bg-white/[0.02] transition-colors">
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-white truncate">{String(item[fields[0].key])}</p>
-                <p className="text-xs text-gray-500 truncate">{String(item[fields[1].key])}</p>
+                <p className="text-xs text-gray-500 truncate">
+                  {fields[1].isRating ? (
+                    <span className="text-yellow-400">{"★".repeat(item[fields[1].key])}</span>
+                  ) : (
+                    String(item[fields[1].key])
+                  )}
+                </p>
               </div>
               <div className="flex items-center gap-3 shrink-0 ml-3">
-                <StatusBadge status={String(item[fields[2].key])} />
-                <span className="text-xs text-gray-500 tabular-nums">
+                {fields[2].isStatus && <StatusBadge status={String(item[fields[2].key])} />}
+                <span className="text-[11px] text-gray-500 tabular-nums">
                   {fields[3].isDate ? new Date(item[fields[3].key]).toLocaleDateString() : String(item[fields[3].key])}
                 </span>
               </div>
@@ -321,20 +533,20 @@ function ActivityTable({
 
 function StatusBadge({ status }: { status: string }) {
   const colors: Record<string, string> = {
-    PENDING: "bg-yellow-500/10 text-yellow-400",
-    APPROVED: "bg-green-500/10 text-green-400",
-    REJECTED: "bg-red-500/10 text-red-400",
-    REVIEWING: "bg-blue-500/10 text-blue-400",
-    ACCEPTED: "bg-green-500/10 text-green-400",
-    IN_PROGRESS: "bg-purple-500/10 text-purple-400",
-    WAITING: "bg-orange-500/10 text-orange-400",
-    COMPLETED: "bg-emerald-500/10 text-emerald-400",
-    DECLINED: "bg-red-500/10 text-red-400",
-    RESOLVED: "bg-green-500/10 text-green-400",
-    CLOSED: "bg-gray-500/10 text-gray-400",
+    PENDING: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20",
+    APPROVED: "bg-green-500/10 text-green-400 border-green-500/20",
+    REJECTED: "bg-red-500/10 text-red-400 border-red-500/20",
+    REVIEWING: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+    ACCEPTED: "bg-green-500/10 text-green-400 border-green-500/20",
+    IN_PROGRESS: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+    WAITING: "bg-orange-500/10 text-orange-400 border-orange-500/20",
+    COMPLETED: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+    DECLINED: "bg-red-500/10 text-red-400 border-red-500/20",
+    RESOLVED: "bg-green-500/10 text-green-400 border-green-500/20",
+    CLOSED: "bg-gray-500/10 text-gray-400 border-gray-500/20",
   };
   return (
-    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${colors[status] || "bg-gray-500/10 text-gray-400"}`}>
+    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full border ${colors[status] || "bg-gray-500/10 text-gray-400 border-gray-500/20"}`}>
       {String(status).replace(/_/g, " ")}
     </span>
   );
