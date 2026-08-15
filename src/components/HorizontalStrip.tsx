@@ -1,15 +1,11 @@
 "use client";
 
-export default function HorizontalStrip() {
-  const items = [
-    "VRCHAT AVATARS",
-    "CUSTOM TEXTURES",
-    "TOGGLES",
-    "CLOTHING",
-    "MODELS",
-    "AVATARS",
-  ];
+interface HorizontalStripProps {
+  marqueeText?: string;
+}
 
+export default function HorizontalStrip({ marqueeText }: HorizontalStripProps) {
+  const items = (marqueeText || "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS").split(" ✦ ");
   const content = [...items, ...items].join(" ✦ ");
 
   return (

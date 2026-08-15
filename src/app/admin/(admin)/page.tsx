@@ -130,6 +130,13 @@ export default async function AdminDashboard() {
           </div>
         )}
 
+        {!health && !hasSchemaIssue && (
+          <div className="rounded-xl border border-yellow-500/20 bg-yellow-500/5 p-4 flex items-center gap-3">
+            <AlertTriangle className="h-5 w-5 text-yellow-400 shrink-0" />
+            <p className="text-sm text-yellow-300">Unable to reach health check. Database and storage may be unreachable.</p>
+          </div>
+        )}
+
         <div>
           <h1 className="text-4xl font-bold tracking-tight text-white font-display">
             Welcome back to{" "}

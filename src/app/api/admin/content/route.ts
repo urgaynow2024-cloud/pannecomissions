@@ -12,50 +12,68 @@ function generateDiagnosticId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
 
+const CONTENT_KEYS = [
+  "hero_title",
+  "hero_subtitle",
+  "marquee_text",
+  "commission_available",
+  "commission_status_text",
+  "about_text",
+  "cta_text",
+];
+
 export async function GET() {
   const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
-    const pricing = await prisma.Pricing.findMany({
-      orderBy: { sort_order: "asc" },
-    });
-    return NextResponse.json(pricing);
+    const env = process.env;
+    const result: Record<string, string> = {};
+
+    for (const key of CONTENT_KEYS) {
+      result[key] = env[key] || "";
+    }
+
+    const dbSettings = await prisma.SiteSetting.findMany();
+    for (const setting of dbSettings) {
+      if (CONTENT_KEYS.includes(setting.key)) {
+        result[setting.key] = setting.value;
+      }
+    }
+
+    return NextResponse.json(result);
   } catch (error) {
-    console.error(`[${diagnosticId}] Failed to fetch pricing:`, error);
+    console.error(`[${diagnosticId}] Failed to fetch content:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const message = error instanceof Error ? error.message : "Failed to load pricing";
+    const message = error instanceof Error ? error.message : "Failed to load content";
     return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
-export async function POST(request: Request) {
+export async function PUT(request: Request) {
   const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const body = await request.json();
-    if (!body.name) {
-      return NextResponse.json({ error: "Name is required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
+
+    for (const key of CONTENT_KEYS) {
+      if (key in body && typeof body[key] === "string") {
+        await prisma.SiteSetting.upsert({
+          where: { key },
+          update: { value: body[key] },
+          create: { key, value: body[key] },
+        });
+      }
     }
-    const item = await prisma.Pricing.create({
-      data: {
-        name: body.name,
-        min_price: body.min_price ?? null,
-        max_price: body.max_price ?? null,
-        description: body.description || null,
-        visible: body.visible ?? true,
-        sort_order: body.sort_order || 0,
-        category: body.category || "sfw",
-      },
-    });
-    return NextResponse.json(item, { status: 201 });
+
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(`[${diagnosticId}] Failed to create pricing:`, error);
+    console.error(`[${diagnosticId}] Failed to update content:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
       return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const message = error instanceof Error ? error.message : "Failed to create pricing";
+    const message = error instanceof Error ? error.message : "Failed to update content";
     return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

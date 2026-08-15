@@ -16,39 +16,76 @@ export const revalidate = 60;
 
 async function getData() {
   try {
-    const [portfolio, services, pricing, reviews] = await Promise.all([
-      prisma.PortfolioItem.findMany({ where: { nsfw: false, visible: true }, orderBy: { sort_order: "asc" } }),
+    const [portfolio, services, pricing, reviews, settings] = await Promise.all([
+      prisma.PortfolioItem.findMany({ where: { nsfw: false, visible: true, homepage_visible: true }, orderBy: { sort_order: "asc" } }),
       prisma.Service.findMany({ where: { visible: true }, orderBy: { sort_order: "asc" } }),
       prisma.Pricing.findMany({ where: { visible: true, category: "sfw" }, orderBy: { sort_order: "asc" } }),
       prisma.Review.findMany({ where: { status: "APPROVED", hidden: false }, orderBy: { created_at: "desc" }, take: 3 }),
+      prisma.SiteSetting.findMany(),
     ]);
+
+    const settingsMap = Object.fromEntries(settings.map((s: { key: string; value: string }) => [s.key, s.value]));
+
+    const heroTitle = process.env.HERO_TITLE || settingsMap.hero_title || "VRCHAT AVATAR COMMISSIONS";
+    const heroSubtitle = process.env.HERO_SUBTITLE || settingsMap.hero_subtitle || "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.";
+    const marqueeText = process.env.MARQUEE_TEXT || settingsMap.marquee_text || "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS";
+    const commissionAvailable = (process.env.COMMISSION_AVAILABLE || settingsMap.commission_available || "true") === "true";
+    const commissionStatusText = process.env.COMMISSION_STATUS_TEXT || settingsMap.commission_status_text || "";
+    const aboutText = process.env.ABOUT_TEXT || settingsMap.about_text || "I make VRChat avatars, outfits, textures and other projects people ask me to build.";
+    const ctaText = process.env.CTA_TEXT || settingsMap.cta_text || "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.";
 
     const featuredWork = portfolio.slice(0, 6);
 
-    return { portfolio, services, pricing, reviews, featuredWork };
+    return {
+      portfolio,
+      services,
+      pricing,
+      reviews,
+      featuredWork,
+      heroTitle,
+      heroSubtitle,
+      marqueeText,
+      commissionAvailable,
+      commissionStatusText,
+      aboutText,
+      ctaText,
+    };
   } catch {
-    return { portfolio: [], services: [], pricing: [], reviews: [], featuredWork: [] };
+    return {
+      portfolio: [] as any[],
+      services: [] as any[],
+      pricing: [] as any[],
+      reviews: [] as any[],
+      featuredWork: [] as any[],
+      heroTitle: "VRCHAT AVATAR COMMISSIONS",
+      heroSubtitle: "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.",
+      marqueeText: "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS",
+      commissionAvailable: true,
+      commissionStatusText: "",
+      aboutText: "I make VRChat avatars, outfits, textures and other projects people ask me to build.",
+      ctaText: "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.",
+    };
   }
 }
 
 export default async function Home() {
-  const { portfolio, services, pricing, reviews, featuredWork } = await getData();
-  const featured = featuredWork[0] || null;
+  const data = await getData();
+  const featured = data.featuredWork[0] || null;
 
   return (
     <main className="min-h-screen text-white antialiased relative">
       <NoiseOverlay />
       <Navbar />
-      <Hero featuredItem={featured} />
-      <HorizontalStrip />
-      <FeaturedWork items={featuredWork} />
-      <Services services={services} />
-      <AboutSection />
+      <Hero featuredItem={featured} heroTitle={data.heroTitle} heroSubtitle={data.heroSubtitle} />
+      <HorizontalStrip marqueeText={data.marqueeText} />
+      <FeaturedWork items={data.featuredWork} />
+      <Services services={data.services} />
+      <AboutSection aboutText={data.aboutText} />
       <HowItWorks />
-      <PricingSection pricing={pricing} />
-      <ReviewsSection reviews={reviews} />
-      <FinalCTA />
-      <Footer portfolioItems={portfolio.slice(0, 6)} />
+      <PricingSection pricing={data.pricing} commissionAvailable={data.commissionAvailable} commissionStatusText={data.commissionStatusText} />
+      <ReviewsSection reviews={data.reviews} />
+      <FinalCTA ctaText={data.ctaText} />
+      <Footer portfolioItems={data.portfolio.slice(0, 6)} />
     </main>
   );
 }

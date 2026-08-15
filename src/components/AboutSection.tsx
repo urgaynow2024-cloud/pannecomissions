@@ -2,7 +2,11 @@
 
 import ScrollReveal from "./ScrollReveal";
 
-export default function AboutSection() {
+interface AboutSectionProps {
+  aboutText?: string;
+}
+
+export default function AboutSection({ aboutText }: AboutSectionProps) {
   return (
     <section className="py-24 md:py-40 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -21,7 +25,7 @@ export default function AboutSection() {
                 <span className="text-brand-purple-400"> ✦</span>
               </h2>
               <p className="text-lg md:text-xl text-gray-400 leading-relaxed max-w-md">
-                I make VRChat avatars, outfits, textures and other projects people ask me to build.
+                {aboutText || "I make VRChat avatars, outfits, textures and other projects people ask me to build."}
               </p>
               <p className="text-sm text-gray-500 leading-relaxed max-w-md">
                 Every piece is made to feel right in-game. I care about how things move, how textures read in lighting, and whether something actually feels good to use.

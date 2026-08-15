@@ -8,18 +8,23 @@ async function requireAdmin() {
   return admin;
 }
 
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export async function POST(request: Request) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const body = await request.json();
     const { ids, action } = body;
 
     if (!Array.isArray(ids) || ids.length === 0) {
-      return NextResponse.json({ error: "No items selected", code: "VALIDATION_ERROR" }, { status: 400 });
+      return NextResponse.json({ error: "No items selected", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
     }
 
     if (!["publish", "hide", "feature", "unfeature", "delete"].includes(action)) {
-      return NextResponse.json({ error: "Invalid action", code: "VALIDATION_ERROR" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid action", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
     }
 
     const updateData: Record<string, any> = {};
@@ -42,24 +47,18 @@ export async function POST(request: Request) {
         break;
     }
 
-    if (action === "delete") {
-      await prisma.PortfolioItem.updateMany({
-        where: { id: { in: ids }, nsfw: false },
-        data: updateData,
-      });
-    } else {
-      await prisma.PortfolioItem.updateMany({
-        where: { id: { in: ids }, nsfw: false },
-        data: updateData,
-      });
-    }
+    const result = await prisma.PortfolioItem.updateMany({
+      where: { id: { in: ids }, nsfw: false },
+      data: updateData,
+    });
 
-    return NextResponse.json({ success: true, count: ids.length });
+    return NextResponse.json({ success: true, count: result.count });
   } catch (error) {
-    console.error("Bulk portfolio action failed:", error);
+    console.error(`[${diagnosticId}] Bulk portfolio action failed:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Bulk action failed", code: "SERVER_ERROR" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Bulk action failed";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

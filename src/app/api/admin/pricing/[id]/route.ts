@@ -8,22 +8,30 @@ async function requireAdmin() {
   return admin;
 }
 
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
-    const item = await prisma.Pricing.findUnique({
-      where: { id },
-    });
+    const item = await prisma.Pricing.findUnique({ where: { id } });
     if (!item) {
-      return NextResponse.json({ error: "Not found" }, { status: 404 });
+      return NextResponse.json({ error: "Pricing tier not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
     return NextResponse.json(item);
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error(`[${diagnosticId}] Failed to fetch pricing:`, error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to load pricing";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -31,6 +39,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -39,18 +48,22 @@ export async function PUT(
       where: { id },
       data: {
         name: body.name,
-        min_price: body.min_price !== undefined ? body.min_price : undefined,
-        max_price: body.max_price !== undefined ? body.max_price : undefined,
-        description: body.description !== undefined ? body.description : undefined,
+        min_price: body.min_price ?? null,
+        max_price: body.max_price ?? null,
+        description: body.description ?? null,
         visible: body.visible ?? true,
         sort_order: body.sort_order ?? 0,
-        category: body.category || "sfw",
+        category: body.category ?? "sfw",
       },
     });
     return NextResponse.json(item);
   } catch (error) {
-    console.error("Failed to update pricing:", error);
-    return NextResponse.json({ error: "Failed to update pricing" }, { status: 500 });
+    console.error(`[${diagnosticId}] Failed to update pricing:`, error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to update pricing";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -58,12 +71,18 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
     await prisma.Pricing.delete({ where: { id } });
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  } catch (error) {
+    console.error(`[${diagnosticId}] Failed to delete pricing:`, error);
+    if (error instanceof Error && error.message === "Unauthorized") {
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to delete pricing";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import FeaturedWork from "@/components/FeaturedWork";
-import Lightbox from "@/components/Lightbox";
-import { ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 interface PortfolioItem {
   id: string;
@@ -93,11 +91,16 @@ export default function HomepagePreview({ items }: HomepagePreviewProps) {
       )}
 
       {lightboxOpen && (
-        <Lightbox
-          items={visibleItems}
-          initialIndex={lightboxIndex}
-          onClose={() => setLightboxOpen(false)}
-        />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={() => setLightboxOpen(false)}>
+          <div className="relative max-w-5xl max-h-[90vh]">
+            <img src={visibleItems[lightboxIndex]?.image_url} alt="Preview" className="rounded-xl max-h-[85vh] object-contain" />
+            <button onClick={() => setLightboxOpen(false)} className="absolute -top-10 right-0 text-gray-300 hover:text-white transition-colors">
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

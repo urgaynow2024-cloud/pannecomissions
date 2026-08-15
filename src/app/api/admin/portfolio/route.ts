@@ -14,6 +14,7 @@ function generateDiagnosticId(): string {
 }
 
 export async function GET() {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const items = await prisma.PortfolioItem.findMany({
@@ -27,17 +28,20 @@ export async function GET() {
     });
     return NextResponse.json(items);
   } catch (error) {
-    console.error("Failed to fetch admin portfolio:", error);
+    console.error(`[${diagnosticId}] Failed to fetch admin portfolio:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load portfolio", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING", diagnosticId }, { status: 500 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to load portfolio";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
 export async function POST(request: Request) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const contentType = request.headers.get("content-type") || "";
@@ -47,19 +51,25 @@ export async function POST(request: Request) {
     let altText: string | null = null;
     let featured = false;
     let visible = true;
+    let homepageVisible = true;
+    let focalPointX = 0.5;
+    let focalPointY = 0.5;
     let imageUrl = "";
 
     if (contentType.includes("application/json")) {
       const body = await request.json();
-      displayTitle = body.displayTitle || null;
-      description = body.description || null;
-      category = body.category || null;
-      altText = body.altText || null;
+      displayTitle = body.displayTitle ?? null;
+      description = body.description ?? null;
+      category = body.category ?? null;
+      altText = body.altText ?? null;
       featured = body.featured === true;
       visible = body.visible !== false;
+      homepageVisible = body.homepageVisible !== false;
+      focalPointX = typeof body.focalPointX === "number" ? body.focalPointX : 0.5;
+      focalPointY = typeof body.focalPointY === "number" ? body.focalPointY : 0.5;
       imageUrl = body.image_url || "";
       if (!imageUrl) {
-        return NextResponse.json({ error: "image_url is required for direct uploads", code: "VALIDATION_ERROR" }, { status: 400 });
+        return NextResponse.json({ error: "image_url is required for direct uploads", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
     } else {
       const formData = await request.formData();
@@ -69,18 +79,19 @@ export async function POST(request: Request) {
       altText = (formData.get("altText") as string) || null;
       featured = formData.get("featured") === "true";
       visible = formData.get("visible") !== "false";
+      homepageVisible = formData.get("homepageVisible") !== "false";
       const file = formData.get("image") as File | null;
 
       if (file && file.size > 0) {
         if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
-        if (file.size > 10 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large (max 10MB)", code: "VALIDATION_ERROR" }, { status: 400 });
+        if (file.size > 20 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large (max 20MB)", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
         imageUrl = await uploadImage(file);
       } else {
-        return NextResponse.json({ error: "Image is required", code: "VALIDATION_ERROR" }, { status: 400 });
+        return NextResponse.json({ error: "Image is required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
     }
 
@@ -93,24 +104,27 @@ export async function POST(request: Request) {
         image_url: imageUrl,
         featured,
         visible,
+        homepage_visible: homepageVisible,
+        focal_point_x: focalPointX,
+        focal_point_y: focalPointY,
         nsfw: false,
+        sort_order: 0,
       },
     });
 
     return NextResponse.json(item, { status: 201 });
   } catch (error) {
-    console.error("Failed to create portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to create portfolio item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
     if (error instanceof Error && error.message.includes("does not exist")) {
-      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING" }, { status: 500 });
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING", diagnosticId }, { status: 500 });
     }
     if (error instanceof Error && error.message.includes("Storage")) {
-      return NextResponse.json({ error: error.message, code: "STORAGE_ERROR" }, { status: 500 });
+      return NextResponse.json({ error: error.message, code: "STORAGE_ERROR", diagnosticId }, { status: 500 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to create portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to create portfolio item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

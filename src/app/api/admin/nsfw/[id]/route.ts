@@ -17,6 +17,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -29,17 +30,16 @@ export async function GET(
       },
     });
     if (!item || !item.nsfw) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "NSFW portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
     return NextResponse.json(item);
   } catch (error) {
-    console.error("Failed to fetch NSFW portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to fetch NSFW item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to load item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to load NSFW item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -47,6 +47,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -55,7 +56,7 @@ export async function PUT(
       where: { id },
     });
     if (!existing || !existing.nsfw) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "NSFW portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
 
     let displayTitle = existing.display_title;
@@ -94,10 +95,10 @@ export async function PUT(
 
       if (file && file.size > 0) {
         if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
-        if (file.size > 10 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large", code: "VALIDATION_ERROR" }, { status: 400 });
+        if (file.size > 20 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
         imageUrl = await uploadImage(file);
       }
@@ -123,13 +124,18 @@ export async function PUT(
 
     return NextResponse.json(item);
   } catch (error) {
-    console.error("Failed to update NSFW portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to update NSFW item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to update NSFW portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING", diagnosticId }, { status: 500 });
+    }
+    if (error instanceof Error && error.message.includes("Storage")) {
+      return NextResponse.json({ error: error.message, code: "STORAGE_ERROR", diagnosticId }, { status: 500 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to update NSFW portfolio item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -137,6 +143,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -144,7 +151,7 @@ export async function DELETE(
       where: { id },
     });
     if (!existing || !existing.nsfw) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "NSFW portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
     await prisma.PortfolioItem.update({
       where: { id },
@@ -152,12 +159,11 @@ export async function DELETE(
     });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to delete NSFW portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to delete NSFW item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to delete portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to delete NSFW portfolio item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

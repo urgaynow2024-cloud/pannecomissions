@@ -12,6 +12,8 @@ interface PricingItem {
 
 interface PricingSectionProps {
   pricing: PricingItem[];
+  commissionAvailable?: boolean;
+  commissionStatusText?: string;
 }
 
 const DEFAULT_PRICING: PricingItem[] = [
@@ -20,7 +22,7 @@ const DEFAULT_PRICING: PricingItem[] = [
   { id: "models", name: "Models", min_price: 65, max_price: 150, description: "depending on complexity" },
 ];
 
-export default function PricingSection({ pricing }: PricingSectionProps) {
+export default function PricingSection({ pricing, commissionAvailable, commissionStatusText }: PricingSectionProps) {
   const displayItems = pricing.length > 0 ? pricing : DEFAULT_PRICING;
 
   return (
@@ -74,6 +76,15 @@ export default function PricingSection({ pricing }: PricingSectionProps) {
 
         <ScrollReveal delay={200}>
           <div className="mt-16 md:mt-24 max-w-3xl space-y-8">
+            {commissionAvailable !== undefined && (
+              <div className={`rounded-xl border p-4 ${commissionAvailable ? "border-green-500/20 bg-green-500/5" : "border-red-500/20 bg-red-500/5"}`}>
+                <p className={`text-sm font-medium ${commissionAvailable ? "text-green-300" : "text-red-300"}`}>
+                  {commissionAvailable ? "Commissions are currently open" : "Commissions are currently closed"}
+                  {commissionStatusText && <span className="text-gray-400"> — {commissionStatusText}</span>}
+                </p>
+              </div>
+            )}
+
             <p className="text-sm text-gray-400 leading-relaxed">
               These prices do <strong className="text-white font-medium">not</strong> include the cost of assets I may need to purchase. Those costs, per terms, will be added to the total before work begins.
             </p>

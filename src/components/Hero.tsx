@@ -15,9 +15,11 @@ interface PortfolioItem {
 
 interface HeroProps {
   featuredItem: PortfolioItem | null;
+  heroTitle?: string;
+  heroSubtitle?: string;
 }
 
-export default function Hero({ featuredItem }: HeroProps) {
+export default function Hero({ featuredItem, heroTitle, heroSubtitle }: HeroProps) {
   const { ref: bgRef, transform: bgTransform } = useParallax(0.1);
   const { ref: imgRef, transform: imgTransform } = useParallax(0.05);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -39,6 +41,9 @@ export default function Hero({ featuredItem }: HeroProps) {
   const bgParallax = isMobile ? bgTransform : `${bgTransform} translate3d(${mousePos.x * -4}px, ${mousePos.y * -3}px, 0)`;
   const imgParallax = isMobile ? imgTransform : `${imgTransform} translate3d(${mousePos.x * 6}px, ${mousePos.y * 4}px, 0)`;
   const artworkParallax = isMobile ? "" : `translate3d(${mousePos.x * 3}px, ${mousePos.y * 2}px, 0)`;
+
+  const title = heroTitle || "VRCHAT AVATAR COMMISSIONS";
+  const subtitle = heroSubtitle || "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.";
 
   return (
     <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12">
@@ -66,14 +71,14 @@ export default function Hero({ featuredItem }: HeroProps) {
                   PANNE
                 </h1>
                 <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-[1.05] font-display heading-pop">
-                  VRCHAT AVATAR
+                  {title.split(" ").slice(0, 2).join(" ")}
                   <br />
-                  <span className="text-brand-purple-400">COMMISSIONS</span>
+                  <span className="text-brand-purple-400">{title.split(" ").slice(2).join(" ")}</span>
                 </h2>
               </div>
 
               <p className="text-base md:text-lg text-gray-400 max-w-md leading-relaxed relative z-10 text-pop">
-                Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.
+                {subtitle}
               </p>
 
             <div className="flex flex-col sm:flex-row gap-4">

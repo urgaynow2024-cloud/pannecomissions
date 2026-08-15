@@ -17,6 +17,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -29,17 +30,16 @@ export async function GET(
       },
     });
     if (!item || item.nsfw || item.deleted_at) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "Portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
     return NextResponse.json(item);
   } catch (error) {
-    console.error("Failed to fetch portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to fetch portfolio item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to load item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to load item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -47,6 +47,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -55,7 +56,7 @@ export async function PUT(
       where: { id },
     });
     if (!existing || existing.nsfw) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "Portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
 
     let displayTitle = existing.display_title;
@@ -64,6 +65,9 @@ export async function PUT(
     let altText = existing.alt_text;
     let featured = existing.featured;
     let visible = existing.visible;
+    let homepageVisible = existing.homepage_visible;
+    let focalPointX = existing.focal_point_x;
+    let focalPointY = existing.focal_point_y;
     let sort_order = existing.sort_order;
     let imageUrl = existing.image_url;
 
@@ -75,6 +79,9 @@ export async function PUT(
       if (body.altText !== undefined) altText = body.altText || null;
       if (body.featured !== undefined) featured = body.featured === true;
       if (body.visible !== undefined) visible = body.visible === true;
+      if (body.homepageVisible !== undefined) homepageVisible = body.homepageVisible === true;
+      if (typeof body.focalPointX === "number") focalPointX = body.focalPointX;
+      if (typeof body.focalPointY === "number") focalPointY = body.focalPointY;
       if (body.sort_order !== undefined) sort_order = body.sort_order;
       if (body.image_url) imageUrl = body.image_url;
     } else {
@@ -85,6 +92,7 @@ export async function PUT(
       const formAltText = formData.get("altText") as string;
       const formFeatured = formData.get("featured") === "true";
       const formVisible = formData.get("visible") === "true";
+      const formHomepageVisible = formData.get("homepageVisible") === "true";
       const formSortOrder = parseInt(formData.get("sortOrder") as string || "0", 10);
       const file = formData.get("image") as File | null;
 
@@ -94,14 +102,15 @@ export async function PUT(
       if (formAltText !== "") altText = formAltText || null;
       featured = formFeatured;
       visible = formVisible;
+      homepageVisible = formHomepageVisible;
       sort_order = formSortOrder;
 
       if (file && file.size > 0) {
         if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR" }, { status: 400 });
+          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
-        if (file.size > 10 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large", code: "VALIDATION_ERROR" }, { status: 400 });
+        if (file.size > 20 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
         imageUrl = await uploadImage(file);
       }
@@ -117,6 +126,9 @@ export async function PUT(
         image_url: imageUrl,
         featured,
         visible,
+        homepage_visible: homepageVisible,
+        focal_point_x: focalPointX,
+        focal_point_y: focalPointY,
         sort_order,
       },
       include: {
@@ -128,13 +140,18 @@ export async function PUT(
 
     return NextResponse.json(item);
   } catch (error) {
-    console.error("Failed to update portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to update portfolio item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to update portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    if (error instanceof Error && error.message.includes("does not exist")) {
+      return NextResponse.json({ error: "Database table missing. Run supabase/schema.sql in Supabase SQL Editor.", code: "SCHEMA_MISSING", diagnosticId }, { status: 500 });
+    }
+    if (error instanceof Error && error.message.includes("Storage")) {
+      return NextResponse.json({ error: error.message, code: "STORAGE_ERROR", diagnosticId }, { status: 500 });
+    }
+    const message = error instanceof Error ? error.message : "Failed to update portfolio item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
@@ -142,6 +159,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
@@ -149,7 +167,7 @@ export async function DELETE(
       where: { id },
     });
     if (!existing || existing.nsfw) {
-      return NextResponse.json({ error: "Not found", code: "NOT_FOUND" }, { status: 404 });
+      return NextResponse.json({ error: "Portfolio item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
     }
     await prisma.PortfolioItem.update({
       where: { id },
@@ -157,12 +175,11 @@ export async function DELETE(
     });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to delete portfolio item:", error);
+    console.error(`[${diagnosticId}] Failed to delete portfolio item:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to delete portfolio item", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to delete portfolio item";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

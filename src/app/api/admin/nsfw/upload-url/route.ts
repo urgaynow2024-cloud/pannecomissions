@@ -2,27 +2,30 @@ import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
 import { createClient } from "@supabase/supabase-js";
 
+async function requireAdmin() {
+  const admin = await verifySession();
+  if (!admin) throw new Error("Unauthorized");
+  return admin;
+}
+
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 const supabase = createClient(
   process.env.SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
-async function requireAdmin() {
-  const admin = await verifySession();
-  if (!admin) {
-    throw new Error("Unauthorized");
-  }
-  return admin;
-}
-
 export async function POST(request: Request) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const body = await request.json();
     const { filename, contentType, bucket = "pannecomissions" } = body;
 
     if (!filename) {
-      return NextResponse.json({ error: "Filename is required" }, { status: 400 });
+      return NextResponse.json({ error: "Filename is required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
     }
 
     const ext = filename.split(".").pop() || "png";
@@ -34,8 +37,11 @@ export async function POST(request: Request) {
       .createSignedUploadUrl(path);
 
     if (error) {
-      console.error("Supabase signed upload error:", error);
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      console.error(`[${diagnosticId}] Supabase signed upload error:`, error);
+      if (error.message.includes("bucket") || error.message.includes("not found")) {
+        return NextResponse.json({ error: "Storage bucket 'pannecomissions' not found. Create it in Supabase Storage.", code: "STORAGE_BUCKET_MISSING", diagnosticId }, { status: 500 });
+      }
+      return NextResponse.json({ error: `Storage error: ${error.message}`, code: "STORAGE_ERROR", diagnosticId }, { status: 500 });
     }
 
     const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
@@ -46,10 +52,11 @@ export async function POST(request: Request) {
       publicUrl: urlData.publicUrl,
     });
   } catch (error) {
-    console.error("Failed to create signed upload URL:", error);
+    console.error(`[${diagnosticId}] Failed to create upload URL:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    return NextResponse.json({ error: "Failed to create upload URL" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to create upload URL";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

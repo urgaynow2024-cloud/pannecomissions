@@ -3,7 +3,11 @@ import SectionGlow from "./SectionGlow";
 import SparkleField from "./SparkleField";
 import { Sparkles, ArrowRight } from "lucide-react";
 
-export default function FinalCTA() {
+interface FinalCTAProps {
+  ctaText?: string;
+}
+
+export default function FinalCTA({ ctaText }: FinalCTAProps) {
   return (
     <section className="relative py-24 md:py-40 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -58,7 +62,7 @@ export default function FinalCTA() {
             </h2>
 
             <p className="text-gray-400 max-w-lg mx-auto lg:mx-0 mb-10 text-lg leading-relaxed">
-              Tell Panne what you&apos;re thinking. No pressure, just a conversation about your avatar.
+              {ctaText || "Tell Panne what you're thinking. No pressure, just a conversation about your avatar."}
             </p>
 
             <Link

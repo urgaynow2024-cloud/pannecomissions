@@ -28,6 +28,7 @@ const navItems = [
   { href: "/admin/pricing", label: "Pricing", icon: DollarSign },
   { href: "/admin/commissions", label: "Commissions", icon: ClipboardList },
   { href: "/admin/support", label: "Support", icon: HelpCircle },
+  { href: "/admin/content", label: "Content", icon: Settings },
   { href: "/admin/media", label: "Media Library", icon: FolderOpen },
   { href: "/admin/trash", label: "Trash", icon: Trash2 },
   { href: "/admin/system", label: "System Status", icon: Activity },

@@ -61,7 +61,10 @@ export default function PricingPage() {
   async function fetchItems() {
     try {
       const res = await fetch("/api/admin/pricing");
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error (${res.status})${data.diagnosticId ? ` [ID: ${data.diagnosticId}]` : ""}`);
+      }
       const data = await res.json();
       setItems(data);
     } catch (err) {
@@ -89,7 +92,7 @@ export default function PricingPage() {
         body: JSON.stringify(body),
       });
       if (!res.ok) {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         throw new Error(data.error || "Save failed");
       }
       await fetchItems();
@@ -156,9 +159,7 @@ export default function PricingPage() {
         </div>
         <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6">
           <p className="text-sm text-red-400 mb-4">{error}</p>
-          <button onClick={fetchItems} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-            Retry
-          </button>
+          <button onClick={fetchItems} className="rounded-lg border border-white/10 px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">Retry</button>
         </div>
       </div>
     );

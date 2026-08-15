@@ -75,7 +75,10 @@ export default function CommissionsPage() {
   async function fetchCommissions() {
     try {
       const res = await fetch("/api/admin/commissions");
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error (${res.status})${data.diagnosticId ? ` [ID: ${data.diagnosticId}]` : ""}`);
+      }
       const data = await res.json();
       setCommissions(data);
     } catch (err) {

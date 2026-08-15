@@ -8,7 +8,12 @@ async function requireAdmin() {
   return admin;
 }
 
+function generateDiagnosticId(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
 export async function GET(request: Request) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const url = new URL(request.url);
@@ -62,10 +67,11 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ photos, total: photos.length, counts });
   } catch (error) {
-    console.error("Media fetch failed:", error);
+    console.error(`[${diagnosticId}] Media fetch failed:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load media library", code: "SERVER_ERROR" }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to load media library";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

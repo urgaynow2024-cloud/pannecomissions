@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS portfolio_items (
   featured BOOLEAN NOT NULL DEFAULT false,
   nsfw BOOLEAN NOT NULL DEFAULT false,
   visible BOOLEAN NOT NULL DEFAULT true,
+  homepage_visible BOOLEAN NOT NULL DEFAULT true,
+  focal_point_x FLOAT DEFAULT 0.5,
+  focal_point_y FLOAT DEFAULT 0.5,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
@@ -54,6 +57,7 @@ CREATE TABLE IF NOT EXISTS site_settings (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   key TEXT NOT NULL UNIQUE,
   value TEXT NOT NULL,
+  content_type TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );

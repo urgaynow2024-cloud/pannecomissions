@@ -16,18 +16,18 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const { id } = await params;
     await prisma.photo.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to delete photo:", error);
+    console.error(`[${diagnosticId}] Failed to delete photo:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to delete photo", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Failed to delete photo";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

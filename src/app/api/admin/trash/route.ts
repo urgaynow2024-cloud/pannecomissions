@@ -19,6 +19,7 @@ function generateDiagnosticId(): string {
 }
 
 export async function GET(request: Request) {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const url = new URL(request.url);
@@ -27,26 +28,34 @@ export async function GET(request: Request) {
     if (action === "restore") {
       const id = url.searchParams.get("id");
       if (!id) {
-        return NextResponse.json({ error: "ID required", code: "VALIDATION_ERROR" }, { status: 400 });
+        return NextResponse.json({ error: "ID required for restore", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
-      await prisma.PortfolioItem.updateMany({
+      const result = await prisma.PortfolioItem.updateMany({
         where: { id, deleted_at: { not: null } },
         data: { deleted_at: null },
       });
-      return NextResponse.json({ success: true });
+      if (result.count === 0) {
+        return NextResponse.json({ error: "Item not found in trash", code: "NOT_FOUND", diagnosticId }, { status: 404 });
+      }
+      return NextResponse.json({ success: true, restored: result.count });
     }
 
     if (action === "permanent-delete") {
       const id = url.searchParams.get("id");
       if (!id) {
-        return NextResponse.json({ error: "ID required", code: "VALIDATION_ERROR" }, { status: 400 });
+        return NextResponse.json({ error: "ID required for permanent delete", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
       const item = await prisma.PortfolioItem.findUnique({ where: { id } });
-      if (item?.image_url) {
+      if (!item) {
+        return NextResponse.json({ error: "Item not found", code: "NOT_FOUND", diagnosticId }, { status: 404 });
+      }
+      if (item.image_url) {
         try {
           const path = item.image_url.split("/").slice(-2).join("/");
           await supabase.storage.from("pannecomissions").remove([path]);
-        } catch {}
+        } catch (e) {
+          console.warn(`[${diagnosticId}] Storage cleanup failed:`, e);
+        }
       }
       await prisma.PortfolioItem.delete({ where: { id } });
       return NextResponse.json({ success: true });
@@ -60,12 +69,11 @@ export async function GET(request: Request) {
 
     return NextResponse.json(items);
   } catch (error) {
-    console.error("Trash operation failed:", error);
+    console.error(`[${diagnosticId}] Trash operation failed:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "Trash operation failed", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "Trash operation failed";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }

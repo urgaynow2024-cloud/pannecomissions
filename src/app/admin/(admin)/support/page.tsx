@@ -65,7 +65,10 @@ export default function SupportPage() {
   async function fetchRequests() {
     try {
       const res = await fetch("/api/admin/support");
-      if (!res.ok) throw new Error("Failed to fetch");
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Server error (${res.status})${data.diagnosticId ? ` [ID: ${data.diagnosticId}]` : ""}`);
+      }
       const data = await res.json();
       setRequests(data);
     } catch (err) {

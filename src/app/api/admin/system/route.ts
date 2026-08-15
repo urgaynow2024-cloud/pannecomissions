@@ -14,6 +14,7 @@ function generateDiagnosticId(): string {
 }
 
 export async function GET() {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const results: any = {
@@ -38,6 +39,7 @@ export async function GET() {
       results.counts.commissions = await prisma.CommissionSubmission.count();
       results.counts.support = await prisma.SupportRequest.count();
       results.counts.photos = await prisma.Photo.count();
+      results.counts.settings = await prisma.SiteSetting.count();
     } catch (e) {
       results.checks.database = false;
       dbError = e instanceof Error ? e.message : "Unknown database error";
@@ -76,12 +78,11 @@ export async function GET() {
 
     return NextResponse.json(results);
   } catch (error) {
-    console.error("System status failed:", error);
+    console.error(`[${diagnosticId}] System status failed:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: error instanceof Error ? error.message : "System status failed", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    const message = error instanceof Error ? error.message : "System status failed";
+    return NextResponse.json({ error: message, code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
