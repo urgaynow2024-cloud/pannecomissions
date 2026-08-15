@@ -143,7 +143,7 @@ export default function ServicePhotosPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold tracking-tight text-white font-display">Service Photos</h1>
-        <p className="text-gray-400 mt-1 text-sm">Upload one photo per service category.</p>
+        <p className="text-gray-400 mt-1 text-sm">Upload one example photo per service category.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
@@ -183,7 +183,7 @@ export default function ServicePhotosPage() {
             <div>
               <h3 className="text-sm font-semibold text-white font-display">{selectedService.name}</h3>
               <p className="text-xs text-gray-500 mt-0.5">
-                {photos.length ? "1 photo uploaded" : "No photo uploaded"}
+                {photos.length ? "1 example photo uploaded" : "No photo uploaded yet"}
                 {selectedService.image_url && " • Cover set"}
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function ServicePhotosPage() {
           {photos.length === 0 ? (
             <div className="text-center py-16 rounded-lg border border-dashed border-white/10">
               <p className="text-sm text-gray-500">No photo uploaded yet.</p>
-              <p className="text-xs text-gray-600 mt-1">Upload one image for this service.</p>
+              <p className="text-xs text-gray-600 mt-1">Upload one example image for this service.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">

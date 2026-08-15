@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 
 interface Service {
@@ -9,15 +8,6 @@ interface Service {
   name: string;
   description: string | null;
   image_url: string | null;
-  photos?: { id: string; url: string; alt_text: string | null; sort_order: number }[];
-}
-
-interface PortfolioItem {
-  id: string;
-  display_title: string | null;
-  description: string | null;
-  image_url: string;
-  category: string | null;
 }
 
 interface ServicesProps {
@@ -64,9 +54,6 @@ const SERVICE_FEATURES: Record<string, string[]> = {
 };
 
 function getServiceImage(service: Service): string | null {
-  if (service.photos && service.photos.length > 0) {
-    return service.photos[0].url;
-  }
   return service.image_url;
 }
 
@@ -79,59 +66,6 @@ function getServiceFeatures(name: string): string[] {
       "Fast turnaround",
       "Direct communication",
     ]
-  );
-}
-
-function CheckIcon() {
-  return (
-    <svg
-      className="h-5 w-5 shrink-0 text-brand-purple-400"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-      strokeWidth={2.5}
-    >
-      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-    </svg>
-  );
-}
-
-function ServiceImage({ src, alt, index }: { src: string; alt: string; index: number }) {
-  const [error, setError] = useState(false);
-
-  if (error) {
-  return (
-    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 flex items-center justify-center">
-      <div className="absolute inset-0 bg-linear-to-br from-brand-purple-500/10 via-transparent to-transparent" />
-        <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
-          {alt}
-        </p>
-      </div>
-    );
-  }
-
-  return (
-        <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 lg:aspect-4/3">
-          <img
-            src={src}
-            alt={alt}
-            className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
-            loading="lazy"
-            onError={() => setError(true)}
-          />
-          <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
-        </div>
-  );
-}
-
-function ServiceImageFallback({ name }: { name: string }) {
-  return (
-    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 flex items-center justify-center">
-      <div className="absolute inset-0 bg-linear-to-br from-brand-purple-500/10 via-transparent to-transparent" />
-      <p className="text-sm font-medium text-gray-600 font-display tracking-wide relative z-10">
-        {name}
-      </p>
-    </div>
   );
 }
 
@@ -152,17 +86,20 @@ export default function Services({ services }: ServicesProps) {
 
       <div className="mx-auto max-w-7xl px-6 relative z-10">
         <ScrollReveal>
-          <div className="mb-20 md:mb-28 relative">
+          <div className="mb-16 md:mb-24 relative">
             <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-4">
               What I Do
             </p>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white font-display heading-pop">
               Services <span className="text-brand-purple-400">✦</span>
             </h2>
+            <p className="text-gray-400 mt-4 max-w-2xl text-base md:text-lg leading-relaxed">
+              From full avatars to small add-ons, every service is built to feel right in-game.
+            </p>
           </div>
         </ScrollReveal>
 
-        <div className="space-y-24 md:space-y-32 lg:space-y-40">
+        <div className="space-y-16 md:space-y-24 lg:space-y-32">
           {displayServices.map((service, i) => {
             const isEven = i % 2 === 0;
             const imageSrc = getServiceImage(service);
@@ -174,11 +111,26 @@ export default function Services({ services }: ServicesProps) {
                   <div
                     className={`lg:col-span-7 ${isEven ? "lg:order-1" : "lg:order-2"}`}
                   >
-                    {imageSrc ? (
-                      <ServiceImage src={imageSrc} alt={service.name} index={i} />
-                    ) : (
-                      <ServiceImageFallback name={service.name} />
-                    )}
+                    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] lg:aspect-[4/3] shadow-[0_0_0_1px_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition-all duration-300">
+                      {imageSrc ? (
+                        <img
+                          src={imageSrc}
+                          alt={service.name}
+                          className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <div className="text-center space-y-3">
+                            <span className="text-5xl text-brand-purple-400/20">✦</span>
+                            <p className="text-sm text-gray-600 font-display tracking-wide">
+                              {service.name}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                    </div>
                   </div>
                   <div
                     className={`lg:col-span-5 ${isEven ? "lg:order-2" : "lg:order-1"}`}
@@ -196,18 +148,22 @@ export default function Services({ services }: ServicesProps) {
                             key={feature}
                             className="flex items-center gap-3 text-gray-300 text-sm md:text-base"
                           >
-                            <CheckIcon />
+                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-purple-500/10 text-brand-purple-400">
+                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                              </svg>
+                            </span>
                             {feature}
                           </li>
                         ))}
                       </ul>
                       <Link
                         href="/commission"
-                        className="group inline-flex items-center gap-2 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors mt-8"
+                        className="group/btn mt-8 inline-flex items-center gap-2 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors"
                       >
                         Ask about this
                         <svg
-                          className="h-4 w-4 transition-transform group-hover:translate-x-1"
+                          className="h-4 w-4 transition-transform group-hover/btn:translate-x-1"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
