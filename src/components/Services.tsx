@@ -136,7 +136,10 @@ function ServiceImageFallback({ name }: { name: string }) {
 }
 
 export default function Services({ services }: ServicesProps) {
-  const displayServices = services.length > 0 ? services : [];
+  const uniqueServices = services.filter(
+    (service, index, self) => index === self.findIndex((s) => s.name === service.name)
+  );
+  const displayServices = uniqueServices.length > 0 ? uniqueServices : [];
 
   if (displayServices.length === 0) return null;
 
