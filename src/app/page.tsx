@@ -34,7 +34,6 @@ async function getData() {
     const commissionStatusText = process.env.COMMISSION_STATUS_TEXT || settingsMap.commission_status_text || "";
     const aboutText = process.env.ABOUT_TEXT || settingsMap.about_text || "I make VRChat avatars, outfits, textures and other projects people ask me to build.";
     const ctaText = process.env.CTA_TEXT || settingsMap.cta_text || "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.";
-    const aboutImageUrl = settingsMap.about_image_url || null;
     const featuredWorkHeading = settingsMap.featured_work_heading || null;
 
     const featuredWork = portfolio.slice(0, 6);
@@ -44,7 +43,7 @@ async function getData() {
     const heroImageUrl = sitePhotoMap['hero'] || settingsMap.hero_image_url || null;
 
     const servicesWithImages = services.map((service: any) => {
-      const slug = service.name.toLowerCase().replace(/\s+/g, "-");
+      const slug = service.name.toLowerCase().replace(/\s+/g, "-").trim();
       return {
         ...service,
         image_url: sitePhotoMap[slug] || service.image_url || null,
@@ -53,8 +52,10 @@ async function getData() {
 
     const uniqueServices = servicesWithImages.filter(
       (service: any, index: number, self: any[]) =>
-        index === self.findIndex((s: any) => s.name === service.name)
+        index === self.findIndex((s: any) => s.name.trim() === service.name.trim())
     );
+
+    const aboutImageUrl = sitePhotoMap['about'] || settingsMap.about_image_url || null;
 
     return {
       portfolio,
@@ -108,7 +109,7 @@ export default async function Home() {
       <HorizontalStrip marqueeText={data.marqueeText} />
       <FeaturedWork items={data.featuredWork} heading={data.featuredWorkHeading || undefined} />
       <Services services={data.services} />
-      <AboutSection aboutText={data.aboutText} aboutImageUrl={data.aboutImageUrl} />
+      <AboutSection aboutText={data.aboutText} aboutImageUrl={data.aboutImageUrl} portfolioItems={data.portfolio.slice(0, 6)} />
       <HowItWorks />
       <PricingSection pricing={data.pricing} commissionAvailable={data.commissionAvailable} commissionStatusText={data.commissionStatusText} />
       <ReviewsSection reviews={data.reviews} />

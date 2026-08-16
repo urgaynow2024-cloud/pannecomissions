@@ -153,7 +153,8 @@ INSERT INTO site_photos (slug, alt_text) VALUES
   ('complete-avatars', 'Complete Avatars service image'),
   ('toggles', 'Toggles service image'),
   ('custom-textures', 'Custom Textures service image'),
-  ('models', 'Models service image')
+  ('models', 'Models service image'),
+  ('about', 'About section image')
 ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS pricing (

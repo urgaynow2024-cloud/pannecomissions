@@ -18,6 +18,7 @@ const SLOT_CONFIG: Record<string, { label: string; description: string; wide?: b
   toggles: { label: "Toggles", description: "Homepage service image" },
   "custom-textures": { label: "Custom Textures", description: "Homepage service image" },
   models: { label: "Models", description: "Homepage service image", wide: true },
+  about: { label: "About Section", description: "Image shown next to the About text" },
 };
 
 export default function SitePhotosPage() {
