@@ -43,7 +43,7 @@ async function getData() {
     const heroImageUrl = sitePhotoMap['hero'] || settingsMap.hero_image_url || null;
 
     const servicesWithImages = services.map((service: any) => {
-      const slug = service.name.toLowerCase().replace(/\s+/g, "-").trim();
+      const slug = service.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
       return {
         ...service,
         image_url: sitePhotoMap[slug] || service.image_url || null,
