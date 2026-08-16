@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Upload, Trash2, ImageIcon, ExternalLink, RefreshCw, Check, X } from "lucide-react";
+import { compressImage } from "@/lib/compress-image";
 
 interface SitePhoto {
   id: string;
@@ -49,8 +50,9 @@ export default function SitePhotosPage() {
     setUploading(slug);
     setUploadProgress((prev) => ({ ...prev, [slug]: 0 }));
     try {
+      const compressed = await compressImage(file);
       const fd = new FormData();
-      fd.append("image", file);
+      fd.append("image", compressed);
       fd.append("slug", slug);
       const res = await fetch("/api/admin/site-photos/upload", { method: "POST", body: fd });
       if (!res.ok) {
