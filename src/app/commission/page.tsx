@@ -4,7 +4,7 @@ import NoiseOverlay from "@/components/NoiseOverlay";
 import CommissionForm from "@/components/CommissionForm";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 async function getData() {
   try {

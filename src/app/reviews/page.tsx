@@ -5,7 +5,7 @@ import Reviews from "@/components/Reviews";
 import Link from "next/link";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 0;
 
 async function getData() {
   try {

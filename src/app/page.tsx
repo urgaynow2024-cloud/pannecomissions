@@ -12,7 +12,7 @@ import ReviewsSection from "@/components/ReviewsSection";
 import FinalCTA from "@/components/FinalCTA";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 async function getData() {
   try {

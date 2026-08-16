@@ -4,7 +4,7 @@ import NoiseOverlay from "@/components/NoiseOverlay";
 import Portfolio from "@/components/Portfolio";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 const CATEGORIES = [
   "All",

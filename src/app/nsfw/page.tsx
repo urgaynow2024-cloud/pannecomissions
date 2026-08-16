@@ -4,7 +4,7 @@ import AgeVerifier from "@/components/AgeVerifier";
 import NSFWPortfolio from "@/components/NSFWPortfolio";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 const CATEGORIES = [
   "All",

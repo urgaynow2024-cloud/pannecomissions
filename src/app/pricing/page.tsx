@@ -4,7 +4,7 @@ import NoiseOverlay from "@/components/NoiseOverlay";
 import PricingSection from "@/components/PricingSection";
 import prisma from "@/lib/prisma";
 
-export const revalidate = 60;
+export const revalidate = 30;
 
 async function getData() {
   try {
