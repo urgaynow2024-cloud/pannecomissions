@@ -124,6 +124,8 @@ model Service {
   name        String
   description String?
   image_url   String?
+  image_fit   String    @default("cover") @db.Text
+  image_position String @default("center") @db.Text
   features    String?   @db.Text
   spare_parts Boolean   @default(false)
   sort_order  Int       @default(0)
@@ -160,6 +162,21 @@ model Photo {
   @@map("photos")
 }
 
+model MediaLibrary {
+  id          String    @id @default(cuid())
+  url         String
+  alt_text    String?
+  filename    String?
+  file_size   Int?
+  mime_type   String?
+  width       Int?
+  height      Int?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  @@map("media_library")
+}
+
 model Pricing {
   id          String    @id @default(cuid())
   name        String
@@ -173,4 +190,15 @@ model Pricing {
   updated_at  DateTime  @updatedAt
 
   @@map("pricing")
+}
+
+model SitePhoto {
+  id         String    @id @default(cuid())
+  slug       String    @unique
+  url        String?
+  alt_text   String?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  @@map("site_photos")
 }

@@ -62,6 +62,21 @@ CREATE TABLE IF NOT EXISTS site_settings (
   updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
 
+CREATE TABLE IF NOT EXISTS media_library (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  url TEXT NOT NULL,
+  alt_text TEXT,
+  filename TEXT,
+  file_size INTEGER,
+  mime_type TEXT,
+  width INTEGER,
+  height INTEGER,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_media_library_filename ON media_library(filename);
+
 CREATE TABLE IF NOT EXISTS admin_users (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
   username TEXT NOT NULL UNIQUE,
@@ -122,6 +137,24 @@ VALUES
   ('Custom Textures', 'Custom texture work for your avatar, from subtle tweaks to full repaints.', 3, true, false),
   ('Models', '3D modelling work for avatars, accessories, and custom parts.', 4, true, true)
 ON CONFLICT DO NOTHING;
+
+CREATE TABLE IF NOT EXISTS site_photos (
+  id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+  slug TEXT NOT NULL UNIQUE,
+  url TEXT,
+  alt_text TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT now(),
+  updated_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+INSERT INTO site_photos (slug, alt_text) VALUES
+  ('hero', 'Main hero background'),
+  ('clothing-addons', 'Clothing Add-ons service image'),
+  ('complete-avatars', 'Complete Avatars service image'),
+  ('toggles', 'Toggles service image'),
+  ('custom-textures', 'Custom Textures service image'),
+  ('models', 'Models service image')
+ON CONFLICT (slug) DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS pricing (
   id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,

@@ -16,12 +16,13 @@ export const revalidate = 60;
 
 async function getData() {
   try {
-    const [portfolio, services, pricing, reviews, settings] = await Promise.all([
+    const [portfolio, services, pricing, reviews, settings, sitePhotos] = await Promise.all([
       prisma.PortfolioItem.findMany({ where: { nsfw: false, visible: true, homepage_visible: true }, orderBy: { sort_order: "asc" } }),
       prisma.Service.findMany({ where: { visible: true }, orderBy: { sort_order: "asc" }, include: { photos: { orderBy: { sort_order: "asc" } } } }),
       prisma.Pricing.findMany({ where: { visible: true, category: "sfw" }, orderBy: { sort_order: "asc" } }),
       prisma.Review.findMany({ where: { status: "APPROVED", hidden: false }, orderBy: { created_at: "desc" }, take: 3 }),
       prisma.SiteSetting.findMany(),
+      prisma.SitePhoto.findMany({ orderBy: { slug: "asc" } }),
     ]);
 
     const settingsMap = Object.fromEntries(settings.map((s: { key: string; value: string }) => [s.key, s.value]));
@@ -34,12 +35,25 @@ async function getData() {
     const aboutText = process.env.ABOUT_TEXT || settingsMap.about_text || "I make VRChat avatars, outfits, textures and other projects people ask me to build.";
     const ctaText = process.env.CTA_TEXT || settingsMap.cta_text || "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.";
     const aboutImageUrl = settingsMap.about_image_url || null;
+    const featuredWorkHeading = settingsMap.featured_work_heading || null;
 
     const featuredWork = portfolio.slice(0, 6);
 
+    const sitePhotoMap = Object.fromEntries(sitePhotos.map((p: { slug: string; url: string | null }) => [p.slug, p.url]));
+
+    const heroImageUrl = sitePhotoMap['hero'] || settingsMap.hero_image_url || null;
+
+    const servicesWithImages = services.map((service: any) => {
+      const slug = service.name.toLowerCase().replace(/\s+/g, "-");
+      return {
+        ...service,
+        image_url: sitePhotoMap[slug] || service.image_url || null,
+      };
+    });
+
     return {
       portfolio,
-      services,
+      services: servicesWithImages,
       pricing,
       reviews,
       featuredWork,
@@ -51,6 +65,9 @@ async function getData() {
       aboutText,
       ctaText,
       aboutImageUrl,
+      heroImageUrl,
+      featuredWorkHeading,
+      sitePhotos,
     };
   } catch {
     return {
@@ -66,6 +83,10 @@ async function getData() {
       commissionStatusText: "",
       aboutText: "I make VRChat avatars, outfits, textures and other projects people ask me to build.",
       ctaText: "Tell Panne what you're thinking. No pressure, just a conversation about your avatar.",
+      aboutImageUrl: null,
+      heroImageUrl: null,
+      featuredWorkHeading: null,
+      sitePhotos: [] as any[],
     };
   }
 }
@@ -78,11 +99,11 @@ export default async function Home() {
     <main className="min-h-screen text-white antialiased relative">
       <NoiseOverlay />
       <Navbar />
-      <Hero featuredItem={featured} heroTitle={data.heroTitle} heroSubtitle={data.heroSubtitle} />
+      <Hero featuredItem={featured} heroTitle={data.heroTitle} heroSubtitle={data.heroSubtitle} heroImageUrl={data.heroImageUrl} />
       <HorizontalStrip marqueeText={data.marqueeText} />
-      <FeaturedWork items={data.featuredWork} />
+      <FeaturedWork items={data.featuredWork} heading={data.featuredWorkHeading || undefined} />
       <Services services={data.services} />
-      <AboutSection aboutText={data.aboutText} />
+      <AboutSection aboutText={data.aboutText} aboutImageUrl={data.aboutImageUrl} />
       <HowItWorks />
       <PricingSection pricing={data.pricing} commissionAvailable={data.commissionAvailable} commissionStatusText={data.commissionStatusText} />
       <ReviewsSection reviews={data.reviews} />
