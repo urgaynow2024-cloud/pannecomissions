@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase";
 
 async function requireAdmin() {
   const admin = await verifySession();
@@ -11,11 +11,6 @@ async function requireAdmin() {
 function generateDiagnosticId(): string {
   return Math.random().toString(36).slice(2, 10);
 }
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 export async function POST(request: Request) {
   const diagnosticId = generateDiagnosticId();
@@ -32,7 +27,7 @@ export async function POST(request: Request) {
     const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
     const path = `uploads/${fileName}`;
 
-    const { data, error } = await supabase.storage
+    const { data, error } = await supabaseAdmin.storage
       .from(bucket)
       .createSignedUploadUrl(path);
 
@@ -44,7 +39,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: `Storage error: ${error.message}`, code: "STORAGE_ERROR", diagnosticId }, { status: 500 });
     }
 
-    const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
+    const { data: urlData } = supabaseAdmin.storage.from(bucket).getPublicUrl(path);
 
     return NextResponse.json({
       signedUrl: data?.signedUrl,

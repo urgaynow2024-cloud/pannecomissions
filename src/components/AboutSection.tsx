@@ -5,9 +5,11 @@ import ScrollReveal from "./ScrollReveal";
 interface AboutSectionProps {
   aboutText?: string;
   aboutImageUrl?: string | null;
+  imageFit?: string;
+  imagePosition?: string;
 }
 
-export default function AboutSection({ aboutText, aboutImageUrl }: AboutSectionProps) {
+export default function AboutSection({ aboutText, aboutImageUrl, imageFit = "cover", imagePosition = "center" }: AboutSectionProps) {
   return (
     <section className="py-24 md:py-40 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -40,6 +42,7 @@ export default function AboutSection({ aboutText, aboutImageUrl }: AboutSectionP
                     src={aboutImageUrl}
                     alt="About Panne"
                     className="w-full h-full object-cover"
+                    style={{ objectFit: imageFit === "contain" ? "contain" : "cover", objectPosition: imagePosition }}
                     loading="lazy"
                   />
                 ) : (

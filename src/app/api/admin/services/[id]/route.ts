@@ -53,6 +53,8 @@ export async function PUT(
         name: body.name,
         description: body.description ?? null,
         image_url: body.image_url ?? null,
+        image_fit: body.image_fit ?? "cover",
+        image_position: body.image_position ?? "center",
         features: body.features ?? null,
         spare_parts: body.spare_parts ?? false,
         sort_order: body.sort_order ?? 0,

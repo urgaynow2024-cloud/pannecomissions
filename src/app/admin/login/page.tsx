@@ -32,7 +32,6 @@ export default function AdminLogin() {
       }
 
       router.push("/admin");
-      router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
       setLoading(false);

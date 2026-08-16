@@ -13,6 +13,20 @@ export async function verifyPassword(password: string, hash: string): Promise<bo
   return bcrypt.compare(password, hash);
 }
 
+let cachedAdminPasswordHash: string | null = null;
+
+export async function getCachedAdminPasswordHash(): Promise<string> {
+  if (cachedAdminPasswordHash) return cachedAdminPasswordHash;
+
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (!adminPassword) {
+    throw new Error("Server misconfigured: ADMIN_PASSWORD is not set");
+  }
+
+  cachedAdminPasswordHash = await hashPassword(adminPassword.trim());
+  return cachedAdminPasswordHash;
+}
+
 export async function getAdmin() {
   return prisma.AdminUser.findFirst({
     select: { id: true, username: true, password_hash: true },
@@ -28,17 +42,17 @@ export async function ensureAdminExists(passwordHash: string) {
   }
 }
 
-export async function createSession(adminId: string, token: string) {
-  const tokenHash = await hashPassword(token);
+export async function createSession(adminId: string) {
+  const sessionId = crypto.randomUUID();
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000);
 
-  await prisma.Session.create({
-    data: { adminId, tokenHash, expiresAt },
+  const session = await prisma.Session.create({
+    data: { id: sessionId, adminId, expiresAt, tokenHash: sessionId },
   });
 
   const cookieStore = await cookies();
   const isProduction = process.env.NODE_ENV === "production";
-  cookieStore.set(SESSION_COOKIE, token, {
+  cookieStore.set(SESSION_COOKIE, session.id, {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
@@ -48,39 +62,39 @@ export async function createSession(adminId: string, token: string) {
 }
 
 export async function verifySession() {
+  const start = performance.now();
   const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!token) return null;
+  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!sessionId) {
+    console.log(`[auth] verifySession no cookie: ${(performance.now() - start).toFixed(1)}ms`);
+    return null;
+  }
 
-  const sessions = await prisma.Session.findMany({
-    where: { expiresAt: { gt: new Date() } },
+  const session = await prisma.Session.findUnique({
+    where: { id: sessionId },
     include: { admin: true },
   });
 
-  for (const session of sessions) {
-    if (await bcrypt.compare(token, session.tokenHash)) {
-      return session.admin ? { id: session.admin.id, username: session.admin.username } : null;
-    }
+  if (!session || session.expiresAt < new Date()) {
+    console.log(`[auth] verifySession invalid/expired: ${(performance.now() - start).toFixed(1)}ms`);
+    return null;
   }
 
-  return null;
+  console.log(`[auth] verifySession ok: ${(performance.now() - start).toFixed(1)}ms`);
+  return session.admin ? { id: session.admin.id, username: session.admin.username } : null;
 }
 
 export async function destroySession() {
   const cookieStore = await cookies();
-  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
 
-  if (token) {
-    const sessions = await prisma.Session.findMany();
-    for (const session of sessions) {
-      if (await bcrypt.compare(token, session.tokenHash)) {
-        await prisma.Session.delete({ where: { id: session.id } });
-        break;
-      }
+  if (sessionId) {
+    try {
+      await prisma.Session.delete({ where: { id: sessionId } });
+    } catch {
+      // Session already deleted or invalid
     }
   }
 
   cookieStore.delete(SESSION_COOKIE);
 }
-
-

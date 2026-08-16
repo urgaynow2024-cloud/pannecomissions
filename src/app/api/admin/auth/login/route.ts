@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { hashPassword, verifyPassword, getAdmin, ensureAdminExists, createSession } from "@/lib/auth";
+import { getCachedAdminPasswordHash, verifyPassword, getAdmin, ensureAdminExists, createSession } from "@/lib/auth";
 
 export async function POST(request: Request) {
+  const t0 = performance.now();
   try {
     const body = await request.json();
     const { password } = body;
@@ -12,12 +13,9 @@ export async function POST(request: Request) {
     }
 
     const trimmedPassword = password.trim();
-    const adminPassword = process.env.ADMIN_PASSWORD;
-    if (!adminPassword) {
-      return NextResponse.json({ error: "Server misconfigured" }, { status: 500 });
-    }
-
-    const passwordHash = await hashPassword(adminPassword.trim());
+    const t1 = performance.now();
+    const passwordHash = await getCachedAdminPasswordHash();
+    const t2 = performance.now();
     await ensureAdminExists(passwordHash);
 
     const admin = await getAdmin();
@@ -34,15 +32,16 @@ export async function POST(request: Request) {
 
     const isValid = await verifyPassword(trimmedPassword, admin.password_hash);
     if (!isValid) {
+      console.log(`[login] invalid password total=${(performance.now() - t0).toFixed(1)}ms hash=${(t2 - t1).toFixed(1)}ms`);
       return NextResponse.json({ error: "Invalid password" }, { status: 401 });
     }
 
-    const token = crypto.randomUUID();
-    await createSession(admin.id, token);
+    await createSession(admin.id);
 
+    console.log(`[login] success total=${(performance.now() - t0).toFixed(1)}ms hash=${(t2 - t1).toFixed(1)}ms`);
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Login error:", error);
+    console.error(`[login] error total=${(performance.now() - t0).toFixed(1)}ms`, error);
     const message = error instanceof Error ? error.message : "Authentication failed";
     return NextResponse.json({ error: message }, { status: 500 });
   }

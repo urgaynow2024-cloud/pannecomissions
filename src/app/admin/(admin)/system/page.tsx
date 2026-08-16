@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, XCircle, AlertTriangle, HardDrive, Database, Image, Shield, Activity } from "lucide-react";
+import { CheckCircle, XCircle, AlertTriangle, HardDrive, Database, Image, Shield } from "lucide-react";
 
 interface SystemStatus {
   checks: Record<string, boolean>;
@@ -10,6 +10,12 @@ interface SystemStatus {
   errors: { db: string | null; storage: string | null };
   ok: boolean;
   timestamp: string;
+  healthDetails?: {
+    ok: boolean;
+    checks: Record<string, boolean>;
+    missing: string[];
+    details: Record<string, string>;
+  };
 }
 
 function StatusIcon({ ok }: { ok: boolean }) {
@@ -142,23 +148,39 @@ export default function SystemStatusPage() {
 
         <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
           <div className="flex items-center gap-3 mb-4">
-            <Activity className="h-5 w-5 text-brand-purple-400" />
-            <h3 className="text-sm font-semibold text-white font-display">Health Endpoint</h3>
-            <StatusIcon ok={status.checks.healthEndpoint} />
+            <Shield className="h-5 w-5 text-brand-purple-400" />
+            <h3 className="text-sm font-semibold text-white font-display">Schema Health</h3>
+            <StatusIcon ok={status.checks.healthPhotos && status.checks.healthCommissionColumn && status.checks.healthStorage} />
           </div>
-          <p className="text-xs text-gray-400">
-            {status.checks.healthEndpoint ? "API health check responding." : "Health endpoint not responding."}
-          </p>
+          <div className="space-y-2 text-xs text-gray-400">
+            <div className="flex justify-between items-center">
+              <span>Photos table</span>
+              {status.checks.healthPhotos ? <span className="text-green-400">OK</span> : <span className="text-red-400">Missing</span>}
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Commission column</span>
+              {status.checks.healthCommissionColumn ? <span className="text-green-400">OK</span> : <span className="text-red-400">Missing</span>}
+            </div>
+            <div className="flex justify-between items-center">
+              <span>Storage bucket</span>
+              {status.checks.healthStorage ? <span className="text-green-400">OK</span> : <span className="text-red-400">Missing</span>}
+            </div>
+          </div>
+          {status.healthDetails?.missing && status.healthDetails.missing.length > 0 && (
+            <div className="rounded-lg border border-red-500/20 bg-red-500/5 p-3 mt-3">
+              <p className="text-xs text-red-400">{status.healthDetails.missing.join(", ")}</p>
+            </div>
+          )}
         </div>
 
         <div className="rounded-xl border border-white/5 bg-white/[0.02] p-5">
           <div className="flex items-center gap-3 mb-4">
             <Image className="h-5 w-5 text-brand-purple-400" />
             <h3 className="text-sm font-semibold text-white font-display">Portfolio API</h3>
-            <StatusIcon ok={status.checks.database && status.checks.storage} />
+            <StatusIcon ok={status.checks.database && status.checks.storage && status.checks.healthPhotos} />
           </div>
           <p className="text-xs text-gray-400">
-            {status.checks.database && status.checks.storage ? "Uploads should work." : "Uploads may fail due to missing database or storage."}
+            {status.checks.database && status.checks.storage && status.checks.healthPhotos ? "Uploads should work." : "Uploads may fail due to missing database, storage, or schema."}
           </p>
         </div>
       </div>

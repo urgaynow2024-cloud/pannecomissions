@@ -21,6 +21,8 @@ const CONTENT_KEYS = [
   "about_text",
   "cta_text",
   "about_image_url",
+  "hero_image_url",
+  "featured_work_heading",
 ];
 
 export async function GET() {

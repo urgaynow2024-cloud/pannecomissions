@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase";
+import { runHealthChecks } from "@/lib/health";
 
 async function requireAdmin() {
   const admin = await verifySession();
@@ -46,11 +47,7 @@ export async function GET() {
     }
 
     try {
-      const supabase = createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!
-      );
-      const { data, error } = await supabase.storage.from("pannecomissions").list("", { limit: 1 });
+      const { data, error } = await supabaseAdmin.storage.from("pannecomissions").list("", { limit: 1 });
       results.checks.storage = !error;
       if (error) {
         storageError = error.message;
@@ -64,12 +61,12 @@ export async function GET() {
     }
 
     try {
-      const healthRes = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"}/api/admin/health`, { cache: "no-store" });
-      results.checks.healthEndpoint = healthRes.ok;
-      if (healthRes.ok) {
-        results.healthDetails = await healthRes.json();
-      }
-    } catch {
+      const health = await runHealthChecks();
+      results.checks.healthPhotos = health.checks.photos_table;
+      results.checks.healthCommissionColumn = health.checks.commission_additional_column;
+      results.checks.healthStorage = health.checks.storage_bucket;
+      results.healthDetails = health;
+    } catch (e) {
       results.checks.healthEndpoint = false;
     }
 

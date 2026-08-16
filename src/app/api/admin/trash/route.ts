@@ -1,18 +1,13 @@
 import { NextResponse } from "next/server";
 import { verifySession } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import { createClient } from "@supabase/supabase-js";
+import { supabaseAdmin } from "@/lib/supabase";
 
 async function requireAdmin() {
   const admin = await verifySession();
   if (!admin) throw new Error("Unauthorized");
   return admin;
 }
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
 
 function generateDiagnosticId(): string {
   return Math.random().toString(36).slice(2, 10);
@@ -52,7 +47,7 @@ export async function GET(request: Request) {
       if (item.image_url) {
         try {
           const path = item.image_url.split("/").slice(-2).join("/");
-          await supabase.storage.from("pannecomissions").remove([path]);
+          await supabaseAdmin.storage.from("pannecomissions").remove([path]);
         } catch (e) {
           console.warn(`[${diagnosticId}] Storage cleanup failed:`, e);
         }

@@ -17,9 +17,10 @@ interface HeroProps {
   featuredItem: PortfolioItem | null;
   heroTitle?: string;
   heroSubtitle?: string;
+  heroImageUrl?: string | null;
 }
 
-export default function Hero({ featuredItem, heroTitle, heroSubtitle }: HeroProps) {
+export default function Hero({ featuredItem, heroTitle, heroSubtitle, heroImageUrl }: HeroProps) {
   const { ref: bgRef, transform: bgTransform } = useParallax(0.1);
   const { ref: imgRef, transform: imgTransform } = useParallax(0.05);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -113,10 +114,10 @@ export default function Hero({ featuredItem, heroTitle, heroSubtitle }: HeroProp
 
               <SparkleField count={10} minSize={3} maxSize={12} minOpacity={0.2} maxOpacity={0.5} className="absolute inset-0 z-20 pointer-events-none" glow layers="single" />
 
-              {featuredItem ? (
+              {heroImageUrl || featuredItem ? (
                 <div className="relative aspect-[3/4] md:aspect-[4/5] lg:aspect-[3/4] overflow-hidden rounded-2xl border border-brand-purple-500/15 shadow-2xl artwork-glow">
                   <Image
-                    src={featuredItem.image_url}
+                    src={heroImageUrl || featuredItem!.image_url}
                      alt="Featured artwork"
                     fill
                     className="object-cover transition-transform duration-700 hover:scale-[1.02]"

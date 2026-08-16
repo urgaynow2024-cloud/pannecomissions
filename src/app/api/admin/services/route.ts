@@ -17,7 +17,6 @@ export async function GET() {
   try {
     await requireAdmin();
     const services = await prisma.Service.findMany({
-      where: { visible: true },
       orderBy: { sort_order: "asc" },
       include: { photos: { orderBy: { sort_order: "asc" } } },
     });
@@ -45,9 +44,11 @@ export async function POST(request: Request) {
         name: body.name,
         description: body.description || null,
         image_url: body.image_url || null,
+        image_fit: body.image_fit || "cover",
+        image_position: body.image_position || "center",
         features: body.features || null,
         spare_parts: body.spare_parts ?? false,
-        sort_order: body.sort_order || 0,
+        sort_order: body.sort_order ?? 0,
         visible: body.visible ?? true,
       },
     });

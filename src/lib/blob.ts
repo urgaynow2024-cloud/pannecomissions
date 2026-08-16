@@ -1,9 +1,4 @@
-import { createClient } from "@supabase/supabase-js";
-
-const supabase = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function uploadImage(file: File): Promise<string> {
   if (!file.type.startsWith("image/")) {
@@ -14,7 +9,7 @@ export async function uploadImage(file: File): Promise<string> {
   const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
   const path = `uploads/${fileName}`;
 
-  const { error } = await supabase.storage
+  const { error } = await supabaseAdmin.storage
     .from("pannecomissions")
     .upload(path, file, {
       cacheControl: "3600",
@@ -32,7 +27,7 @@ export async function uploadImage(file: File): Promise<string> {
     throw new Error(`Storage upload failed: ${error.message}`);
   }
 
-  const { data } = supabase.storage
+  const { data } = supabaseAdmin.storage
     .from("pannecomissions")
     .getPublicUrl(path);
 

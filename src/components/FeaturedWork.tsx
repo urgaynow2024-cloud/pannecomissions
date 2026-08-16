@@ -16,9 +16,10 @@ interface PortfolioItem {
 
 interface FeaturedWorkProps {
   items: PortfolioItem[];
+  heading?: string;
 }
 
-export default function FeaturedWork({ items }: FeaturedWorkProps) {
+export default function FeaturedWork({ items, heading }: FeaturedWorkProps) {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -52,14 +53,14 @@ export default function FeaturedWork({ items }: FeaturedWorkProps) {
         <ScrollReveal>
           <div className="flex items-end justify-between mb-10 md:mb-14 relative">
             <SparkleField count={6} minSize={4} maxSize={14} minOpacity={0.25} maxOpacity={0.55} className="-inset-6" glow />
-            <div className="relative z-10">
-              <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-3">
-                Selected Work
-              </p>
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display heading-pop">
-                Featured <span className="text-brand-purple-400">✦</span>
-              </h2>
-            </div>
+              <div className="relative z-10">
+                <p className="text-[10px] font-semibold text-brand-purple-300 uppercase tracking-[0.2em] mb-3">
+                  {heading || "Selected Work"}
+                </p>
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white font-display heading-pop">
+                  Featured <span className="text-brand-purple-400">✦</span>
+                </h2>
+              </div>
             <Link
               href="/portfolio"
               className="hidden sm:inline-flex items-center gap-2 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors group"

@@ -8,83 +8,32 @@ interface Service {
   name: string;
   description: string | null;
   image_url: string | null;
+  image_fit?: string;
+  image_position?: string;
   features?: string | null;
+  visible?: boolean;
 }
 
 interface ServicesProps {
   services: Service[];
 }
 
-const SERVICE_FEATURES: Record<string, string[]> = {
-  "Clothing Add-ons": [
-    "Clothing fitting",
-    "Accessory additions",
-    "Custom adjustments",
-    "Avatar integration",
-  ],
-  "Complete Avatars": [
-    "Full avatar setup",
-    "Materials and textures",
-    "PhysBones configuration",
-    "Expressions and toggles",
-  ],
-  "Entire Avatars": [
-    "Full avatar setup",
-    "Materials and textures",
-    "PhysBones configuration",
-    "Expressions and toggles",
-  ],
-  Toggles: [
-    "Avatar toggles",
-    "Visibility switching",
-    "State management",
-    "Performance optimized",
-  ],
-  "Custom Textures": [
-    "Custom texture creation",
-    "Material tweaks",
-    "Full repaints",
-    "PBR ready",
-  ],
-  Models: [
-    "3D modelling",
-    "Custom parts",
-    "Avatar accessories",
-    "Game-ready assets",
-  ],
-};
-
-function getServiceImage(service: Service): string | null {
-  return service.image_url;
+function parseFeatures(features: string | null | undefined): string[] {
+  if (!features) return [];
+  return features.split("\n").map((f) => f.trim()).filter((f) => f.length > 0);
 }
 
-function getServiceFeatures(service: Service): string[] {
-  if (service.features) {
-    const parsed = service.features
-      .split("\n")
-      .map((f) => f.trim())
-      .filter(Boolean);
-    if (parsed.length > 0) return parsed;
-  }
-
-  return (
-    SERVICE_FEATURES[service.name] ||
-    SERVICE_FEATURES[service.name.replace(/^Custom /, "").replace(/^Complete /, "")] || [
-      "Custom work",
-      "Quality assured",
-      "Fast turnaround",
-      "Direct communication",
-    ]
-  );
+function getImageStyle(fit: string, position: string): React.CSSProperties {
+  return {
+    objectFit: fit === "contain" ? "contain" : "cover",
+    objectPosition: position || "center",
+  };
 }
 
 export default function Services({ services }: ServicesProps) {
-  const uniqueServices = services.filter(
-    (service, index, self) => index === self.findIndex((s) => s.name === service.name)
-  );
-  const displayServices = uniqueServices.length > 0 ? uniqueServices : [];
+  const visibleServices = services.filter((s) => s.visible !== false);
 
-  if (displayServices.length === 0) return null;
+  if (visibleServices.length === 0) return null;
 
   return (
     <section className="py-24 md:py-32 lg:py-40 relative">
@@ -109,10 +58,12 @@ export default function Services({ services }: ServicesProps) {
         </ScrollReveal>
 
         <div className="space-y-16 md:space-y-24 lg:space-y-32">
-          {displayServices.map((service, i) => {
+          {visibleServices.map((service, i) => {
             const isEven = i % 2 === 0;
-            const imageSrc = getServiceImage(service);
-            const features = getServiceFeatures(service);
+            const imageSrc = service.image_url;
+            const features = parseFeatures(service.features);
+            const fit = service.image_fit || "cover";
+            const position = service.image_position || "center";
 
             return (
               <ScrollReveal key={service.id} delay={i * 100}>
@@ -120,12 +71,13 @@ export default function Services({ services }: ServicesProps) {
                   <div
                     className={`lg:col-span-7 ${isEven ? "lg:order-1" : "lg:order-2"}`}
                   >
-                    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/[0.02] aspect-[4/3] lg:aspect-[4/3] shadow-[0_0_0_1px_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition-all duration-300">
+                    <div className="relative rounded-3xl overflow-hidden border border-white/5 bg-white/2 aspect-4/3 lg:aspect-4/3 shadow-[0_0_0_1px_rgba(255,255,255,0.03)] hover:shadow-[0_0_0_1px_rgba(255,255,255,0.08)] transition-all duration-300">
                       {imageSrc ? (
                         <img
                           src={imageSrc}
                           alt={service.name}
                           className="w-full h-full object-cover transition-transform duration-700 hover:scale-[1.03]"
+                          style={getImageStyle(fit, position)}
                           loading="lazy"
                         />
                       ) : (
@@ -138,7 +90,7 @@ export default function Services({ services }: ServicesProps) {
                           </div>
                         </div>
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                      <div className="absolute inset-0 bg-linear-to-t from-black/30 via-transparent to-transparent" />
                     </div>
                   </div>
                   <div
@@ -151,21 +103,23 @@ export default function Services({ services }: ServicesProps) {
                       <p className="text-gray-400 leading-relaxed text-base md:text-lg mt-4 max-w-lg">
                         {service.description || ""}
                       </p>
-                      <ul className="mt-6 space-y-3">
-                        {features.map((feature) => (
-                          <li
-                            key={feature}
-                            className="flex items-center gap-3 text-gray-300 text-sm md:text-base"
-                          >
-                            <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-purple-500/10 text-brand-purple-400">
-                              <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                              </svg>
-                            </span>
-                            {feature}
-                          </li>
-                        ))}
-                      </ul>
+                      {features.length > 0 && (
+                        <ul className="mt-6 space-y-3">
+                          {features.map((feature) => (
+                            <li
+                              key={feature}
+                              className="flex items-center gap-3 text-gray-300 text-sm md:text-base"
+                            >
+                              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-brand-purple-500/10 text-brand-purple-400">
+                                <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                              </span>
+                              {feature}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                       <Link
                         href="/commission"
                         className="group/btn mt-8 inline-flex items-center gap-2 text-sm font-medium text-brand-purple-400 hover:text-brand-purple-300 transition-colors"

@@ -13,6 +13,9 @@ const KEYS = [
   "pricing_heading",
   "footer_description",
   "support_info",
+  "about_image_url",
+  "hero_image_url",
+  "featured_work_heading",
 ];
 
 export async function GET() {
