@@ -43,16 +43,17 @@ export async function ensureAdminExists(passwordHash: string) {
 }
 
 export async function createSession(adminId: string) {
-  const sessionId = crypto.randomUUID();
+  const token = crypto.randomUUID();
+  const tokenHash = await hashPassword(token);
   const expiresAt = new Date(Date.now() + SESSION_MAX_AGE * 1000);
 
-  const session = await prisma.Session.create({
-    data: { id: sessionId, adminId, expiresAt, tokenHash: sessionId },
+  await prisma.Session.create({
+    data: { adminId, tokenHash, expiresAt },
   });
 
   const cookieStore = await cookies();
   const isProduction = process.env.NODE_ENV === "production";
-  cookieStore.set(SESSION_COOKIE, session.id, {
+  cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: isProduction,
     sameSite: "lax",
@@ -62,37 +63,35 @@ export async function createSession(adminId: string) {
 }
 
 export async function verifySession() {
-  const start = performance.now();
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
-  if (!sessionId) {
-    console.log(`[auth] verifySession no cookie: ${(performance.now() - start).toFixed(1)}ms`);
-    return null;
-  }
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!token) return null;
 
-  const session = await prisma.Session.findUnique({
-    where: { id: sessionId },
+  const sessions = await prisma.Session.findMany({
+    where: { expiresAt: { gt: new Date() } },
     include: { admin: true },
   });
 
-  if (!session || session.expiresAt < new Date()) {
-    console.log(`[auth] verifySession invalid/expired: ${(performance.now() - start).toFixed(1)}ms`);
-    return null;
+  for (const session of sessions) {
+    if (await bcrypt.compare(token, session.tokenHash)) {
+      return session.admin ? { id: session.admin.id, username: session.admin.username } : null;
+    }
   }
 
-  console.log(`[auth] verifySession ok: ${(performance.now() - start).toFixed(1)}ms`);
-  return session.admin ? { id: session.admin.id, username: session.admin.username } : null;
+  return null;
 }
 
 export async function destroySession() {
   const cookieStore = await cookies();
-  const sessionId = cookieStore.get(SESSION_COOKIE)?.value;
+  const token = cookieStore.get(SESSION_COOKIE)?.value;
 
-  if (sessionId) {
-    try {
-      await prisma.Session.delete({ where: { id: sessionId } });
-    } catch {
-      // Session already deleted or invalid
+  if (token) {
+    const sessions = await prisma.Session.findMany();
+    for (const session of sessions) {
+      if (await bcrypt.compare(token, session.tokenHash)) {
+        await prisma.Session.delete({ where: { id: session.id } });
+        break;
+      }
     }
   }
 
