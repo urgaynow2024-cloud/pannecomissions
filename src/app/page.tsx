@@ -51,9 +51,14 @@ async function getData() {
       };
     });
 
+    const uniqueServices = servicesWithImages.filter(
+      (service: any, index: number, self: any[]) =>
+        index === self.findIndex((s: any) => s.name === service.name)
+    );
+
     return {
       portfolio,
-      services: servicesWithImages,
+      services: uniqueServices,
       pricing,
       reviews,
       featuredWork,
