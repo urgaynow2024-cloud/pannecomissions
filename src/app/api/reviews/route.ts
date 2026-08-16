@@ -25,9 +25,6 @@ export async function POST(request: Request) {
       if (!display_name || !review_text) {
         return NextResponse.json({ error: "Name and review text are required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
-      if (!imageUrl) {
-        return NextResponse.json({ error: "Image is required for public reviews", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
-      }
     } else {
       const formData = await request.formData();
       display_name = (formData.get("display_name") as string) || "";
@@ -48,8 +45,6 @@ export async function POST(request: Request) {
         }
         const compressed = await compressImage(file);
         imageUrl = await uploadImage(compressed);
-      } else {
-        return NextResponse.json({ error: "Image is required for public reviews", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
     }
 
@@ -58,7 +53,7 @@ export async function POST(request: Request) {
         display_name,
         rating: Math.min(5, Math.max(1, rating)),
         review_text,
-        image_url: imageUrl,
+        image_url: imageUrl || null,
         status: "PENDING",
         hidden: false,
       },

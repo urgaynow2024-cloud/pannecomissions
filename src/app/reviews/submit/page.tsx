@@ -39,10 +39,6 @@ export default function SubmitReviewPage() {
       setMessage({ type: "error", text: "Please fill in all required fields" });
       return;
     }
-    if (!imageFile) {
-      setMessage({ type: "error", text: "Please upload an image" });
-      return;
-    }
 
     setSubmitting(true);
     try {
@@ -50,7 +46,9 @@ export default function SubmitReviewPage() {
       fd.append("display_name", displayName.trim());
       fd.append("rating", String(rating));
       fd.append("review_text", reviewText.trim());
-      fd.append("image", imageFile);
+      if (imageFile) {
+        fd.append("image", imageFile);
+      }
 
       const res = await fetch("/api/reviews", { method: "POST", body: fd });
       const data = await res.json().catch(() => ({}));
@@ -101,7 +99,7 @@ export default function SubmitReviewPage() {
             <div className="flex gap-2">
               {[1, 2, 3, 4, 5].map((star) => (
                 <button key={star} type="button" onClick={() => setRating(star)} className="transition-transform hover:scale-110">
-                  <Star className={`h-8 w-8 ${star <= rating ? "text-brand-purple-400 fill-brand-purple-400" : "text-white/10"}`} />
+                  <Star className={`h-8 w-8 ${star <= rating ? "text-brand-purple-400" : "text-white/10"}`} fill={star <= rating ? "currentColor" : "none"} />
                 </button>
               ))}
             </div>
@@ -113,7 +111,8 @@ export default function SubmitReviewPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Commission Image *</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Commission Image (optional)</label>
+            <p className="text-xs text-gray-500 mb-2">You can submit a review without an image, or attach one if you have it.</p>
             <div
               className={`relative rounded-xl border-2 border-dashed transition-colors cursor-pointer ${dragOver ? "border-brand-purple-400 bg-brand-purple-500/5" : "border-white/10 hover:border-white/20"} ${imagePreview ? "p-3" : "p-10"}`}
               onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
