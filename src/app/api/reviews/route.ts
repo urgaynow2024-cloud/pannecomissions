@@ -56,6 +56,7 @@ export async function POST(request: Request) {
         image_url: imageUrl || null,
         status: "PENDING",
         hidden: false,
+        nsfw: false,
       },
     });
 

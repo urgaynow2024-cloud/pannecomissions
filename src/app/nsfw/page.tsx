@@ -1,7 +1,9 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import NoiseOverlay from "@/components/NoiseOverlay";
 import AgeVerifier from "@/components/AgeVerifier";
 import NSFWPortfolio from "@/components/NSFWPortfolio";
+import Reviews from "@/components/Reviews";
 import prisma from "@/lib/prisma";
 
 export const revalidate = 30;
@@ -15,7 +17,7 @@ const CATEGORIES = [
   "Models",
 ];
 
-async function getData(category?: string) {
+async function getPortfolio(category?: string) {
   try {
     const where: any = { nsfw: true, visible: true };
     if (category && category !== "All") {
@@ -39,17 +41,41 @@ async function getData(category?: string) {
   }
 }
 
+async function getReviews() {
+  try {
+    const reviews = await prisma.Review.findMany({
+      where: { status: "APPROVED", hidden: false, nsfw: true },
+      orderBy: { created_at: "desc" },
+    });
+
+    return reviews.map((review: { id: string; display_name: string; rating: number; review_text: string; image_url: string | null; created_at: Date }) => ({
+      id: review.id,
+      display_name: review.display_name,
+      rating: review.rating,
+      review_text: review.review_text,
+      image_url: review.image_url,
+      created_at: review.created_at.toISOString(),
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export default async function NSFWPage({
   searchParams,
 }: {
   searchParams: Promise<{ category?: string }>;
 }) {
   const params = await searchParams;
-  const items = await getData(params.category);
+  const [items, reviews] = await Promise.all([
+    getPortfolio(params.category),
+    getReviews(),
+  ]);
   const activeCategory = params.category || "All";
 
   return (
     <main className="min-h-screen bg-brand-black text-white antialiased relative">
+      <NoiseOverlay />
       <AgeVerifier />
       <Navbar />
       <div className="mx-auto max-w-7xl px-6 pt-32 md:pt-40 pb-20 md:pb-32">
@@ -89,6 +115,13 @@ export default async function NSFWPage({
         </div>
 
         <NSFWPortfolio items={items} />
+
+        <div className="mt-20">
+          <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-display heading-pop mb-8">
+            NSFW Reviews
+          </h2>
+          <Reviews reviews={reviews} />
+        </div>
       </div>
       <Footer />
     </main>

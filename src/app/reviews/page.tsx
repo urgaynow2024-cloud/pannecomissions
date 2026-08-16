@@ -10,7 +10,7 @@ export const revalidate = 0;
 async function getData() {
   try {
     const reviews = await prisma.Review.findMany({
-      where: { status: "APPROVED", hidden: false },
+      where: { status: "APPROVED", hidden: false, nsfw: false },
       orderBy: { created_at: "desc" },
     });
 

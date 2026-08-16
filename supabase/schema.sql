@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS reviews (
   image_url TEXT,
   status TEXT NOT NULL DEFAULT 'PENDING',
   hidden BOOLEAN NOT NULL DEFAULT false,
+  nsfw BOOLEAN NOT NULL DEFAULT false,
   rejection_reason TEXT,
   created_at TIMESTAMP NOT NULL DEFAULT now(),
   updated_at TIMESTAMP NOT NULL DEFAULT now()

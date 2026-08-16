@@ -11,6 +11,7 @@ interface Review {
   image_url: string | null;
   status: string;
   hidden: boolean;
+  nsfw: boolean;
   rejection_reason: string | null;
   created_at: string;
 }
@@ -97,7 +98,7 @@ export default function ReviewsPage() {
   const [filter, setFilter] = useState<string>("PENDING");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ display_name: "", rating: 5, review_text: "", status: "PENDING", hidden: false, rejection_reason: "", image_url: "" });
+  const [formData, setFormData] = useState({ display_name: "", rating: 5, review_text: "", status: "PENDING", hidden: false, nsfw: false, rejection_reason: "", image_url: "" });
   const [saving, setSaving] = useState(false);
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
@@ -193,14 +194,14 @@ export default function ReviewsPage() {
 
   function handleEdit(item: Review) {
     setEditingId(item.id);
-    setFormData({ display_name: item.display_name, rating: item.rating, review_text: item.review_text, status: item.status, hidden: item.hidden, rejection_reason: item.rejection_reason || "", image_url: item.image_url || "" });
+    setFormData({ display_name: item.display_name, rating: item.rating, review_text: item.review_text, status: item.status, hidden: item.hidden, nsfw: item.nsfw, rejection_reason: item.rejection_reason || "", image_url: item.image_url || "" });
     setShowForm(true);
   }
 
   function resetForm() {
     setShowForm(false);
     setEditingId(null);
-    setFormData({ display_name: "", rating: 5, review_text: "", status: "PENDING", hidden: false, rejection_reason: "", image_url: "" });
+    setFormData({ display_name: "", rating: 5, review_text: "", status: "PENDING", hidden: false, nsfw: false, rejection_reason: "", image_url: "" });
   }
 
   function getFiltered() {
@@ -321,9 +322,15 @@ export default function ReviewsPage() {
               <textarea value={formData.rejection_reason} onChange={(e) => setFormData({ ...formData, rejection_reason: e.target.value })} className="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-white focus:border-brand-purple-400/50 focus:outline-none transition-colors" rows={2} />
             </div>
           )}
-          <div className="flex items-center gap-2">
-            <input type="checkbox" checked={formData.hidden} onChange={(e) => setFormData({ ...formData, hidden: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
-            <span className="text-sm text-gray-300">Hidden</span>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-2">
+              <input type="checkbox" checked={formData.hidden} onChange={(e) => setFormData({ ...formData, hidden: e.target.checked })} className="rounded border-white/20 bg-white/5 text-brand-purple-600 focus:ring-brand-purple-500 focus:ring-offset-0" />
+              <span className="text-sm text-gray-300">Hidden</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input type="checkbox" checked={formData.nsfw} onChange={(e) => setFormData({ ...formData, nsfw: e.target.checked })} className="rounded border-white/20 bg-white/5 text-red-600 focus:ring-red-500 focus:ring-offset-0" />
+              <span className="text-sm text-gray-300">NSFW</span>
+            </div>
           </div>
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving} className="rounded-lg bg-brand-purple-600 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-purple-500 disabled:opacity-50 transition-colors">

@@ -55,6 +55,7 @@ export async function PUT(
         image_url: body.image_url ?? null,
         status: body.status,
         hidden: body.hidden ?? false,
+        nsfw: body.nsfw ?? false,
         rejection_reason: body.rejection_reason ?? null,
       },
     });
