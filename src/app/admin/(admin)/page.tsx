@@ -29,7 +29,6 @@ interface DashboardStats {
   pendingReviews: number;
   pendingCommissions: number;
   openSupport: number;
-  totalServices: number;
   totalPricing: number;
   storageEstimate: string;
   recentCommissions: any[];
@@ -319,7 +318,6 @@ export default function AdminDashboard() {
                 { label: "Published", value: stats?.portfolioStats?.published || 0, href: "/admin/portfolio", color: "text-green-400" },
                 { label: "Hidden", value: stats?.portfolioStats?.hidden || 0, href: "/admin/portfolio", color: "text-yellow-400" },
                 { label: "Featured", value: stats?.portfolioStats?.featured || 0, href: "/admin/portfolio", color: "text-brand-purple-400" },
-                { label: "Deleted", value: stats?.portfolioStats?.deleted || 0, href: "/admin/trash", color: "text-red-400" },
               ].map((item) => (
                 <a
                   key={item.label}
@@ -349,7 +347,6 @@ export default function AdminDashboard() {
             <div className="space-y-2.5 text-xs">
               {[
                 { label: "Portfolio", value: stats?.portfolioStats?.total || 0 },
-                { label: "Services", value: stats?.totalServices || 0 },
                 { label: "Pricing", value: stats?.totalPricing || 0 },
                 { label: "Photos", value: stats?.totalPricing || 0 },
               ].map((item) => (
