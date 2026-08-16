@@ -36,8 +36,18 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16 md:h-20">
           <Link
             href="/"
-            className="text-lg md:text-xl font-bold tracking-tight text-white font-display group flex items-center gap-1 heading-pop"
+            className="text-lg md:text-xl font-bold tracking-tight text-white font-display group flex items-center gap-2 heading-pop"
           >
+            <span className="relative inline-flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor" className="h-6 w-6 md:h-7 md:w-7 text-brand-purple-400 animate-paw-glow">
+                <ellipse cx="50" cy="65" rx="22" ry="18" />
+                <ellipse cx="25" cy="35" rx="10" ry="12" />
+                <ellipse cx="50" cy="25" rx="10" ry="12" />
+                <ellipse cx="75" cy="35" rx="10" ry="12" />
+                <ellipse cx="35" cy="55" rx="7" ry="8" />
+                <ellipse cx="65" cy="55" rx="7" ry="8" />
+              </svg>
+            </span>
             PANNE
             <Sparkles className="h-3.5 w-3.5 text-brand-purple-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </Link>

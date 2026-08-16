@@ -14,8 +14,6 @@ import {
   ExternalLink,
   LogOut,
   Settings,
-  FolderOpen,
-  Trash2,
   Activity,
 } from "lucide-react";
 
@@ -29,8 +27,6 @@ const navItems = [
   { href: "/admin/support", label: "Support", icon: HelpCircle },
   { href: "/admin/site-photos", label: "Site Photos", icon: Image },
   { href: "/admin/content", label: "Content", icon: Settings },
-  { href: "/admin/media", label: "Media Library", icon: FolderOpen },
-  { href: "/admin/trash", label: "Trash", icon: Trash2 },
   { href: "/admin/system", label: "System Status", icon: Activity },
 ];
 

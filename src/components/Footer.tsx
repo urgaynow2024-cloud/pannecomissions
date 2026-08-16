@@ -46,12 +46,22 @@ export default function Footer({ portfolioItems = [] }: FooterProps) {
       <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         <div className="flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-center md:text-left">
-            <Link href="/" className="inline-block text-xl font-bold tracking-tight text-white font-display group">
+          <Link href="/" className="inline-block text-xl font-bold tracking-tight text-white font-display group">
+            <span className="inline-flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor" className="h-5 w-5 text-brand-purple-400 animate-paw-glow">
+                <ellipse cx="50" cy="65" rx="22" ry="18" />
+                <ellipse cx="25" cy="35" rx="10" ry="12" />
+                <ellipse cx="50" cy="25" rx="10" ry="12" />
+                <ellipse cx="75" cy="35" rx="10" ry="12" />
+                <ellipse cx="35" cy="55" rx="7" ry="8" />
+                <ellipse cx="65" cy="55" rx="7" ry="8" />
+              </svg>
               PANNE
               <span className="text-brand-purple-400 group-hover:text-brand-purple-300 transition-colors duration-300 animate-sparkle-float inline-block">
                 {" "}✦
               </span>
-            </Link>
+            </span>
+          </Link>
             <p className="mt-2 text-xs text-gray-600">
               VRCHAT COMMISSIONS
             </p>
