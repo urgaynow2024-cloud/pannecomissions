@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { AlertCircle } from "lucide-react";
 
 interface Review {
   id: string;
@@ -92,6 +93,7 @@ export default function ReviewsPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>("PENDING");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -131,9 +133,9 @@ export default function ReviewsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Save failed");
+        throw new Error(data.error || data.diagnosticId ? `Save failed (${res.status}) [ID: ${data.diagnosticId}]` : `Save failed (${res.status})`);
       }
       await fetchItems();
       resetForm();
@@ -145,6 +147,7 @@ export default function ReviewsPage() {
   }
 
   async function handleStatusUpdate(id: string, status: string, hidden?: boolean) {
+    setActionError(null);
     const review = reviews.find((r) => r.id === id);
     const body: any = { status };
     if (hidden !== undefined) body.hidden = hidden;
@@ -153,20 +156,39 @@ export default function ReviewsPage() {
       if (!reason) return;
       body.rejection_reason = reason;
     }
-    const res = await fetch(`/api/admin/reviews/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (res.ok) {
+    try {
+      const res = await fetch(`/api/admin/reviews/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || data.diagnosticId ? `Failed (${res.status}) [ID: ${data.diagnosticId}]` : `Failed (${res.status})`);
+      }
       setReviews(reviews.map((r) => (r.id === id ? { ...r, ...body } : r)));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Action failed";
+      setActionError(message);
+      setTimeout(() => setActionError(null), 5000);
     }
   }
 
   async function handleDelete(id: string) {
+    setActionError(null);
     if (!confirm("Delete this review?")) return;
-    const res = await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" });
-    if (res.ok) setReviews(reviews.filter((r) => r.id !== id));
+    try {
+      const res = await fetch(`/api/admin/reviews/${id}`, { method: "DELETE" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(data.error || data.diagnosticId ? `Delete failed (${res.status}) [ID: ${data.diagnosticId}]` : `Delete failed (${res.status})`);
+      }
+      setReviews(reviews.filter((r) => r.id !== id));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Delete failed";
+      setActionError(message);
+      setTimeout(() => setActionError(null), 5000);
+    }
   }
 
   function handleEdit(item: Review) {
@@ -244,6 +266,18 @@ export default function ReviewsPage() {
           </button>
         ))}
       </div>
+
+      {actionError && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 flex items-center gap-3">
+          <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
+          <p className="text-sm text-red-400">{actionError}</p>
+          <button onClick={() => setActionError(null)} className="ml-auto text-gray-400 hover:text-white transition-colors">
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="rounded-xl border border-white/5 bg-white/[0.02] p-6 space-y-4">
