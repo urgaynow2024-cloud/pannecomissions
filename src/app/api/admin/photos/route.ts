@@ -27,7 +27,7 @@ export async function GET(request: Request) {
     if (portfolioItemId) where.portfolioItemId = portfolioItemId;
     if (reviewId) where.reviewId = reviewId;
 
-    const photos = await prisma.photo.findMany({
+    const photos = await prisma.Photo.findMany({
       where,
       orderBy: { sort_order: "asc" },
     });
@@ -66,7 +66,7 @@ export async function POST(request: Request) {
 
     const url = await uploadImage(file);
 
-    const photo = await prisma.photo.create({
+    const photo = await prisma.Photo.create({
       data: {
         url,
         alt_text: altText || null,

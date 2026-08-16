@@ -20,7 +20,7 @@ export async function DELETE(
   try {
     await requireAdmin();
     const { id } = await params;
-    await prisma.photo.delete({ where: { id } });
+    await prisma.Photo.delete({ where: { id } });
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error(`[${diagnosticId}] Failed to delete photo:`, error);

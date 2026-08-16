@@ -14,6 +14,7 @@ function generateDiagnosticId(): string {
 }
 
 export async function GET() {
+  const diagnosticId = generateDiagnosticId();
   try {
     await requireAdmin();
     const items = await prisma.PortfolioItem.findMany({
@@ -27,13 +28,11 @@ export async function GET() {
     });
     return NextResponse.json(items);
   } catch (error) {
-    console.error("Failed to fetch admin NSFW portfolio:", error);
+    console.error(`[${diagnosticId}] Failed to fetch admin NSFW portfolio:`, error);
     if (error instanceof Error && error.message === "Unauthorized") {
-      return NextResponse.json({ error: "Unauthorized", code: "UNAUTHORIZED" }, { status: 401 });
+      return NextResponse.json({ error: "Authentication expired. Please log in again.", code: "UNAUTHORIZED", diagnosticId }, { status: 401 });
     }
-    const diagnosticId = generateDiagnosticId();
-    console.error(`[${diagnosticId}]`, error);
-    return NextResponse.json({ error: "Failed to load NSFW portfolio", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
+    return NextResponse.json({ error: error instanceof Error ? error.message : "Failed to load NSFW portfolio", code: "SERVER_ERROR", diagnosticId }, { status: 500 });
   }
 }
 
