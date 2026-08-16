@@ -43,7 +43,15 @@ async function getData() {
     const heroImageUrl = sitePhotoMap['hero'] || settingsMap.hero_image_url || null;
 
     const servicesWithImages = services.map((service: any) => {
-      const slug = service.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+      const name = service.name.trim();
+      const slugMap: Record<string, string> = {
+        "Clothing Add-ons": "clothing-addons",
+        "Complete Avatars": "complete-avatars",
+        "Toggles": "toggles",
+        "Custom Textures": "custom-textures",
+        "Models": "models",
+      };
+      const slug = slugMap[name] || name.toLowerCase().replace(/\s+/g, "-");
       return {
         ...service,
         image_url: sitePhotoMap[slug] || service.image_url || null,

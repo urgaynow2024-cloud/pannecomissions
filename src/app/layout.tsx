@@ -17,8 +17,28 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Panne Commissions — VRChat Avatar Creator",
+  title: {
+    default: "Panne Commissions — VRChat Avatar Creator",
+    template: "%s | Panne Commissions",
+  },
   description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+  icons: {
+    icon: "/paw-icon.svg",
+    shortcut: "/paw-icon.svg",
+    apple: "/paw-icon.svg",
+  },
+  openGraph: {
+    title: "Panne Commissions — VRChat Avatar Creator",
+    description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+    url: "https://www.pannecomissions.shop",
+    siteName: "Panne Commissions",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Panne Commissions — VRChat Avatar Creator",
+    description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+  },
 };
 
 export default function RootLayout({
@@ -28,6 +48,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="/paw-icon.svg" type="image/svg+xml" />
+      </head>
       <body className={`${spaceGrotesk.variable} ${inter.variable} antialiased text-white min-h-screen relative overflow-x-hidden`}>
         <SparkleSystem />
         <NoiseOverlay />
