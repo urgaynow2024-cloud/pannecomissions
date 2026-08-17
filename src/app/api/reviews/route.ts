@@ -16,12 +16,15 @@ export async function POST(request: Request) {
     let review_text = "";
     let imageUrl = "";
 
+    let nsfw = false;
+
     if (contentType.includes("application/json")) {
       const body = await request.json();
       display_name = body.display_name || "";
       rating = typeof body.rating === "number" ? body.rating : 5;
       review_text = body.review_text || "";
       imageUrl = body.image_url || "";
+      nsfw = body.nsfw === true;
       if (!display_name || !review_text) {
         return NextResponse.json({ error: "Name and review text are required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
       }
@@ -31,6 +34,7 @@ export async function POST(request: Request) {
       rating = parseInt((formData.get("rating") as string) || "5", 10);
       review_text = (formData.get("review_text") as string) || "";
       const file = formData.get("image") as File | null;
+      nsfw = formData.get("nsfw") === "true";
 
       if (!display_name || !review_text) {
         return NextResponse.json({ error: "Name and review text are required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
@@ -56,7 +60,7 @@ export async function POST(request: Request) {
         image_url: imageUrl || null,
         status: "PENDING",
         hidden: false,
-        nsfw: false,
+        nsfw,
       },
     });
 
