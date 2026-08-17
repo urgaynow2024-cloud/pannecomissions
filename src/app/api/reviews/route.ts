@@ -37,11 +37,11 @@ export async function POST(request: Request) {
       }
 
       if (file && file.size > 0) {
-        if (!file.type.startsWith("image/")) {
-          return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
+        if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+          return NextResponse.json({ error: "Invalid file type. Images and videos only.", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
-        if (file.size > 20 * 1024 * 1024) {
-          return NextResponse.json({ error: "File too large (max 20MB)", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
+        if (file.size > 50 * 1024 * 1024) {
+          return NextResponse.json({ error: "File too large (max 50MB)", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
         }
         const compressed = await compressImage(file);
         imageUrl = await uploadImage(compressed);

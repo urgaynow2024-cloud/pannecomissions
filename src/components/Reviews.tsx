@@ -22,6 +22,11 @@ const formatDate = (dateStr?: string) => {
   return d.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 };
 
+function isVideo(url: string | null): boolean {
+  if (!url) return false;
+  return /\.(mp4|webm|mov|avi|mkv)(\?.*)?$/i.test(url) || url.startsWith("data:video");
+}
+
 export default function Reviews({ reviews }: ReviewsProps) {
   if (reviews.length === 0) {
     return (
@@ -33,7 +38,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
 
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const reviewImages = reviews.filter((r) => r.image_url);
+  const reviewMedia = reviews.filter((r) => r.image_url);
 
   return (
     <div className="space-y-6 md:space-y-8">
@@ -47,19 +52,31 @@ export default function Reviews({ reviews }: ReviewsProps) {
               <div className="mb-5 -mx-6 md:-mx-8 -mt-6 md:-mt-8 relative">
                 <button
                   onClick={() => {
-                    const idx = reviewImages.findIndex((r) => r.id === review.id);
+                    const idx = reviewMedia.findIndex((r) => r.id === review.id);
                     setLightboxIndex(idx >= 0 ? idx : 0);
                     setLightboxOpen(true);
                   }}
                   className="block w-full text-left"
-                  aria-label={`View commission image from ${review.display_name}`}
+                  aria-label={`View commission media from ${review.display_name}`}
                 >
                   <div className="relative aspect-video overflow-hidden">
-                    <img
-                      src={review.image_url}
-                      alt={`Commission by ${review.display_name}`}
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
-                    />
+                    {isVideo(review.image_url) ? (
+                      <video
+                        src={review.image_url}
+                        className="w-full h-full object-cover"
+                        muted
+                        loop
+                        playsInline
+                        onMouseEnter={(e) => (e.currentTarget as HTMLVideoElement).play()}
+                        onMouseLeave={(e) => { e.currentTarget.pause(); e.currentTarget.currentTime = 0; }}
+                      />
+                    ) : (
+                      <img
+                        src={review.image_url}
+                        alt={`Commission by ${review.display_name}`}
+                        className="w-full h-full object-cover transition-all duration-700 group-hover:scale-[1.03]"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute inset-0 bg-brand-purple-500/0 group-hover:bg-brand-purple-500/5 transition-colors duration-500" />
                     <div className="absolute bottom-4 left-4 md:left-6">
@@ -67,7 +84,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
                         <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" />
                         </svg>
-                        View Image
+                        {isVideo(review.image_url) ? "Play Video" : "View Image"}
                       </span>
                     </div>
                   </div>
@@ -106,9 +123,9 @@ export default function Reviews({ reviews }: ReviewsProps) {
         </div>
       ))}
 
-      {lightboxOpen && reviewImages.length > 0 && (
+      {lightboxOpen && reviewMedia.length > 0 && (
         <Lightbox
-          items={reviewImages.map((r) => ({
+          items={reviewMedia.map((r) => ({
             id: r.id,
             title: r.display_name,
             image_url: r.image_url!,

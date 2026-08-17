@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { Star, Upload, CheckCircle, AlertCircle } from "lucide-react";
-import { compressImage } from "@/lib/compress-image";
+import { compressImage, isVideo } from "@/lib/compress-image";
 
 export default function SubmitReviewPage() {
   const [displayName, setDisplayName] = useState("");
@@ -15,15 +15,19 @@ export default function SubmitReviewPage() {
   const [dragOver, setDragOver] = useState(false);
 
   const handleImageChange = useCallback(async (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setMessage({ type: "error", text: "Please select an image file" });
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      setMessage({ type: "error", text: "Please select an image or video file" });
       return;
     }
     const compressed = await compressImage(file);
     setImageFile(compressed);
-    const reader = new FileReader();
-    reader.onload = () => setImagePreview(reader.result as string);
-    reader.readAsDataURL(compressed);
+    if (isVideo(compressed)) {
+      setImagePreview(URL.createObjectURL(compressed));
+    } else {
+      const reader = new FileReader();
+      reader.onload = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(compressed);
+    }
   }, []);
 
   function handleDrop(e: React.DragEvent) {
@@ -123,8 +127,12 @@ export default function SubmitReviewPage() {
               <input id="review-image-upload" type="file" accept="image/*" className="hidden" onChange={(e) => e.target.files?.[0] && handleImageChange(e.target.files[0])} />
 
               {imagePreview ? (
-                <div className="relative aspect-video rounded-lg overflow-hidden">
-                  <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
+                  {imageFile && isVideo(imageFile) ? (
+                    <video src={imagePreview} className="w-full h-full object-contain" controls autoPlay muted loop />
+                  ) : (
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  )}
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
                     <span className="text-sm text-white font-medium">Click or drop to replace</span>
                   </div>
@@ -133,8 +141,8 @@ export default function SubmitReviewPage() {
                 <div className="text-center space-y-3">
                   <Upload className="h-10 w-10 text-gray-500 mx-auto" />
                   <div>
-                    <p className="text-sm font-medium text-gray-300">Drop an image here or click to browse</p>
-                    <p className="text-xs text-gray-500 mt-1">Large images are automatically compressed</p>
+                    <p className="text-sm font-medium text-gray-300">Drop an image or video here or click to browse</p>
+                    <p className="text-xs text-gray-500 mt-1">Large files are automatically compressed</p>
                   </div>
                 </div>
               )}

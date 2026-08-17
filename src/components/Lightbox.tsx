@@ -78,6 +78,8 @@ export default function Lightbox({ items, initialIndex, onClose }: LightboxProps
   const item = items[index];
   if (!item) return null;
 
+  const isVideo = (url: string) => /\.(mp4|webm|mov|avi|mkv)(\?.*)?$/i.test(url) || url.startsWith("data:video");
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-md p-4"
@@ -157,11 +159,20 @@ export default function Lightbox({ items, initialIndex, onClose }: LightboxProps
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          <img
-            src={item.image_url}
-            alt="Artwork"
-            className="max-w-full max-h-[75vh] object-contain rounded-lg"
-          />
+          {isVideo(item.image_url) ? (
+            <video
+              src={item.image_url}
+              controls
+              autoPlay
+              className="max-w-full max-h-[75vh] rounded-lg"
+            />
+          ) : (
+            <img
+              src={item.image_url}
+              alt="Artwork"
+              className="max-w-full max-h-[75vh] object-contain rounded-lg"
+            />
+          )}
         </div>
         {item.description && (
           <div className="p-6 pt-2 border-t border-white/5 shrink-0">

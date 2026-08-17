@@ -74,12 +74,20 @@ function StatusBadge({ status, hidden }: { status: string; hidden: boolean }) {
   );
 }
 
+function isVideo(url: string): boolean {
+  return /\.(mp4|webm|mov|avi|mkv)(\?.*)?$/i.test(url) || url.startsWith("data:video");
+}
+
 function Lightbox({ src, onClose }: { src: string; onClose: () => void }) {
   if (!src) return null;
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onClick={onClose}>
       <div className="relative max-w-4xl max-h-[90vh]">
-        <img src={src} alt="Review" className="rounded-xl max-h-[85vh] object-contain" />
+        {isVideo(src) ? (
+          <video src={src} controls autoPlay className="rounded-xl max-h-[85vh] max-w-full" />
+        ) : (
+          <img src={src} alt="Review" className="rounded-xl max-h-[85vh] object-contain" />
+        )}
         <button onClick={onClose} className="absolute -top-10 right-0 text-gray-300 hover:text-white transition-colors">
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -365,7 +373,11 @@ export default function ReviewsPage() {
                   onClick={() => setLightboxUrl(review.image_url)}
                   className="mb-3 rounded-lg overflow-hidden border border-white/5 hover:border-brand-purple-500/30 transition-colors"
                 >
-                  <img src={review.image_url} alt="Commission" className="w-full h-40 object-cover" />
+                  {isVideo(review.image_url) ? (
+                    <video src={review.image_url} className="w-full h-40 object-cover" muted loop playsInline />
+                  ) : (
+                    <img src={review.image_url} alt="Commission" className="w-full h-40 object-cover" />
+                  )}
                 </button>
               )}
 

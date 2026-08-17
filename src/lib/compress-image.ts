@@ -3,7 +3,19 @@ const MAX_HEIGHT = 1920;
 const QUALITY = 0.85;
 const MIME_TYPE = "image/jpeg";
 
+export function isGif(file: File): boolean {
+  return file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+}
+
+export function isVideo(file: File): boolean {
+  return file.type.startsWith("video/") || /\.(mp4|webm|mov|avi|mkv)$/i.test(file.name);
+}
+
 export async function compressImage(file: File): Promise<File> {
+  if (isGif(file) || isVideo(file)) {
+    return file;
+  }
+
   if (!file.type.startsWith("image/")) {
     return file;
   }
