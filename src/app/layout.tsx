@@ -18,26 +18,26 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "Panne Commissions — VRChat Avatar Creator",
+    default: "Panne Commissions — VRChat Avatar Work",
     template: "%s | Panne Commissions",
   },
-  description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+  description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
   icons: {
     icon: "/paw-icon.svg",
     shortcut: "/paw-icon.svg",
     apple: "/paw-icon.svg",
   },
   openGraph: {
-    title: "Panne Commissions — VRChat Avatar Creator",
-    description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+    title: "Panne Commissions — VRChat Avatar Work",
+    description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
     url: "https://www.pannecomissions.shop",
     siteName: "Panne Commissions",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Panne Commissions — VRChat Avatar Creator",
-    description: "Custom VRChat avatars, outfits, textures, and toggles by Panne. High-quality commission work for the VRChat community.",
+    title: "Panne Commissions — VRChat Avatar Work",
+    description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
   },
 };
 
