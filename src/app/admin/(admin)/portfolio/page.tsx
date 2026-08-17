@@ -94,7 +94,7 @@ export default function PortfolioPage() {
   }
 
   const handleFiles = useCallback(async (files: FileList) => {
-    const accepted = Array.from(files).filter((f) => /\.(png|jpe?g|webp)$/i.test(f.name));
+    const accepted = Array.from(files).filter((f) => /\.(png|jpe?g|webp|gif|mp4|webm|mov|avi|mkv)$/i.test(f.name));
     if (accepted.length === 0) return;
 
     const queue: UploadQueueItem[] = accepted.map((file) => ({
@@ -253,7 +253,7 @@ export default function PortfolioPage() {
 
     setPhotoUploading(true);
     for (const file of Array.from(files)) {
-      if (!file.type.startsWith("image/")) continue;
+      if (!file.type.startsWith("image/") && !file.type.startsWith("video/") && !file.type.includes("gif")) continue;
       const fd = new FormData();
       fd.append("image", file);
       fd.append("altText", "");
@@ -426,7 +426,7 @@ export default function PortfolioPage() {
         <input
           ref={dropInputRef}
           type="file"
-          accept=".png,.jpg,.jpeg,.webp"
+          accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov,.avi,.mkv"
           multiple
           className="hidden"
           onChange={(e) => { if (e.target.files?.length) handleFiles(e.target.files); e.target.value = ""; }}
@@ -535,7 +535,7 @@ export default function PortfolioPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                   </svg>
                   {photoUploading ? "Uploading..." : "Add Photos"}
-                  <input ref={photoInputRef} type="file" accept=".png,.jpg,.jpeg,.webp" multiple className="hidden" onChange={handlePhotoUpload} />
+                  <input ref={photoInputRef} type="file" accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov,.avi,.mkv" multiple className="hidden" onChange={handlePhotoUpload} />
                 </label>
               </div>
             );

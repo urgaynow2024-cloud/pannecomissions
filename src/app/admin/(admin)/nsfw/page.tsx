@@ -313,7 +313,7 @@ export default function NSFWPortfolioPage() {
         <input
           ref={dropInputRef}
           type="file"
-          accept=".png,.jpg,.jpeg,.webp"
+          accept=".png,.jpg,.jpeg,.webp,.gif,.mp4,.webm,.mov,.avi,.mkv"
           multiple
           className="hidden"
           onChange={(e) => { if (e.target.files?.length) handleFiles(e.target.files); e.target.value = ""; }}

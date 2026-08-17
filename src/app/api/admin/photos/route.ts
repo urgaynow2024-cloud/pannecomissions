@@ -56,8 +56,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Image is required", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
     }
 
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json({ error: "Invalid file type", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/") && !file.type.includes("gif")) {
+      return NextResponse.json({ error: "Invalid file type. Images, GIFs, and videos only.", code: "VALIDATION_ERROR", diagnosticId }, { status: 400 });
     }
 
     if (file.size > 20 * 1024 * 1024) {

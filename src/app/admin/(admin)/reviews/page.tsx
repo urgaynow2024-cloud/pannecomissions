@@ -16,7 +16,7 @@ interface Review {
   created_at: string;
 }
 
-const TABS = ["PENDING", "APPROVED", "HIDDEN", "REJECTED"] as const;
+const TABS = ["PENDING", "APPROVED", "HIDDEN", "REJECTED", "NSFW"] as const;
 
 function SkeletonCard() {
   return (
@@ -214,10 +214,9 @@ export default function ReviewsPage() {
 
   function getFiltered() {
     if (filter === "ALL") return reviews;
-    return reviews.filter((r) => {
-      if (filter === "HIDDEN") return r.hidden;
-      return r.status === filter;
-    });
+    if (filter === "NSFW") return reviews.filter((r) => r.nsfw);
+    if (filter === "HIDDEN") return reviews.filter((r) => r.hidden);
+    return reviews.filter((r) => r.status === filter);
   }
 
   const filtered = getFiltered();
