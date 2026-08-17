@@ -4,6 +4,7 @@ import NoiseOverlay from "@/components/NoiseOverlay";
 import AgeVerifier from "@/components/AgeVerifier";
 import NSFWPortfolio from "@/components/NSFWPortfolio";
 import Reviews from "@/components/Reviews";
+import SubmitNSFWReviewPage from "./submit-review/page";
 import prisma from "@/lib/prisma";
 
 export const revalidate = 30;
@@ -115,6 +116,10 @@ export default async function NSFWPage({
         </div>
 
         <NSFWPortfolio items={items} />
+
+        <div className="mt-20">
+          <SubmitNSFWReviewPage />
+        </div>
 
         <div className="mt-20">
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight text-white font-display heading-pop mb-8">

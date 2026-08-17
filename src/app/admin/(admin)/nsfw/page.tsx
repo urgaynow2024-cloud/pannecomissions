@@ -90,7 +90,7 @@ export default function NSFWPortfolioPage() {
   }
 
   const handleFiles = useCallback(async (files: FileList) => {
-    const accepted = Array.from(files).filter((f) => /\.(png|jpe?g|webp)$/i.test(f.name));
+    const accepted = Array.from(files).filter((f) => /\.(png|jpe?g|webp|gif|mp4|webm|mov|avi|mkv)$/i.test(f.name));
     if (accepted.length === 0) return;
 
     const queue: UploadQueueItem[] = accepted.map((file) => ({
