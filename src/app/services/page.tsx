@@ -5,14 +5,14 @@ import Link from "next/link";
 
 const SERVICES = [
   {
-    id: "textures",
-    name: "Textures",
+    id: "custom-textures",
+    name: "Custom Textures",
     range: "$5–$25",
     description: "Custom texture work for avatars, including things such as recolours, custom textures, decals, patterns, edits, and similar work.",
   },
   {
-    id: "entire-avatars",
-    name: "Entire Avatars",
+    id: "complete-avatars",
+    name: "Complete Avatars",
     range: "$55–$100",
     description: "Complete avatar work using the customer's requested assets and requirements. Final pricing depends on the avatar's complexity and the amount of work required.",
   },

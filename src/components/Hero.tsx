@@ -44,7 +44,7 @@ export default function Hero({ featuredItem, heroTitle, heroSubtitle, heroImageU
   const artworkParallax = isMobile ? "" : `translate3d(${mousePos.x * 3}px, ${mousePos.y * 2}px, 0)`;
 
   const title = heroTitle || "VRCHAT AVATAR COMMISSIONS";
-  const subtitle = heroSubtitle || "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.";
+  const subtitle = heroSubtitle || "Handmade VRChat avatars, outfits, textures, and models. Work you can feel in-game.";
 
   return (
     <section ref={heroRef} className="relative min-h-screen flex items-center overflow-hidden pt-20 pb-12">

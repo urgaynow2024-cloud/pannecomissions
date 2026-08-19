@@ -14,9 +14,9 @@ interface PricingItem {
 }
 
 const PRESET_TIERS = [
-  { label: "Textures", min: 5, max: 25 },
-  { label: "Entire Avatar", min: 55, max: 100 },
-  { label: "Model", min: 65, max: 150 },
+  { label: "Custom Textures", min: 5, max: 25 },
+  { label: "Complete Avatars", min: 55, max: 100 },
+  { label: "Models", min: 65, max: 150 },
 ];
 
 function SkeletonCard() {

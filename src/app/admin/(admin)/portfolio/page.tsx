@@ -337,6 +337,7 @@ export default function PortfolioPage() {
   }
 
   const CATEGORIES = [
+    "All",
     "Clothing Add-ons",
     "Complete Avatars",
     "Toggles",

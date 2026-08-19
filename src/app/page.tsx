@@ -28,8 +28,8 @@ async function getData() {
     const settingsMap = Object.fromEntries(settings.map((s: { key: string; value: string }) => [s.key, s.value]));
 
     const heroTitle = process.env.HERO_TITLE || settingsMap.hero_title || "VRCHAT AVATAR COMMISSIONS";
-    const heroSubtitle = process.env.HERO_SUBTITLE || settingsMap.hero_subtitle || "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.";
-    const marqueeText = process.env.MARQUEE_TEXT || settingsMap.marquee_text || "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS";
+    const heroSubtitle = process.env.HERO_SUBTITLE || settingsMap.hero_subtitle || "Handmade VRChat avatars, outfits, textures, and models. Work you can feel in-game.";
+    const marqueeText = process.env.MARQUEE_TEXT || settingsMap.marquee_text || "VRCHAT AVATARS ✦ CLOTHING ADD-ONS ✦ COMPLETE AVATARS ✦ TOGGLES ✦ CUSTOM TEXTURES ✦ MODELS ✦ AVATARS";
     const commissionAvailable = (process.env.COMMISSION_AVAILABLE || settingsMap.commission_available || "true") === "true";
     const commissionStatusText = process.env.COMMISSION_STATUS_TEXT || settingsMap.commission_status_text || "";
     const aboutText = process.env.ABOUT_TEXT || settingsMap.about_text || "I make VRChat avatars, outfits, textures and other projects people ask me to build.";
@@ -58,10 +58,13 @@ async function getData() {
       };
     });
 
-    const uniqueServices = servicesWithImages.filter(
-      (service: any, index: number, self: any[]) =>
-        index === self.findIndex((s: any) => s.name.trim() === service.name.trim())
-    );
+    const seenNames = new Set<string>();
+    const uniqueServices = servicesWithImages.filter((service: any) => {
+      const key = service.name.trim().toLowerCase();
+      if (seenNames.has(key)) return false;
+      seenNames.add(key);
+      return true;
+    });
 
     const aboutImageUrl = sitePhotoMap['about'] || settingsMap.about_image_url || null;
 
@@ -91,8 +94,8 @@ async function getData() {
       reviews: [] as any[],
       featuredWork: [] as any[],
       heroTitle: "VRCHAT AVATAR COMMISSIONS",
-      heroSubtitle: "Handmade VRChat avatars, outfits, textures, and toggles. Work you can feel in-game.",
-      marqueeText: "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS",
+      heroSubtitle: "Handmade VRChat avatars, outfits, textures, and models. Work you can feel in-game.",
+      marqueeText: "VRCHAT AVATARS ✦ CLOTHING ADD-ONS ✦ COMPLETE AVATARS ✦ TOGGLES ✦ CUSTOM TEXTURES ✦ MODELS ✦ AVATARS",
       commissionAvailable: true,
       commissionStatusText: "",
       aboutText: "I make VRChat avatars, outfits, textures and other projects people ask me to build.",

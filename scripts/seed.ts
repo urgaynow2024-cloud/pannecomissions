@@ -11,8 +11,8 @@ const DEFAULT_SERVICES = [
 ];
 
 const DEFAULT_PRICING = [
-  { name: "Textures", min_price: 5, max_price: 25, description: "depending on complexity.", category: "sfw", sort_order: 0 },
-  { name: "Entire Avatars", min_price: 55, max_price: 100, description: "depending on complexity.", category: "sfw", sort_order: 1 },
+  { name: "Custom Textures", min_price: 5, max_price: 25, description: "depending on complexity.", category: "sfw", sort_order: 0 },
+  { name: "Complete Avatars", min_price: 55, max_price: 100, description: "depending on complexity.", category: "sfw", sort_order: 1 },
   { name: "Models", min_price: 65, max_price: 150, description: "depending on complexity.", category: "sfw", sort_order: 2 },
 ];
 

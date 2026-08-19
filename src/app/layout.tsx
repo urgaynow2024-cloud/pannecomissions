@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: "Panne Commissions — VRChat Avatar Work",
     template: "%s | Panne Commissions",
   },
-  description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
+  description: "I make VRChat avatars, outfits, textures, and models. Commissions open — DM or use the form to tell me what you need.",
   icons: {
     icon: "/paw-icon.svg",
     shortcut: "/paw-icon.svg",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Panne Commissions — VRChat Avatar Work",
-    description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
+    description: "I make VRChat avatars, outfits, textures, and models. Commissions open — DM or use the form to tell me what you need.",
     url: "https://www.pannecomissions.shop",
     siteName: "Panne Commissions",
     type: "website",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Panne Commissions — VRChat Avatar Work",
-    description: "I make VRChat avatars, outfits, textures, toggles, and models. Commissions open — DM or use the form to tell me what you need.",
+    description: "I make VRChat avatars, outfits, textures, and models. Commissions open — DM or use the form to tell me what you need.",
   },
 };
 

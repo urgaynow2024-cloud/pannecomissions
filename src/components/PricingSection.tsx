@@ -17,8 +17,8 @@ interface PricingSectionProps {
 }
 
 const DEFAULT_PRICING: PricingItem[] = [
-  { id: "textures", name: "Textures", min_price: 5, max_price: 25, description: "depending on complexity" },
-  { id: "entire-avatar", name: "Entire Avatars", min_price: 55, max_price: 100, description: "depending on complexity" },
+  { id: "custom-textures", name: "Custom Textures", min_price: 5, max_price: 25, description: "depending on complexity" },
+  { id: "complete-avatars", name: "Complete Avatars", min_price: 55, max_price: 100, description: "depending on complexity" },
   { id: "models", name: "Models", min_price: 65, max_price: 150, description: "depending on complexity" },
 ];
 

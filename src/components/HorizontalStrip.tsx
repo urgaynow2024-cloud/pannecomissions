@@ -5,7 +5,7 @@ interface HorizontalStripProps {
 }
 
 export default function HorizontalStrip({ marqueeText }: HorizontalStripProps) {
-  const items = (marqueeText || "VRCHAT AVATARS ✦ CUSTOM TEXTURES ✦ TOGGLES ✦ CLOTHING ✦ MODELS ✦ AVATARS").split(" ✦ ");
+  const items = (marqueeText || "VRCHAT AVATARS ✦ CLOTHING ADD-ONS ✦ COMPLETE AVATARS ✦ TOGGLES ✦ CUSTOM TEXTURES ✦ MODELS ✦ AVATARS").split(" ✦ ");
   const content = [...items, ...items].join(" ✦ ");
 
   return (

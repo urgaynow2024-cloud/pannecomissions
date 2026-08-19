@@ -242,6 +242,7 @@ export default function NSFWPortfolioPage() {
   }
 
   const CATEGORIES = [
+    "All",
     "Clothing Add-ons",
     "Complete Avatars",
     "Toggles",

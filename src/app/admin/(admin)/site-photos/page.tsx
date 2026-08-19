@@ -14,7 +14,7 @@ interface SitePhoto {
 const SLOT_CONFIG: Record<string, { label: string; description: string; wide?: boolean }> = {
   hero: { label: "Homepage — Main Hero", description: "Main hero background image", wide: true },
   "clothing-addons": { label: "Clothing Add-ons", description: "Homepage service image" },
-  "complete-avatars": { label: "Complete Avatars", description: "Homepage service image" },
+  "complete-avatars": { label: "Complete Avatars", description: "Homepage service image", wide: true },
   toggles: { label: "Toggles", description: "Homepage service image" },
   "custom-textures": { label: "Custom Textures", description: "Homepage service image" },
   models: { label: "Models", description: "Homepage service image", wide: true },

@@ -13,7 +13,15 @@ async function getData() {
       orderBy: { sort_order: "asc" },
     });
 
-    return services.map((service: { id: string; name: string }) => ({
+    const seen = new Set<string>();
+    const unique = services.filter((service: { name: string }) => {
+      const key = service.name.trim().toLowerCase();
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+
+    return unique.map((service: { id: string; name: string }) => ({
       id: service.id,
       name: service.name,
     }));
