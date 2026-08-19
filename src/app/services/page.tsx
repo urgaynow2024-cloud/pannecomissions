@@ -2,46 +2,29 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NoiseOverlay from "@/components/NoiseOverlay";
 import Link from "next/link";
-import prisma from "@/lib/prisma";
 
-export const revalidate = 30;
-
-async function getData() {
-  try {
-    const services = await prisma.Service.findMany({
-      where: { visible: true },
-      orderBy: { sort_order: "asc" },
-    });
-
-    return services.map((service: { id: string; name: string; description: string | null; image_url: string | null }) => ({
-      id: service.id,
-      name: service.name,
-      description: service.description,
-      image_url: service.image_url,
-    }));
-  } catch {
-    return [];
-  }
-}
-
-const SERVICE_PRICES: Record<string, { range: string; description: string }> = {
-  "Textures": {
+const SERVICES = [
+  {
+    id: "textures",
+    name: "Textures",
     range: "$5–$25",
-    description: "Recolours, custom textures, decals, patterns, edits, and similar work. Final price depends on complexity and amount of work required.",
+    description: "Custom texture work for avatars, including things such as recolours, custom textures, decals, patterns, edits, and similar work.",
   },
-  "Entire Avatars": {
+  {
+    id: "entire-avatars",
+    name: "Entire Avatars",
     range: "$55–$100",
-    description: "Complete avatar assemblies from premade assets, tailored to your needs. Final price depends on the avatar, requested changes, complexity, and amount of work required.",
+    description: "Complete avatar work using the customer's requested assets and requirements. Final pricing depends on the avatar's complexity and the amount of work required.",
   },
-  "Models": {
+  {
+    id: "models",
+    name: "Models",
     range: "$65–$150",
     description: "Custom or modified 3D model work. Final price depends on the modelling requirements, complexity, and amount of work required.",
   },
-};
+];
 
-export default async function ServicesPage() {
-  const services = await getData();
-
+export default function ServicesPage() {
   return (
     <main className="min-h-screen bg-brand-black text-white antialiased relative">
       <NoiseOverlay />
@@ -61,19 +44,16 @@ export default async function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-            {services.map((service: { id: string; name: string; description: string | null; image_url: string | null }) => {
-              const priceInfo = SERVICE_PRICES[service.name] || { range: "TBD", description: service.description || "" };
-              return (
-                <div
-                  key={service.id}
-                  className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 md:p-8 hover:border-white/10 transition-colors"
-                >
-                  <h3 className="text-xl font-bold text-white font-display mb-2">{service.name}</h3>
-                  <p className="text-3xl font-bold text-brand-purple-400 mb-4">{priceInfo.range}</p>
-                  <p className="text-sm text-gray-400 leading-relaxed">{priceInfo.description}</p>
-                </div>
-              );
-            })}
+            {SERVICES.map((service) => (
+              <div
+                key={service.id}
+                className="rounded-2xl border border-white/5 bg-white/[0.02] p-6 md:p-8 hover:border-white/10 transition-colors"
+              >
+                <h3 className="text-xl font-bold text-white font-display mb-2">{service.name}</h3>
+                <p className="text-3xl font-bold text-brand-purple-400 mb-4">{service.range}</p>
+                <p className="text-sm text-gray-400 leading-relaxed">{service.description}</p>
+              </div>
+            ))}
           </div>
 
           <div className="rounded-2xl border border-green-500/20 bg-green-500/5 p-6 md:p-8 mb-16">

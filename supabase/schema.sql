@@ -132,11 +132,9 @@ END $$;
 
 INSERT INTO services (name, description, sort_order, visible, spare_parts)
 VALUES
-  ('Clothing Add-ons', 'Custom clothing, accessories and outfit additions for existing avatars.', 0, true, false),
-  ('Complete Avatars', 'Full avatar assemblies from premade assets, tailored to your needs.', 1, true, false),
-  ('Toggles', 'Avatar toggles and options for switching between different looks or states.', 2, true, true),
-  ('Custom Textures', 'Custom texture work for your avatar, from subtle tweaks to full repaints.', 3, true, false),
-  ('Models', '3D modelling work for avatars, accessories, and custom parts.', 4, true, true)
+  ('Textures', 'Custom texture work for avatars, including things such as recolours, custom textures, decals, patterns, edits, and similar work.', 0, true, false),
+  ('Entire Avatars', 'Complete avatar work using the customer''s requested assets and requirements. Final pricing depends on the avatar''s complexity and the amount of work required.', 1, true, false),
+  ('Models', 'Custom or modified 3D model work. Final price depends on the modelling requirements, complexity, and amount of work required.', 2, true, true)
 ON CONFLICT DO NOTHING;
 
 CREATE TABLE IF NOT EXISTS site_photos (
@@ -150,10 +148,8 @@ CREATE TABLE IF NOT EXISTS site_photos (
 
 INSERT INTO site_photos (slug, alt_text) VALUES
   ('hero', 'Main hero background'),
-  ('clothing-addons', 'Clothing Add-ons service image'),
-  ('complete-avatars', 'Complete Avatars service image'),
-  ('toggles', 'Toggles service image'),
-  ('custom-textures', 'Custom Textures service image'),
+  ('textures', 'Textures service image'),
+  ('entire-avatars', 'Entire Avatars service image'),
   ('models', 'Models service image'),
   ('about', 'About section image')
 ON CONFLICT (slug) DO NOTHING;
