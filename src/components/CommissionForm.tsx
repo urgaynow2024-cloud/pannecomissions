@@ -88,7 +88,13 @@ export default function CommissionForm({ services }: CommissionFormProps) {
       const res = await fetch("/api/commissions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          client_name: formData.name,
+          email: formData.email,
+          service: formData.service,
+          description: formData.description,
+          additional: formData.additional,
+        }),
       });
 
       if (res.ok) {

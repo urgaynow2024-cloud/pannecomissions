@@ -5,14 +5,15 @@ import { sendDiscordWebhook } from "@/lib/discord";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
+    const clientName = body.client_name || body.name;
 
-    if (!body.client_name || !body.email || !body.service) {
+    if (!clientName || !body.email || !body.service) {
       return NextResponse.json({ error: "Name, email, and service are required" }, { status: 400 });
     }
 
     const submission = await prisma.CommissionSubmission.create({
       data: {
-        client_name: String(body.client_name).trim(),
+        client_name: String(clientName).trim(),
         email: String(body.email).trim(),
         service: String(body.service).trim(),
         description: body.description ? String(body.description).trim() : null,
@@ -37,6 +38,10 @@ export async function POST(request: Request) {
       });
     } catch (discordError) {
       console.error("Discord webhook failed:", discordError);
+      return NextResponse.json(
+        { error: "Failed to send notification. Please try again later." },
+        { status: 502 }
+      );
     }
 
     return NextResponse.json(submission, { status: 201 });

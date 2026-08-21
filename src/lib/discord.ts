@@ -64,11 +64,17 @@ export async function sendDiscordWebhook({
   }
 
   try {
-    await fetch(webhookUrl, {
+    const response = await fetch(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ embeds: [embed] }),
     });
+
+    if (!response.ok) {
+      const text = await response.text();
+      console.error("Discord webhook returned error:", response.status, text);
+      throw new Error(`Discord webhook failed with status ${response.status}`);
+    }
   } catch (error) {
     console.error("Failed to send Discord webhook:", error);
     throw error;
